@@ -61,7 +61,7 @@ services:
   ecat-user:
     build:
       context: ..
-      dockerfile: services/Dockerfile
+      dockerfile: e-cat/services/Dockerfile
     command: ["user-service"]
     container_name: travel-ecat-user
     restart: unless-stopped
@@ -94,7 +94,7 @@ services:
   ecat-booking:
     build:
       context: ..
-      dockerfile: services/Dockerfile
+      dockerfile: e-cat/services/Dockerfile
     command: ["booking-service"]
     container_name: travel-ecat-booking
     restart: unless-stopped

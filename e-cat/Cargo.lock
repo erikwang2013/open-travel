@@ -601,6 +601,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "booking-service"
+version = "0.1.0"
+dependencies = [
+ "axum 0.8.9",
+ "ecat",
+ "ecat-auth",
+ "ecat-circuit-breaker",
+ "ecat-data",
+ "ecat-data-redis",
+ "ecat-data-sqlx",
+ "ecat-middleware",
+ "ecat-security",
+ "ecat-tracing",
+ "ecat-transport-http",
+ "serde",
+ "serde_json",
+ "shared",
+ "tokio",
+ "tower 0.5.3",
+ "tracing",
+]
+
+[[package]]
 name = "bson"
 version = "2.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4708,6 +4731,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "shared"
+version = "0.1.0"
+dependencies = [
+ "axum 0.8.9",
+ "ecat-data",
+ "ecat-data-redis",
+ "tower 0.5.3",
+ "tracing",
+]
+
+[[package]]
 name = "shlex"
 version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5687,6 +5721,29 @@ dependencies = [
  "idna",
  "percent-encoding",
  "serde",
+]
+
+[[package]]
+name = "user-service"
+version = "0.1.0"
+dependencies = [
+ "axum 0.8.9",
+ "ecat",
+ "ecat-auth",
+ "ecat-circuit-breaker",
+ "ecat-data",
+ "ecat-data-redis",
+ "ecat-data-sqlx",
+ "ecat-middleware",
+ "ecat-security",
+ "ecat-tracing",
+ "ecat-transport-http",
+ "serde",
+ "serde_json",
+ "shared",
+ "tokio",
+ "tower 0.5.3",
+ "tracing",
 ]
 
 [[package]]
