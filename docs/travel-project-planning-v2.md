@@ -37,7 +37,7 @@ Open Travel 是面向全球用户的旅游平台 monorepo，覆盖**景点、景
 | 机票 | 航班查询、比价、预订 | 规划中（Phase 4-5） |
 | 酒店 | 酒店搜索、房型、预订 | 规划中（Phase 4-5） |
 | 订单中心 | 订单列表、详情、取消、支付引导 | 规划中（Phase 3-4） |
-| 支付 | 在线支付（微信/支付宝等）、回调处理 | 规划中（Phase 4） |
+| 支付 | 多渠道支付（国际卡 Stripe / 本地支付按语言国家 / USDT 加密）、回调处理、管理端渠道开关与流水账单 | 规划中（Phase 4-5） |
 | 多语言 | 13 个 ARB 文件、语言切换 | **已实现**（资源），页面全量适配规划中 |
 
 ### 2.2 管理端功能矩阵
@@ -170,6 +170,7 @@ Open Travel 是面向全球用户的旅游平台 monorepo，覆盖**景点、景
 - 金额一律以**分**存储（`amount_cents`），涉及金额的计算统一由后端完成
 - 支付回调必须**验签 + 幂等**（按支付流水号去重），防止重复入账
 - 取消订单需处理库存释放与退款（Phase 4 规划）
+- **多渠道支付**：国际卡（Stripe，官方 API + 社区 stripe-rs SDK）、本地支付按用户语言/国家路由（中国：微信支付/支付宝——需境内商户资质；日本：PayPay；韩国：KakaoPay；东南亚：GCash/GrabPay 等，各自官方 API）、USDT 等加密渠道（NOWPayments / Binance Pay，支持多链 USDT）。渠道层以注册表抽象（`travel_payment_channels` 表 + trait），payment-service 按「本国渠道优先 → 国际卡 → 加密」顺序返回可用渠道；管理端可开关渠道（影响前端展示）并查看流水账单
 
 ### 5.3 多语言 i18n 设计
 
@@ -193,6 +194,7 @@ Open Travel 是面向全球用户的旅游平台 monorepo，覆盖**景点、景
 | `travel_hotels` | name_*、city_code、star、lat/lng、cover_url、status | Phase 4 |
 | `travel_hotel_rooms` | hotel_id、room_type_*、price_cents、breakfast、inventory | Phase 4 |
 | `travel_orders`（扩展） | +order_type（1 线路/2 机票/3 酒店）、product_id、product_snapshot JSON、expire_at | Phase 3 |
+| `travel_payment_channels` | channel_code、name_*、type（card/local/crypto）、enabled、priority、languages（JSON，适用语言）、countries（JSON，适用国家）、merchant_config（加密存储） | Phase 4 |
 | `travel_payments` | order_id、channel、amount_cents、status、txn_no、paid_at | Phase 4 |
 | `travel_admins` | username、password_hash、role、status | Phase 3 |
 | `travel_searches` | keyword、lang、results、created_at（搜索日志/热词） | Phase 3 |
