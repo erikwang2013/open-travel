@@ -41,7 +41,7 @@ open-travel/
 
 | 服务 | 端口 | 说明 |
 |------|------|------|
-| user-service | 8001 | `GET /api/user/profile`（需 JWT）、`POST /api/user/register`（公开） |
+| user-service | 8001 | `POST /api/user/register`、`POST /api/user/login`（公开）、`GET /api/user/profile`（需 JWT） |
 | booking-service | 8002 | `GET /api/booking/dates?region_id=N`（公开接口） |
 | Nginx 网关 | 8082→80 | 按 `/api/user/` 与 `/api/booking/` 前缀分流 |
 
@@ -95,8 +95,9 @@ curl 直连服务：
 curl http://localhost:8002/health                 # OK
 curl -H "X-Api-Version: v1" "http://localhost:8002/api/booking/dates?region_id=1"
 # {"code":0,"message":"ok","data":[{"region_id":1,"name_en":"placeholder-destination"}]}
-curl -H "X-Api-Version: v1" http://localhost:8001/api/user/register -X POST
-# {"code":0,"message":"ok","data":{"user_id":2,"nickname":"new-user"}}
+curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -X POST \
+  http://localhost:8001/api/user/register -d '{"email":"a@b.com","password":"secret1"}'
+# {"code":0,"message":"ok","data":{"user_id":1,"email":"a@b.com","lang":"en"}}
 ```
 
 经网关（Nginx，host `8082` → 容器 `80`）：

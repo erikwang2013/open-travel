@@ -41,7 +41,7 @@ open-travel/
 
 | Service | Port | Description |
 |---------|------|-------------|
-| user-service | 8001 | `GET /api/user/profile` (JWT required), `POST /api/user/register` (public) |
+| user-service | 8001 | `POST /api/user/register`, `POST /api/user/login` (public), `GET /api/user/profile` (JWT required) |
 | booking-service | 8002 | `GET /api/booking/dates?region_id=N` (public) |
 | Nginx gateway | 8082→80 | Prefix routing: `/api/user/` and `/api/booking/` |
 
@@ -95,8 +95,9 @@ Curl the services directly:
 curl http://localhost:8002/health                 # OK
 curl -H "X-Api-Version: v1" "http://localhost:8002/api/booking/dates?region_id=1"
 # {"code":0,"message":"ok","data":[{"region_id":1,"name_en":"placeholder-destination"}]}
-curl -H "X-Api-Version: v1" http://localhost:8001/api/user/register -X POST
-# {"code":0,"message":"ok","data":{"user_id":2,"nickname":"new-user"}}
+curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -X POST \
+  http://localhost:8001/api/user/register -d '{"email":"a@b.com","password":"secret1"}'
+# {"code":0,"message":"ok","data":{"user_id":1,"email":"a@b.com","lang":"en"}}
 ```
 
 Through the gateway (Nginx, host `8082` → container `80`):

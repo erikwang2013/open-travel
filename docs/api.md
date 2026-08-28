@@ -65,10 +65,13 @@ Authorization: Bearer <JWT>
 |------|------|
 | 200 | 成功 |
 | 400 | 请求参数错误 / `X-Api-Version` 缺失或不受支持（`code` 非 0，`message` 描述原因） |
-| 401 | 未认证 / JWT 无效 |
+| 401 | 未认证 / JWT 无效 / 登录凭据错误（统一返回，防枚举） |
 | 403 | 请求被安全中间件拦截（SQL 注入 / XSS / SSRF 等攻击模式） |
+| 404 | 用户不存在 |
+| 409 | 邮箱已注册 |
 | 429 | 超过限流阈值 |
 | 500 | 服务内部错误 |
+| 503 | 数据库不可用 |
 
 错误响应示例（限流）：
 
@@ -100,38 +103,65 @@ curl http://localhost:8082/ready
 
 ### 用户服务
 
+#### `POST /api/user/register` — 用户注册
+
+公开接口。请求体 JSON：
+
+```json
+{ "email": "a@b.com", "password": "secret1", "lang": "en" }
+```
+
+| 字段 | 必填 | 说明 |
+|------|------|------|
+| `email` | 是 | 邮箱格式（需含 `@`），非法返回 400 |
+| `password` | 是 | 至少 6 位，bcrypt（cost 12）哈希存储 |
+| `lang` | 否 | 语言偏好，默认 `en` |
+
+- `400`：邮箱格式无效 / 密码少于 6 位
+- `409`：邮箱已注册（`email already registered`）
+- `503`：数据库不可用
+
+```bash
+curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -X POST \
+  http://localhost:8082/api/user/register -d '{"email":"a@b.com","password":"secret1"}'
+```
+
+```json
+{ "code": 0, "message": "ok", "data": { "user_id": 1, "email": "a@b.com", "lang": "en" } }
+```
+
+#### `POST /api/user/login` — 登录
+
+公开接口。请求体 `{ "email": "...", "password": "..." }`。
+
+- **统一 `401`**（`invalid credentials`）：不区分「邮箱不存在」与「密码错误」，防账号枚举
+- 成功返回 JWT（24 小时有效期）与用户信息
+- `503`：数据库不可用
+
+```bash
+curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -X POST \
+  http://localhost:8082/api/user/login -d '{"email":"a@b.com","password":"secret1"}'
+```
+
+```json
+{ "code": 0, "message": "ok", "data": { "token": "<JWT>", "user_id": 1, "email": "a@b.com" } }
+```
+
 #### `GET /api/user/profile` — 查询用户资料
 
-鉴权：**需要 JWT**。当前返回占位数据（Phase 2 接入真实用户表）。
+鉴权：**需要 JWT**（`Authorization: Bearer <JWT>`，由登录接口签发）。
+
+- `401`：无 token / token 无效
+- `400`：token 中 subject 非法
+- `404`：用户不存在
+- `503`：数据库不可用
 
 ```bash
 curl -H "X-Api-Version: v1" -H "Authorization: Bearer <JWT>" http://localhost:8082/api/user/profile
 ```
 
 ```json
-{ "code": 0, "message": "ok", "data": { "user_id": 1, "nickname": "traveler" } }
-```
-
-无 token 时：
-
-```bash
-curl -H "X-Api-Version: v1" http://localhost:8082/api/user/profile
-```
-
-```json
-{ "code": 401001, "message": "unauthorized", "data": null }
-```
-
-#### `POST /api/user/register` — 用户注册
-
-无需 JWT（注册接口）。当前返回占位数据。
-
-```bash
-curl -H "X-Api-Version: v1" -X POST http://localhost:8082/api/user/register
-```
-
-```json
-{ "code": 0, "message": "ok", "data": { "user_id": 2, "nickname": "new-user" } }
+{ "code": 0, "message": "ok", "data": { "user_id": 1, "email": "a@b.com", "lang": "en" } }
 ```
 
 ### 目的地服务
@@ -166,4 +196,3 @@ curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/dates?region_id=1
 - [项目 README](../README.md)（快速开始、端口映射、环境变量）
 - [联调报告](integration-report.md)（链路验证结果）
 - [压测报告](loadtest-report.md)
-- [数据库配置教程](database-config-tutorial.md)
