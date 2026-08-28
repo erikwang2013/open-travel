@@ -68,3 +68,11 @@ CREATE TABLE IF NOT EXISTS travel_reviews (
   created_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间',
   INDEX idx_destination (destination_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='目的地评论表';
+
+-- 示例种子数据（空数据卷首次初始化时写入；已初始化的库手动执行或忽略）
+INSERT INTO travel_destinations (name_en, name_zh, name_ja, description, latitude, longitude, category, region_id) VALUES
+('Tokyo','东京','東京','{"en":"Capital of Japan","zh":"日本首都"}',35.6762,139.6503,'city',1),
+('Hong Kong','香港','香港','{"en":"Asia world city","zh":"亚洲国际都会"}',22.3193,114.1694,'city',1),
+('Paris','巴黎','パリ','{"en":"City of Light","zh":"光之城"}',48.8566,2.3522,'city',2),
+('London','伦敦','ロンドン','{"en":"Historic capital of UK","zh":"英国首都"}',51.5074,-0.1278,'city',2),
+('New York','纽约','ニューヨーク','{"en":"The Big Apple","zh":"大苹果城"}',40.7128,-74.0060,'city',3);

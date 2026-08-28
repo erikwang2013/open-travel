@@ -5,6 +5,8 @@ services:
     image: mysql:8.0
     container_name: travel-mysql
     restart: unless-stopped
+    # 忽略客户端声明的字符集，强制使用服务器 utf8mb4（修复 sqlx 连接中文乱码）
+    command: --skip-character-set-client-handshake
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-travel_dev}
       MYSQL_DATABASE: travel
@@ -71,7 +73,7 @@ services:
       redis:
         condition: service_healthy
     environment:
-      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel
+      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel?charset=utf8mb4
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
     ports:
@@ -106,7 +108,7 @@ services:
       opensearch:
         condition: service_healthy
     environment:
-      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel
+      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel?charset=utf8mb4
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
     ports:

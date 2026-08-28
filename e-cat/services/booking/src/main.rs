@@ -27,6 +27,7 @@ use ecat_security::SecurityLayer;
 use ecat_tracing::TracingLayer;
 use ecat_transport_http::HttpServer;
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 use shared::{no_error, RedisRateLimitLayer};
 use std::sync::Arc;
 use std::time::Duration;
@@ -57,6 +58,7 @@ struct RegionQuery {
 struct DestRow {
     region_id: u64,
     name_en: String,
+    name_zh: String,
 }
 
 async fn health() -> &'static str {
@@ -84,16 +86,22 @@ async fn available_dates(
         }
     }
 
-    // 2. 未命中 → MySQL 回源（列与 config/schema.sql travel_destinations 对齐，Phase 2 接真实数据）
+    // 2. 未命中 → MySQL 回源（travel_destinations 表，参数化查询防注入）
     let mut rows: Vec<DestRow> = Vec::new();
     if let Some(db) = &state.db {
-        let sql = format!("SELECT region_id, name_en FROM travel_destinations WHERE region_id = {region_id}", region_id = q.region_id);
-        match db.query(&sql).await {
+        match db
+            .query_with(
+                "SELECT region_id, name_en, name_zh FROM travel_destinations WHERE region_id = ?",
+                &[json!(q.region_id)],
+            )
+            .await
+        {
             Ok(result) => {
                 for row in result {
                     let region_id = row.get("region_id").and_then(|v| v.as_u64()).unwrap_or(q.region_id);
                     let name_en = row.get("name_en").and_then(|v| v.as_str()).unwrap_or("").to_string();
-                    rows.push(DestRow { region_id, name_en });
+                    let name_zh = row.get("name_zh").and_then(|v| v.as_str()).unwrap_or("").to_string();
+                    rows.push(DestRow { region_id, name_en, name_zh });
                 }
             }
             Err(e) => tracing::warn!("db query failed: {e}"),
@@ -112,7 +120,11 @@ async fn available_dates(
 
     // 4. 占位数据兜底，保证接口在无数据源环境可响应
     if rows.is_empty() {
-        rows.push(DestRow { region_id: q.region_id, name_en: "placeholder-destination".into() });
+        rows.push(DestRow {
+            region_id: q.region_id,
+            name_en: "placeholder-destination".into(),
+            name_zh: "占位目的地".into(),
+        });
     }
     Json(ApiResponse { code: 0, message: "ok".into(), data: Some(rows) })
 }
