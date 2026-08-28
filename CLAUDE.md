@@ -152,6 +152,16 @@ Any string works as a custom agent type.
 npm run build && npm test
 ```
 
+## 推送与发布
+
+- 提交：改动完成且验证通过后提交（不添加 Co-Authored-By，除非 settings.json 显式配置）
+- 推送：push 到 origin/main，确认远程同步
+- 版本发布流程：
+  1. CHANGELOG.md 顶部新增版本节（格式 `## [x.y.z] — YYYY-MM-DD`），记录变更
+  2. 打 annotated tag：`git tag -a vX.Y.Z -m "vX.Y.Z"`，`git push origin vX.Y.Z`
+  3. 创建 release：`gh release create vX.Y.Z --title vX.Y.Z --notes-file <节>`，body 取自 CHANGELOG 对应节；最新版本自动置为 Latest
+  4. 增量原则：只补缺失的 tag/release，已存在的跳过；e-cat 子模块按自身仓库版本独立发布
+
 ## CLI Quick Reference
 
 ```bash
