@@ -1,19 +1,165 @@
 <!-- Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz -->
-# Ecat
+# Open Travel — 全球旅游平台
 
-[English](README.en.md) | [日本語](docs/i18n/ja/README.md) | [한국어](docs/i18n/ko/README.md) | [Русский](docs/i18n/ru/README.md) | [Deutsch](docs/i18n/de/README.md) | [Français](docs/i18n/fr/README.md) | [Español](docs/i18n/es/README.md) | [Português](docs/i18n/pt/README.md) | [हिन्दी](docs/i18n/hi/README.md) | [العربية](docs/i18n/ar/README.md) | [বাংলা](docs/i18n/bn/README.md) | [Bahasa Indonesia](docs/i18n/id/README.md) | 简体中文
+[English](README.en.md) | [日本語](../docs/i18n/ja/README.md) | [한국어](../docs/i18n/ko/README.md) | [Русский](../docs/i18n/ru/README.md) | [Deutsch](../docs/i18n/de/README.md) | [Français](../docs/i18n/fr/README.md) | [Español](../docs/i18n/es/README.md) | [Português](../docs/i18n/pt/README.md) | [हिन्दी](../docs/i18n/hi/README.md) | [العربية](../docs/i18n/ar/README.md) | [বাংলা](../docs/i18n/bn/README.md) | [Bahasa Indonesia](../docs/i18n/id/README.md) | 简体中文
 
-Ecat中文名：一只猫
+> 一个面向全球用户的旅游预订平台：Rust 微服务后端（**e-cat** 框架） + Flutter / HarmonyOS 多端客户端，支持 **12+ 种语言**、国际支付与多语言搜索。
 
-**一只猫** 是对标 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 的 Rust 微服务框架（v3.0.2 · 51 crates）。
+## 项目简介
 
-提供 API-first 开发体验、可插拔的组件架构、统一的 HTTP/gRPC 中间件抽象，以及完备的 CLI 工具链。让熟悉 Kratos 的开发者可以无缝上手，同时充分利用 Rust 的类型安全、零成本抽象和极致性能。
+Open Travel 是一个全球旅游平台 monorepo。后端基于 **e-cat（一只猫）** Rust 微服务框架（v3.0.3 · 51 crates）构建 —— 对标 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3，提供 API-first 开发体验、可插拔组件架构与统一的 HTTP/gRPC 中间件抽象。
 
-<p align="center">
-  <img src="docs/e-cat.svg" alt="Ecat 项目宠物（动态）" width="220" />
-</p>
+| 维度 | 说明 |
+| :--- | :--- |
+| **后端** | e-cat（Rust）：HTTP/axum + gRPC/tonic，51 crates 微服务生态 |
+| **业务服务** | user-service（:8001）、booking-service（:8002），位于 `e-cat/services/` |
+| **网关** | Nginx（`config/nginx.conf`），按 URL 前缀分流 |
+| **多端客户端** | `apps/flutter`（iOS / Android / Web / Desktop）、`apps/harmonyos`（鸿蒙） |
+| **数据源** | MySQL + Redis 缓存 + OpenSearch 多语言搜索 |
+| **安全** | ecat-security / ecat-auth（JWT）/ ecat-tls：认证、审计、限流、防注入 |
+| **国际化** | 12+ 语种，RTL 支持，OpenSearch 多语言分词 |
 
-## 设计架构
+## 项目结构
+
+```
+open-travel/
+├── apps/                  # 多端客户端（flutter / harmonyos）
+├── config/                # docker-compose.yml、nginx.conf、schema.sql、opensearch.yml
+├── docs/                  # 规划文档、联调/压测报告、SVG 架构图、i18n 翻译
+├── scripts/               # opensearch_init / loadtest / cdn_setup / cdn_upload / release
+└── e-cat/                 # e-cat 框架 + 业务服务（同一 Cargo workspace）
+    ├── ecat*/             # 51 个 ecat-* 框架 crate
+    ├── services/          # 业务微服务（workspace 成员）
+    │   ├── user/          # user-service：用户资料 / 注册，入口 src/main.rs
+    │   ├── booking/       # booking-service：热门目的地日期，入口 src/main.rs
+    │   └── shared/        # 公共代码（JWT 密钥、Redis 限流中间件等）
+    ├── config/            # 框架配置示例
+    ├── docs/              # 框架设计文档（API 参考、生态规划、审计报告）
+    └── examples/          # 框架示例项目
+```
+
+## 业务服务
+
+| 服务 | 端口 | 说明 |
+|------|------|------|
+| user-service | 8001 | `GET /api/v1/user/profile`（需 JWT）、`POST /api/v1/user/register` |
+| booking-service | 8002 | `GET /api/v1/booking/dates?region_id=N`（公开接口） |
+| Nginx 网关 | 8082→80 | 按 `/api/v1/user/` 与 `/api/v1/booking/` 前缀分流 |
+
+两个服务均提供 `GET /health`（存活）与 `GET /ready`（就绪，报告数据源降级状态）。
+
+> 接口详情（请求/响应示例、鉴权与限流说明）见 [API 参考](docs/api.md)。
+
+## 快速开始
+
+### 前提条件
+
+- Rust 1.85+（stable 工具链，edition 2024）+ [protoc](https://github.com/protocolbuffers/protobuf)
+- Docker + Docker Compose
+
+### 构建
+
+```bash
+cd e-cat
+cargo check -p user-service -p booking-service   # 编译检查业务服务
+```
+
+本地开发模式运行（各自监听 `0.0.0.0:8001` / `0.0.0.0:8002`）：
+
+```bash
+cd e-cat
+cargo run -p user-service &
+cargo run -p booking-service
+```
+
+构建 Docker 镜像（`e-cat/services/Dockerfile`，从 `e-cat/Cargo.toml` 按 `-p` 构建）：
+
+```bash
+docker build -f e-cat/services/Dockerfile -t open-travel/services .
+```
+
+### 启动（Docker Compose）
+
+```bash
+docker compose -f config/docker-compose.yml up -d
+```
+
+> ⚠️ 不要使用 `--env-file .env` 启动（会报错）。
+
+### 验证
+
+curl 直连服务：
+
+```bash
+curl http://localhost:8002/health                 # OK
+curl "http://localhost:8002/api/v1/booking/dates?region_id=1"
+# {"code":0,"message":"ok","data":[{"region_id":1,"name_en":"placeholder-destination"}]}
+curl http://localhost:8001/api/v1/user/register -X POST
+# {"code":0,"message":"ok","data":{"user_id":2,"nickname":"new-user"}}
+```
+
+经网关（Nginx，host `8082` → 容器 `80`）：
+
+```bash
+curl http://localhost:8082/api/v1/booking/dates?region_id=1
+curl http://localhost:8082/health
+```
+
+带鉴权的接口（`/api/v1/user/profile`）需在请求头携带 JWT：
+
+```bash
+curl -H "Authorization: Bearer <JWT>" http://localhost:8082/api/v1/user/profile
+```
+
+### 端口映射
+
+| 服务 | 宿主端口 → 容器端口 |
+|------|---------------------|
+| Nginx 网关 | 8082 → 80 |
+| user-service | 8001 → 8001 |
+| booking-service | 8002 → 8002 |
+| MySQL | 3308 → 3306 |
+| Redis | 6381 → 6379 |
+| OpenSearch | 9201 → 9200 |
+
+> 数据源端口映射为本地临时方案（宿主 3306/6379/9200 已被占用），见 `docs/integration-report.md`。
+
+### 运行测试
+
+```bash
+cd e-cat
+cargo test -p user-service -p booking-service   # 业务服务
+cargo test --workspace                          # 全 workspace
+```
+
+### 脚本
+
+| 脚本 | 用途 |
+|------|------|
+| `scripts/opensearch_init.sh` | 幂等创建 OpenSearch 索引（cjk 分析器） |
+| `scripts/loadtest.sh` | 接口压测 |
+| `scripts/cdn_setup.sh` / `cdn_upload.sh` | CDN 配置与资源上传（`--dry-run` 为默认） |
+| `scripts/release.sh` | 发布流程辅助 |
+
+### 版本发布流程
+
+项目版本（当前 v1.0.0，按 semver 演进）**独立于** e-cat 框架版本（当前 3.0.3）。
+
+1. `CHANGELOG.md` 顶部新增版本节，格式 `## [x.y.z] — YYYY-MM-DD`，记录变更
+2. 打 annotated tag：`git tag -a vX.Y.Z -m "vX.Y.Z"`，`git push origin vX.Y.Z`
+3. 创建 release：`gh release create vX.Y.Z --title vX.Y.Z --notes-file <节>`，body 取自 CHANGELOG 对应节；最新版本自动置为 Latest
+
+增量原则：只补缺失的 tag/release，已存在的跳过。
+
+## 环境变量
+
+| 变量 | 默认值 | 说明 |
+|------|--------|------|
+| `DATABASE_URL` | `mysql://travel:pass@localhost:3306/travel` | MySQL 连接串 |
+| `REDIS_URL` | `redis://localhost:6379` | Redis 连接串 |
+| `JWT_SECRET` | 开发占位密钥 | JWT 签名密钥，需 ≥32 字节；未配置或长度不足时退回占位密钥并告警，**生产必须配置** |
+
+## 架构（e-cat 框架）
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -35,16 +181,14 @@ Ecat中文名：一只猫
 │                    │    Auth (JWT/API)  │                    │
 ├────────────────────┼────────────────────┼────────────────────┤
 │     config         │     errors         │     metadata       │
-│     ──────         │     ──────         │     ────────       │
 │     file / env     │     ErrorCode      │     key-value      │
 │     remote source  │     Error          │     HTTP/gRPC      │
 ├────────────────────┴────────────────────┴────────────────────┤
 │                         data 层                               │
-│     ────────────────────────────────────────────────          │
 │     rdbms:   SQLite / PostgreSQL / MySQL / TiDB              │
-│     cache:   Redis ✓                                         │
-│     config:  remote (Consul KV)                              │
-│     registry: consul                                         │
+│     cache:   Redis ✓ / Memcached（内存实现）                  │
+│     search:  OpenSearch / Elasticsearch                      │
+│     olap / graph / tsdb / document / storage: 另 11 个后端    │
 ├──────────────────────────────────────────────────────────────┤
 │                       ecat-protos                             │
 │     (共享 .proto 定义: errors, metadata, ...)                 │
@@ -62,44 +206,45 @@ Ecat中文名：一只猫
                                       │
                               ┌───────┴───────┐
                               │   Middleware   │
-                              │   ──────────   │
                               │ 1. Recovery    │  捕获 panic
                               │ 2. Tracing     │  注入 trace_id
                               │ 3. Logging     │  请求日志
-                              │ 4. Auth        │  认证鉴权
-                              │ 5. Metrics     │  指标采集
-│ 6. Security    │  攻击检测
-│ 7. CircuitBrk  │  熔断保护
+                              │ 4. Security    │  攻击检测
+                              │ 5. CircuitBrk  │  熔断保护
+                              │ 6. Auth        │  认证鉴权
                               └───────┬───────┘
                                       │
                               ┌───────┴───────┐
-                              │    Handler     │  用户业务逻辑
+                              │    Handler     │  业务逻辑
                               │ (tower::Service)│
                               └───────┬───────┘
                                       │
                               ┌───────┴───────┐
-                              │   Response     │  编码序列化
-                              │ JSON/Protobuf  │
+                              │   Response     │  JSON/Protobuf 编码
                               └───────────────┘
 ```
 
-## 功能
+### 本项目中间件链
 
-- **API-first**：Protobuf 定义 API、错误码、元数据；prost + tonic-build 代码生成
-- **双协议支持**：HTTP（axum）和 gRPC（tonic）共用同一套 tower::Layer 中间件
-- **可插拔架构**：Registry、Config、Logging、Encoding 全部通过 trait 抽象，默认提供生产可用实现
-- **中间件体系**：内置 Recovery、Tracing、Logging、Timeout、RateLimit、Security、CircuitBreaker、MetricsLayer、RetryLayer、ValidateLayer、CORS（cors feature）；通过 tower::ServiceBuilder 组合
-- **应用生命周期**：Builder 模式构建 App，多 Server 并发启动，SIGTERM/SIGINT 信号处理，start/stop 生命周期钩子
-- **类型安全**：基于 protobuf 的错误码体系，编译期 HTTP 状态码映射
-- **可观测性**：tracing + Prometheus + Health 端点（/health、/ready）
-- **攻击检测**：SecurityLayer 自动检测 SQL 注入、XSS、SSRF 等攻击模式，阻断高危请求
-- **服务间通信**：HttpClient 集成服务发现与负载均衡，CircuitBreaker 熔断保护
-- **认证鉴权**：JWT / API Key 认证中间件，Claims 传递至请求上下文
-- **消息与事件**：MessageQueue trait + EventBus 本地/远程 Pub/Sub
-- **分布式追踪**：请求 span、trace_id 注入/提取
-- **gRPC 客户端**：GrpcClient 集成服务发现与负载均衡
-- **多协议**：HTTP、gRPC、WebSocket、GraphQL 统一路由
-- **多数据源**：RDBMS（SQLite/PG/MySQL/TiDB）、缓存（Redis/Memcached）、搜索（OpenSearch/Elasticsearch）、图（Neo4j/NebulaGraph/ArangoDB）、时序（InfluxDB/IoTDB/QuestDB/TDengine）、文档（MongoDB）、对象存储（S3/MinIO）
+业务路由挂载完整中间件链（执行顺序：外层 → 内层）：
+
+- **user-service**：`Tracing → CircuitBreaker → Security → RateLimit(Redis) → Auth(JWT)`
+- **booking-service**：`Tracing → CircuitBreaker → Security → RateLimit`（dates 为公开接口，无 JWT）
+
+**限流**：每服务 100 req/60s，Redis 分布式固定窗口；未认证请求也计入限流（防暴力请求耗尽资源），超限返回 429。
+
+## e-cat 框架速览
+
+### 技术栈
+
+| 组件 | 选型 | 组件 | 选型 |
+|------|------|------|------|
+| 运行时 | **tokio** | RDBMS | **sqlx** |
+| HTTP | **axum** | Redis | **redis-rs** |
+| gRPC | **tonic** | JWT | **jsonwebtoken** |
+| Protobuf | **prost + tonic-build** | HTTP Client | **reqwest** |
+| 中间件 | **tower::Service / Layer** | CLI | **clap** |
+| 日志/追踪 | **tracing + trace_id** | 指标 | **prometheus** |
 
 ### Kratos 概念映射
 
@@ -113,394 +258,36 @@ Ecat中文名：一只猫
 | `registry.Discovery` | `Registry` trait | 可插拔注册发现 |
 | `config.Source` | `ConfigSource` trait | 多源配置加载 |
 
-## 技术栈
+### 数据后端
 
-| 组件 | 选型 |
-|------|------|
-| 异步运行时 | **tokio** |
-| HTTP | **axum** |
-| gRPC | **tonic** |
-| Protobuf | **prost + tonic-build** |
-| 中间件 | **tower::Service / Layer** |
-| 日志/追踪 | **tracing + trace_id propagation** |
-| 指标 | **prometheus** |
-| 序列化 | **serde + prost** |
-| 攻击检测 | **security-rust** |
-| RDBMS | **sqlx** |
-| Redis | **redis-rs** |
-| JWT | **jsonwebtoken** |
-| HTTP Client | **reqwest** |
-| CLI | **clap** |
-
-## 支持的数据库
-
-| 类别 | 数据库 | Crate | 状态 |
-|------|--------|-------|------|
-| RDBMS | SQLite | `ecat-data-sqlx` | ✅ 已实现 |
-| RDBMS | PostgreSQL | `ecat-data-sqlx` | ✅ 已实现 |
-| RDBMS | MySQL | `ecat-data-sqlx` | ✅ 已实现 |
-| RDBMS | TiDB | `ecat-data-sqlx` | ✅ 已实现 |
-| 缓存 | Redis | `ecat-data-redis` | ✅ 已实现 |
-| 搜索 | OpenSearch | `ecat-data-opensearch` | ✅ 已实现 |
-| 搜索 | Elasticsearch | `ecat-data-elasticsearch` | ✅ 已实现 |
-| 缓存 | Memcached | `ecat-data-memcached` | ⚠️ 内存实现（非生产，勿用于持久缓存） |
-| OLAP | ClickHouse | `ecat-data-clickhouse` | ✅ 已实现 |
-| 图 | Neo4j | `ecat-data-neo4j` | ✅ REST API |
-| 图 | NebulaGraph | `ecat-data-nebulagraph` | ✅ REST API |
-| 图 | ArangoDB | `ecat-data-arangodb` | ✅ REST API |
-| 时序 | InfluxDB | `ecat-data-influxdb` | ✅ HTTP API |
-| 时序 | Apache IoTDB | `ecat-data-iotdb` | ✅ REST API |
-| 时序 | QuestDB | `ecat-data-questdb` | ✅ HTTP API |
-| 时序 | TDengine | `ecat-data-tdengine` | ✅ REST API |
-| 文档 | MongoDB | `ecat-data-mongodb` | ✅ 原生驱动 |
-| 对象存储 | S3 / MinIO | `ecat-data-s3` | ✅ reqwest+rustls |
-
-> 所有数据后端通过统一的 trait 抽象（`RdbmsClient` / `Cache` / `SearchClient` / `GraphClient` / `TsdbClient` / `DocumentClient` / `StorageClient`），按需引入对应 contrib crate。每个后端均提供 `XxxConfig` 结构体（`#[derive(Deserialize)]`），支持从 JSON/YAML 配置文件加载连接信息。
-
-> **构造器命名约定**：消息队列 crate（`ecat-mq-*`）主构造器统一为 `connect`（如 `KafkaMq::connect(brokers)`、`MqttMq::connect(url)`），另提供 `from_config` 从配置加载；数据后端 crate（`ecat-data-*`）多数主构造器为 `new`，例外：`ecat-data-redis` / `ecat-data-sqlx` 沿用 `connect`，`ecat-data-mongodb` / `ecat-data-s3` 仅提供 `from_config`。此为既有约定，不强制统一（避免破坏性变更）；3.0 窗口可评估统一。
-
-### 数据库配置示例
-
-每个数据后端提供 `XxxConfig` 结构体和 `from_config()` 方法，将连接信息从代码中解耦到配置文件：
-
-```rust
-use ecat_data_redis::{RedisCache, RedisConfig};
-use ecat_data_sqlx::{SqlxClient, SqlxConfig};
-use ecat_data_clickhouse::{ClickhouseClient, ClickhouseConfig};
-
-// 从配置文件加载（JSON 或 YAML）
-let config: serde_json::Value = serde_json::from_str(r#"{
-    "redis":     {"url": "redis://localhost:6379"},
-    "sql":       {"url": "postgres://user:pass@localhost/db"},
-    "clickhouse":{"base_url": "http://localhost:8123", "database": "mydb"}
-}"#)?;
-
-// Redis
-let redis_cfg: RedisConfig = serde_json::from_value(config["redis"].clone())?;
-let cache = RedisCache::from_config(redis_cfg).await?;
-cache.set("key", b"value", Duration::from_secs(60)).await?;
-
-// RDBMS
-let sql_cfg: SqlxConfig = serde_json::from_value(config["sql"].clone())?;
-let db = SqlxClient::from_config(sql_cfg).await?;
-let rows = db.query("SELECT * FROM users").await?;
-
-// ClickHouse
-let ch_cfg: ClickhouseConfig = serde_json::from_value(config["clickhouse"].clone())?;
-let ch = ClickhouseClient::from_config(ch_cfg);
-ch.execute("INSERT INTO events VALUES (1, 'start')").await?;
-```
-
-**配置字段参考**:
-
-| 后端 | Config | 字段 | 示例值 |
-|------|--------|------|--------|
-| Redis | `RedisConfig` | `url`, `password`? | `redis://localhost:6379` |
-| RDBMS | `SqlxConfig` | `url`, `username`?, `password`? | `postgres://localhost/db` |
-| ClickHouse | `ClickhouseConfig` | `base_url`, `database`, `username`?, `password`? | `http://localhost:8123`, `default` |
-| QuestDB | `QuestdbConfig` | `base_url`, `username`?, `password`? | `http://localhost:9000` |
-| Elasticsearch | `ElasticsearchConfig` | `base_url`, `username`?, `password`? | `http://localhost:9200` |
-| OpenSearch | `OpenSearchConfig` | `base_url`, `username`?, `password`? | `http://localhost:9200` |
-| InfluxDB | `InfluxConfig` | `base_url`, `org`, `bucket`, `token` | — |
-| Neo4j | `Neo4jConfig` | `base_url`, `username`, `password` | — |
-| NebulaGraph | `NebulaGraphConfig` | `base_url`, `space`, `username`?, `password`? | — |
-| ArangoDB | `ArangoConfig` | `base_url`, `db`, `username`, `password` | — |
-| IoTDB | `IotdbConfig` | `base_url`, `username`, `password` | — |
-| Memcached | `MemcachedConfig` | `username`?, `password`?（保留字段） | — |
-| TDengine | `TdengineConfig` | `base_url`, `username`, `password`, `database`? | `http://localhost:6041` |
-| MongoDB | `MongoConfig` | `url`, `database`, `tls`? | `mongodb://localhost:27017`, `app` |
-| S3 | `S3Config` | `endpoint`, `region`, `access_key`, `secret_key`, `tls`? | `http://localhost:9000`, `us-east-1` |
-
-> 所有后端 Config 均支持可选的 `tls` 字段（`TlsClientConfig`），用于配置 TLS 客户端证书认证。详见 [数据库配置教程](docs/database-config-tutorial.md)。
-
-## 项目结构
-
-```
-e-cat/
-├── ecat/                       # 核心：App 生命周期
-├── ecat-transport/             # 传输抽象（Server trait）
-├── ecat-transport-http/        # axum 实现
-├── ecat-transport-grpc/        # tonic 实现
-├── ecat-middleware/            # tower::Layer 中间件
-├── ecat-protos/                # Protobuf 定义
-├── ecat-errors/                # 错误码体系
-├── ecat-metadata/              # 元数据传递
-├── ecat-encoding/              # 序列化抽象
-├── ecat-logging/               # tracing 集成
-├── ecat-registry/              # 服务注册发现
-├── ecat-config/                # 配置管理
-├── ecat-metrics/               # Prometheus 集成
-├── ecat-data/                  # 数据访问 trait
-├── ecat-security/              # 攻击检测（security-rust）
-├── ecat-cli/                   # CLI 工具
-├── ecat-health/                # 健康检查（/health /ready）
-├── ecat-auth/                  # 认证中间件（JWT / API Key）
-├── ecat-client/                # 服务间 HTTP 客户端
-├── ecat-circuit-breaker/       # 熔断器（Tower Layer）
-├── ecat-registry-consul/       # Consul 服务注册
-├── ecat-config-remote/         # Consul KV 远程配置
-├── ecat-data-redis/            # Redis 缓存实现
-├── ecat-mq/                    # 消息队列抽象
-├── ecat-events/                # 事件总线（本地 + 远程）
-├── ecat-testing/               # 集成测试工具
-├── ecat-openapi/               # OpenAPI spec 生成
-├── ecat-bench/                 # 性能基准
-├── ecat-tracing/               # 分布式追踪（trace_id 注入/提取）
-├── ecat-registry-etcd/         # etcd 服务注册
-├── ecat-mq-kafka/              # Kafka 消息队列适配
-├── ecat-data-opensearch/       # OpenSearch 搜索后端
-├── ecat-data-influxdb/         # InfluxDB 时序后端
-├── ecat-graphql/               # GraphQL endpoint
-├── ecat-data-elasticsearch/    # Elasticsearch 搜索后端
-├── ecat-data-clickhouse/       # ClickHouse OLAP 后端
-├── ecat-data-sqlx/             # RDBMS 后端（SQLite/PG/MySQL/TiDB）
-├── ecat-data-memcached/        # Memcached 缓存后端（内存实现）
-├── ecat-data-neo4j/            # Neo4j 图后端
-├── ecat-data-nebulagraph/      # NebulaGraph 图后端
-├── ecat-data-arangodb/         # ArangoDB 图后端
-├── ecat-data-iotdb/            # IoTDB 时序后端
-├── ecat-data-questdb/          # QuestDB 时序后端
-├── ecat-transport-ws/          # WebSocket transport
-├── ecat-versioning/            # API 版本路由
-├── ecat-tls/                   # TLS 证书配置与自动生成
-├── ecat-deploy/                # Docker / K8s / Helm / CI/CD
-├── ecat-lock/                  # 分布式锁抽象（Redis 实现）
-├── ecat-scheduler/             # tokio 定时任务调度
-├── ecat-tracing-otlp/          # OpenTelemetry OTLP 追踪导出
-├── ecat-data-tdengine/         # TDengine 时序后端
-├── ecat-data-mongodb/          # MongoDB 文档后端
-├── ecat-data-s3/               # S3 / MinIO 对象存储后端
-├── ecat-mq-rabbitmq/           # RabbitMQ 消息后端
-├── ecat-mq-mqtt/               # MQTT 消息后端
-├── ecat-mq-nats/               # NATS 消息后端
-├── config/                     # 配置示例文件
-├── docs/                       # 设计文档与生态规划
-└── examples/                   # 示例项目
-```
-
-## 快速开始
-
-### 前提条件
-
-- Rust 1.85+（stable 工具链，edition 2024 要求）
-- [protoc](https://github.com/protocolbuffers/protobuf)（Protocol Buffers 编译器）
-
-### 安装 CLI
-
-```bash
-cargo install ecat-cli
-```
-
-### 创建服务
-
-```bash
-# 脚手架生成项目
-ecat new helloworld
-cd helloworld
-
-# 添加 proto 定义
-ecat proto add proto/service.proto
-
-# 生成客户端和服务端代码（tonic-build build.rs，自动补齐 Cargo.toml 依赖）
-ecat proto client proto/service.proto
-ecat proto server proto/service.proto -t internal/service
-
-# 开发模式运行
-ecat run
-
-# 监听 src/ 变更自动重启
-ecat run --watch
-
-# 更新所有 ecat-* 依赖
-ecat upgrade
-```
-
-访问 `http://localhost:8000/helloworld/ecat`。
-
-### 代码示例
-
-```rust
-use ecat::App;
-use ecat_transport_http::HttpServer;
-use ecat_transport_grpc::GrpcServer;
-
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    let http_srv = HttpServer::new("0.0.0.0:8000");
-    let grpc_srv = GrpcServer::new("0.0.0.0:9000");
-
-    let app = App::builder()
-        .name("my-service")
-        .version("v1.0.0")
-        .server(http_srv)
-        .server(grpc_srv)
-        .on_start(|| async {
-            tracing::info!("service started");
-            Ok(())
-        })
-        .on_stop(|| async {
-            tracing::info!("service stopped");
-            Ok(())
-        })
-        .build()?;
-
-    app.run().await?; // 阻塞直到 SIGTERM/SIGINT
-    Ok(())
-}
-```
+全部 18 类数据后端通过统一 trait（`RdbmsClient` / `Cache` / `SearchClient` / `GraphClient` / `TsdbClient` / `DocumentClient` / `StorageClient`）抽象，均提供 `XxxConfig` + `from_config()` 从 JSON/YAML 加载连接信息：RDBMS（SQLite/PG/MySQL/TiDB）、缓存（Redis/Memcached）、搜索（OpenSearch/Elasticsearch）、OLAP（ClickHouse）、图（Neo4j/NebulaGraph/ArangoDB）、时序（InfluxDB/IoTDB/QuestDB/TDengine）、文档（MongoDB）、对象存储（S3/MinIO）。
 
 ### 聚合 crate（ecat）
 
-`ecat` 提供 feature-gated 的 re-export 入口——只启用需要的组件：
-
-```rust
-use ecat::transport_http::HttpServer;   // feature "http"（默认）
-use ecat::middleware::RecoveryLayer;     // feature "middleware"
-use ecat::auth::JwtAuthLayer;            // feature "auth"
-use ecat::data::redis::RedisCache;       // feature "redis"
-```
-
-默认 features = `http+grpc`；使用 `--no-default-features --features <组件>` 可精简依赖树。完整 feature 列表：`http` `grpc` `middleware` `auth` `client` `events` `metrics` `tracing` `circuit-breaker` `consul` `remote` `redis`。
-
-### 中间件
-
-```rust
-use tower::ServiceBuilder;
-use ecat_middleware::{RecoveryLayer, TracingLayer, LoggingLayer, TimeoutLayer};
-use ecat_circuit_breaker::CircuitBreakerLayer;
-use ecat_security::SecurityLayer;
-use ecat_auth::JwtAuthLayer;
-use std::time::Duration;
-
-// JWT 密钥需 ≥32 字节；可链式强制校验 iss/aud 声明（可选，默认不校验）：
-// JwtAuthLayer::new(secret)?.required_issuer("my-issuer").required_audience("my-api")
-let jwt = JwtAuthLayer::new("change-me-32-bytes-minimum-secret").expect("valid jwt secret");
-
-let layer = ServiceBuilder::new()
-    .layer(RecoveryLayer)
-    .layer(TracingLayer)
-    .layer(LoggingLayer)
-    .layer(TimeoutLayer::new(Duration::from_secs(30)))
-    .layer(CircuitBreakerLayer::new())
-    .layer(jwt)
-    .layer(SecurityLayer::new());
-```
-
-> 注：`ecat_middleware::TracingLayer` 不注入 trace_id；如需请求级 trace_id 注入，请使用 `ecat_tracing::TracingLayer::new()`。
-
-```rust
-// 指标：记录请求计数与时延到全局 registry（与 /metrics 端点共享）
-use ecat_metrics::MetricsLayer;
-let app = Router::new().route("/hello", get(hello)).layer(MetricsLayer::new());
-// 指标名：ecat_http_requests_total / ecat_http_request_duration_seconds
-// （标签 method/path/status）。路径含 ID 等高基数场景请用
-// MetricsLayer::new().with_path_fn(...) 归一化，避免指标基数爆炸。
-
-// 重试：指数退避；⚠️ 仅对幂等请求（GET/HEAD/PUT/DELETE）安全
-use ecat_middleware::RetryLayer;
-let retry = RetryLayer::new(3, Duration::from_secs(1), Duration::from_secs(30)); // 含首次共 3 次尝试
-// 自定义重试规则：RetryLayer::new(3, ...).with_rule(MyRule)  // 按状态码/响应内容判定
-
-// 校验：路由前校验 header/参数，失败短路返回 JSON 错误（默认 400，with_status 可改 422 等）
-use ecat_middleware::{ValidateLayer, ValidateError};
-let validate = ValidateLayer::from_fn(|req: &http::Request<axum::body::Body>| {
-    if req.headers().contains_key("x-api-key") {
-        Ok(())
-    } else {
-        Err(ValidateError::new("missing x-api-key").with_status(422))
-    }
-});
-
-// CORS：ecat-middleware 需启用 "cors" feature
-use ecat_middleware::{CorsLayer, AllowOrigin};
-let cors = CorsLayer::new().allow_origin(AllowOrigin::any());
-```
+`ecat` 提供 feature-gated re-export 入口：`use ecat::transport_http::HttpServer;`（feature "http"）、`use ecat::auth::JwtAuthLayer;`（feature "auth"）等。默认 features = `http+grpc`；完整列表：`http` `grpc` `middleware` `auth` `client` `events` `metrics` `tracing` `circuit-breaker` `consul` `remote` `redis`。
 
 ### 错误处理
+
+`ecat-errors` 提供 `ErrorCode` + `Error`，编译期映射 HTTP 状态码；错误响应经中间件编码为 JSON，携带 `code` / `reason` / `message`：
 
 ```rust
 use ecat_errors::{Error, ErrorCode};
 
-fn get_user(id: u64) -> Result<User, Error> {
-    if id == 0 {
-        return Err(Error::new(
-            ErrorCode::InvalidArgument,
-            "bad_request",
-            "user id must be positive",
-        ));
-    }
-    // ...
-}
+Error::new(ErrorCode::InvalidArgument, "bad_request", "user id must be positive");
 ```
 
-## 实现阶段
+### 实现阶段与已知限制
 
-| 阶段 | 状态 | 内容 |
-|------|------|------|
-| Phase 1 | ✅ 完成 | 项目骨架、protos、errors、metadata、encoding、logging |
-| Phase 2 | ✅ 完成 | Transport 层（HTTP + gRPC） |
-| Phase 3 | ✅ 完成 | Middleware 体系（Recovery/Tracing/Logging/Timeout） |
-| Phase 4 | ✅ 完成 | App 生命周期管理 |
-| Phase 5 | ✅ 完成 | Registry、Config、Metrics |
-| Phase 5.5 | ✅ 完成 | Data 访问层（traits + sqlx 后端） |
-| Phase 6 | ✅ 完成 | CLI 工具链（new/proto/run/build） |
-| Phase 7 | ✅ 完成 | README、示例（helloworld）、设计文档 |
-| Phase 8 | ✅ 完成 | 攻击检测集成（security-rust, ecat-security） |
-| Phase 9 | ✅ 完成 | 生态一期（health / client / circuit-breaker / auth / registry-consul） |
-| Phase 10 | ✅ 完成 | 生态二期（redis / mq / events / config-remote） |
-| Phase 11 | ✅ 完成 | 生态三期（testing / deploy / bench / openapi） |
-| Phase 12 | ✅ 完成 | 通信与安全强化（gRPC 客户端 / OAuth2 / mTLS / 分布式追踪） |
-| Phase 13 | ✅ 完成 | 数据后端补齐（etcd / Kafka / OpenSearch / InfluxDB） |
-| Phase 14 | ✅ 完成 | 运维与体验（WebSocket / API 版本管理 / Helm / CI/CD） |
-| Phase 15 | ✅ 完成 | 生态扩展 v2（真 Kafka / RabbitMQ / MQTT / NATS / MongoDB / S3 / TDengine / OTLP / 分布式锁 / 调度 / CLI watch+upgrade） |
-| Phase 16 | ✅ 完成 | 维护强化 v2.4（M1 MetricsLayer / M2 RetryLayer / M3 ValidateLayer / M4 CORS / U1 聚合 crate ecat / U2 examples / OAuth2 token hash / CVE 跟踪） |
-
-## 已知限制
-
-- **GraphQL 解析（ecat-graphql）**：支持字段参数与嵌套 selection（`query_field`/`mutation_field` 富 resolver 可访问 `args`/`variables`/`selection`）；仍不支持别名、fragment 与多顶层字段，请勿将其暴露为通用 GraphQL 端点。
-- **OAuth2 内省缓存（ecat-auth）**：缓存 key 为 token 的 SHA-256 hash（不存 token 明文）；缓存值经白名单过滤（默认保留 sub/exp/iat/role + extra 的 iss/aud/scope/roles，`cache_claims_whitelist` 可配置；miss 时仍返回完整 claims，仅缓存值过滤）；TTL 过期条目在写入时主动清除（默认 TTL 300s）。
-- **Kafka offset（ecat-mq-kafka）**：默认 `enable.auto.commit=false` 且无手动 commit——进程重启后从分区末尾（latest）重读，停机期间产生的消息会被跳过；需显式配置 `auto_commit=true` 才具备 at-least-once 语义（重启从最近提交点继续）。
-
-## 设计目标
-
-| # | 目标 | 说明 |
-|---|------|------|
-| 1 | **Kratos 对齐** | 保持 Kratos 的 API-first、可插拔、统一抽象理念 |
-| 2 | **Rust 惯用** | 复用 tower::Service、trait 泛型、零成本抽象；不做「Go in Rust」 |
-| 3 | **类型安全** | 编译期捕获错误，Protobuf 定义全强类型化 |
-| 4 | **可插拔** | Registry、Config、Logging、Encoding 全部通过 trait 抽象 |
-| 5 | **工具链完备** | CLI 支持项目脚手架、proto 代码生成、开发运行 |
-| 6 | **性能优先** | 零成本抽象 + 异步运行时 |
-| 7 | **可观测** | tracing + Prometheus 开箱即用 |
-| 8 | **生态完备** | 客户端、熔断、认证、健康检查、注册中心后端 |
-
-## 技术说明
-
-### 为什么选择 tower::Service
-
-[`tower::Service`](https://docs.rs/tower/latest/tower/trait.Service.html) 是 Rust 异步生态的 `http.Handler` 等价物。axum 和 tonic 都构建在 tower 之上，因此 e-cat 不需要自定义中间件 trait——直接提供 tower::Layer 实现即可达到与 Kratos 中间件相同的效果，且零适配器开销。
-
-### 为什么用 Cargo Workspace
-
-与 Kratos 的模块化设计一致。所有 `ecat-*` crate 以 workspace 锁步版本发布（当前 3.0.2），各自独立编译，用户按需引入。核心 crate 保持最小依赖，contrib crate 提供可选集成。
-
-### 为什么用 prost（而非 protobuf-rs）
-
-prost 是 Rust 社区最广泛使用的 protobuf 实现，编译期生成类型安全代码，与 tonic 深度集成。
+- 框架 Phase 1–16 全部完成（详见 [CHANGELOG](CHANGELOG.md) 与 [生态规划 v3](docs/ecosystem-plan-v3.md)）
+- 已知限制：GraphQL 不支持别名/fragment/多顶层字段；OAuth2 内省缓存默认白名单过滤 claims；Kafka 默认 `auto_commit=false`（重启从分区末尾重读）
 
 ## 设计文档
 
-- [设计规范](docs/superpowers/specs/2026-07-29-ecat-framework-design.md)
-- [实现计划](docs/superpowers/plans/2026-07-29-ecat-framework.md)
-- [生态规划 v1](docs/ecosystem-plan.md)（已完成）
-- [生态规划 v2](docs/ecosystem-plan-v2.md)（已完成）
-- [生态规划 v3](docs/ecosystem-plan-v3.md)（最终评估）
 - [API 参考](docs/api.md)
-- [审计报告 r5](docs/audit-report-2026-08-01-r5.md)（2026-08-01）
+- [项目规划](docs/travel-project-planning.md)（根目录 docs/）
 - [数据库配置教程](docs/database-config-tutorial.md)
-- [依赖 CVE 跟踪](docs/dependency-cve-tracking.md)
 - [TLS 证书认证教程](docs/tls-certificate-tutorial.md)
-- [配置示例文件](config/databases.example.yaml)
+- [依赖 CVE 跟踪](docs/dependency-cve-tracking.md)
 
 ## 支持
 

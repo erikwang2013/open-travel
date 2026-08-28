@@ -53,14 +53,14 @@ QPS 在 ~163 收敛：curl 每请求一个进程（exec ~8ms），此并发已�
 
 ## 联调期发现的阻塞问题（已修复）
 
-1. **SSRF 误报**：nginx 注入的 X-Forwarded-For/X-Real-IP（docker 内网 172.x）被 SsrfDetector 判为 Critical 拦截，经网关的全部请求 502。修复：ecat-security is_proxy_header 跳过转发头（ecat-security/src/lib.rs:157）。
+1. **SSRF 误报**：nginx 注入的 X-Forwarded-For/X-Real-IP（docker 内网 172.x）被 SsrfDetector 判为 Critical 拦截，经网关的全部请求 502。修复：ecat-security is_proxy_header 跳过转发头（e-cat/ecat-security/src/lib.rs:157）。
 2. **JWT 误报**：Authorization 头携带的合法 JWT 命中 jwt_attack 规则（`ey...ey....` 正则），所有带 token 请求被拦。修复：is_proxy_header 增加跳过 authorization（同上）。
-3. **阻断即 panic**：安全层拦截返回 Err 后，`From<NoError> for Infallible` 走 `unreachable!()`（shared/src/lib.rs:47），worker 直接 panic 而非返回 403。**未修**（属 4-1 中间件链路重构范围）：当前压测流量无真实攻击，不触发；任何真实拦截都会崩一个 worker，建议 4-1 改为错误→HTTP 响应。
+3. **阻断即 panic**：安全层拦截返回 Err 后，`From<NoError> for Infallible` 走 `unreachable!()`（e-cat/services/shared/src/lib.rs:47），worker 直接 panic 而非返回 403。**未修**（属 4-1 中间件链路重构范围）：当前压测流量无真实攻击，不触发；任何真实拦截都会崩一个 worker，建议 4-1 改为错误→HTTP 响应。
 
 ## 结论与调优建议
 
 - 服务端能力未被压满：163 QPS 是 curl 工具上限。接入 wrk/k6 后应重测真实 QPS。
 - 缓存生效：命中 p50 3.5ms vs 未命中 5.2ms；TTL 300s 对 hot_destinations 合理，命中率取决于内容更新频率，若数据源更新频繁可降到 60-120s。
-- 限流 100/60s/服务符合当前占位 API 规模；窗口为全服务共享计数（未按 IP），生产建议按客户端 IP 分桶（shared/src/lib.rs:60 ponytail 注释已预留）。
+- 限流 100/60s/服务符合当前占位 API 规模；窗口为全服务共享计数（未按 IP），生产建议按客户端 IP 分桶（e-cat/services/shared/src/lib.rs:60 ponytail 注释已预留）。
 - 网关未加 nginx limit_req，服务端限流已兜底；若需网关层限速，nginx.conf:3 注释有说明。
 - 429 响应快（突发 QPS 224 时仍稳定），限流本身无性能负担。

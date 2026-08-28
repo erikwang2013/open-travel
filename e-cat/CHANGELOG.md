@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.0] — 2026-08-28
+
+> 项目首个版本（项目版本独立于 e-cat 框架版本，见 [README](README.md)「版本发布流程」）。
+
+### Added
+- e-cat v3.0.3 框架集成：基于 51 crates 的 Rust 微服务框架搭建后端，user-service / booking-service 使用统一中间件链（Tracing → CircuitBreaker → Security → RateLimit）
+- 基础服务（Phase 1-2）：user-service（8001，JWT 鉴权 + 限流）、booking-service（8002，公开接口）、shared 公共 crate（JWT 密钥、Redis 限流中间件）
+- 安全加固（Phase 3）：SecurityLayer 攻击检测（SQL 注入 / XSS / SSRF）、Redis 分布式限流（每服务 100 req/60s，超限 429）、JWT 密钥环境变量化（JWT_SECRET，占位密钥仅限开发）
+- 网关（Phase 4）：Nginx 按 `/api/v1/user/` 与 `/api/v1/booking/` 前缀分流，`config/nginx.conf`
+- 联调 / 压测 / CDN 脚本（Phase 4）：scripts/opensearch_init.sh（幂等建索引，cjk 分析器）、scripts/loadtest.sh、scripts/cdn_setup.sh / cdn_upload.sh（--dry-run 默认）、scripts/release.sh；联调与压测报告见 docs/integration-report.md、docs/loadtest-report.md
+- 业务服务并入 e-cat workspace：services/{user,booking,shared} 为 workspace 成员，镜像经 `e-cat/services/Dockerfile` 按 `-p` 构建
+
 ## [3.0.3] — 2026-08-27
 
 ### Added

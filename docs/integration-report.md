@@ -26,7 +26,7 @@ open-novel 的容器未做任何改动。调整以注释记录在 `config/docker
 `./config/xxx` 相对路径按 compose 文件所在目录（config/）解析，实际指向不存在的 `config/config/xxx`，导致 schema.sql 未初始化、opensearch.yml/nginx.conf 挂载失败 → 改为 `./xxx`。修复后需删掉旧的 `open-travel_travel-mysql-data` 卷重建，schema.sql 才生效（travel 库 5 张表初始化成功）。
 
 ### 2.3 SecurityLayer 误伤网关代理请求（核心 bug，导致 502 + 服务崩溃）
-现象：经 nginx 的所有业务请求 502；服务日志显示 `ecat_security: attack detected attack_type=ssrf matched=172.19.0.1` 后 `panic at shared/src/lib.rs:47: unreachable code`，worker 线程崩溃。
+现象：经 nginx 的所有业务请求 502；服务日志显示 `ecat_security: attack detected attack_type=ssrf matched=172.19.0.1` 后 `panic at e-cat/services/shared/src/lib.rs:47: unreachable code`，worker 线程崩溃。
 
 根因（e-cat/ecat-security）：
 1. `request_parts` 扫描全部请求头，nginx 注入的 `X-Real-IP/X-Forwarded-For: 172.19.0.1`（docker 内网网关 IP）命中 security-rust 的 SSRF 正则（`172.(1[6-9]|2\d|3[01]).*`）→ 被拦
@@ -43,8 +43,8 @@ open-novel 的容器未做任何改动。调整以注释记录在 `config/docker
 现象：系统无 JWT 签发接口，`/api/v1/user/profile` 无 token 恒 401，请求到不了限流层 → 任务要求的 429 永远不会出现。
 
 修复：
-- `services/user/src/main.rs`：限流层移到 JWT 外层（顺序 CircuitBreaker → Security → RateLimit → Auth），未认证请求也计入限流
-- `services/booking/src/main.rs`：dates 为公开接口（热门目的地展示），移出 JWT 保护，保留限流（CircuitBreaker → Security → RateLimit）
+- `e-cat/services/user/src/main.rs`：限流层移到 JWT 外层（顺序 CircuitBreaker → Security → RateLimit → Auth），未认证请求也计入限流
+- `e-cat/services/booking/src/main.rs`：dates 为公开接口（热门目的地展示），移出 JWT 保护，保留限流（CircuitBreaker → Security → RateLimit）
 
 ### 2.5 OpenSearch 索引初始化失败（缺 ICU 插件）
 `opensearchproject/opensearch:latest` 镜像不再内置 `analysis-icu` 插件，`{"type":"icu"}` 报 `Unknown analyzer type [icu]` → `scripts/opensearch_init.sh` 改用内置 `cjk` 分析器（bigram 中日韩分词），免装插件，脚本保持幂等。

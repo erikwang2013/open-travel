@@ -149,7 +149,7 @@ Any string works as a custom agent type.
 - ALWAYS verify build succeeds before committing
 
 ```bash
-npm run build && npm test
+cd e-cat && cargo check -p user-service -p booking-service
 ```
 
 ## 推送与发布

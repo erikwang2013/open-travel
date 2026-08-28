@@ -6,7 +6,7 @@
 
 ## 项目简介
 
-Open Travel 是一个全球旅游平台 monorepo，采用 **e-cat（一只猫）** —— 对标 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 的 **Rust 微服务框架**（v3.0.2 · 51 crates）—— 构建高性能后端，配合 Flutter 多端与鸿蒙原生客户端，为全球用户提供统一的旅行预订体验。
+Open Travel 是一个全球旅游平台 monorepo，采用 **e-cat（一只猫）** —— 对标 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 的 **Rust 微服务框架**（v3.0.3 · 51 crates）—— 构建高性能后端，配合 Flutter 多端与鸿蒙原生客户端，为全球用户提供统一的旅行预订体验。
 
 | 维度 | 说明 |
 | :--- | :--- |
@@ -16,6 +16,59 @@ Open Travel 是一个全球旅游平台 monorepo，采用 **e-cat（一只猫）
 | **安全** | ecat-security / ecat-auth（JWT）/ ecat-tls：认证、审计、限流、防注入 |
 | **国际化** | 12+ 语种 ARB 语言包，RTL 支持，OpenSearch 多语言分词 |
 | **支付** | 微信支付、支付宝 |
+
+## 快速开始
+
+> 以下使用说明聚焦后端（Rust 微服务）；客户端（apps/）构建方式见各子目录。
+
+### 环境要求
+
+- Rust 1.85+（stable 工具链，edition 2024）
+- Docker + Docker Compose
+
+### 构建与启动
+
+```bash
+cd e-cat
+cargo check -p user-service -p booking-service   # 编译检查业务服务
+
+docker compose -f config/docker-compose.yml up -d   # 启动数据源 + 服务 + 网关
+```
+
+> 不要使用 `--env-file .env` 启动（会报错）。
+
+### 端口
+
+| 服务 | 端口 | 说明 |
+|------|------|------|
+| user-service | 8001 | 用户资料 / 注册 |
+| booking-service | 8002 | 热门目的地日期 |
+| Nginx 网关 | 8082→80 | 按 `/api/v1/user/`、`/api/v1/booking/` 前缀分流 |
+| MySQL | 3308→3306 | 数据源（宿主端口冲突，临时映射） |
+| Redis | 6381→6379 | 缓存 / 限流 |
+| OpenSearch | 9201→9200 | 多语言搜索 |
+
+### 验证
+
+```bash
+curl http://localhost:8082/health
+curl "http://localhost:8082/api/v1/booking/dates?region_id=1"
+# {"code":0,"message":"ok","data":[{"region_id":1,"name_en":"placeholder-destination"}]}
+```
+
+### 脚本
+
+| 脚本 | 用途 |
+|------|------|
+| `scripts/opensearch_init.sh` | 幂等创建 OpenSearch 索引（cjk 分析器） |
+| `scripts/loadtest.sh` | 压测 |
+| `scripts/cdn_setup.sh` / `cdn_upload.sh` | CDN 配置与上传（`--dry-run` 默认） |
+| `scripts/release.sh` | 发布流程辅助 |
+
+### 后端文档
+
+- 后端 README（含中间件链、环境变量、版本发布流程）：[e-cat/README.md](e-cat/README.md)
+- API 参考（端点、鉴权、限流）：[docs/api.md](docs/api.md)
 
 ## 核心特性
 
