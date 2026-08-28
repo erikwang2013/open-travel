@@ -1,0 +1,25 @@
+{
+  "string": [
+    { "name": "app_name", "value": "Open Travel" },
+    { "name": "module_desc", "value": "Open Travel entry module" },
+    { "name": "EntryAbility_desc", "value": "Open Travel main page" },
+    { "name": "EntryAbility_label", "value": "Open Travel" },
+    { "name": "tab_home", "value": "Home" },
+    { "name": "tab_search", "value": "Search" },
+    { "name": "tab_booking", "value": "Bookings" },
+    { "name": "tab_profile", "value": "Profile" },
+    { "name": "hot_destinations", "value": "Popular Destinations" },
+    { "name": "view_all", "value": "View All" },
+    { "name": "destination_list_title", "value": "Destinations" },
+    { "name": "destination_detail_title", "value": "Destination Details" },
+    { "name": "detail_placeholder", "value": "Detail page coming soon" },
+    { "name": "search_hint", "value": "Search destinations, hotels..." },
+    { "name": "search_placeholder", "value": "Search coming soon" },
+    { "name": "booking_placeholder", "value": "No bookings yet" },
+    { "name": "profile_subtitle", "value": "One account, travel the world" },
+    { "name": "profile_enter", "value": "Open Profile" },
+    { "name": "logout", "value": "Sign Out" },
+    { "name": "settings_title", "value": "Settings" },
+    { "name": "language_label", "value": "Language" }
+  ]
+}

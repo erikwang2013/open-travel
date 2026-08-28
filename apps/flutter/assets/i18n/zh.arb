@@ -1,0 +1,143 @@
+{
+  "@@locale": "zh",
+  "appTitle": "开放旅行",
+  "@appTitle": {
+    "description": "appTitle"
+  },
+  "tagline": "探索世界，一键预订",
+  "@tagline": {
+    "description": "tagline"
+  },
+  "nav.home": "首页",
+  "@nav.home": {
+    "description": "nav.home"
+  },
+  "nav.search": "搜索",
+  "@nav.search": {
+    "description": "nav.search"
+  },
+  "nav.bookings": "预订",
+  "@nav.bookings": {
+    "description": "nav.bookings"
+  },
+  "nav.profile": "我的",
+  "@nav.profile": {
+    "description": "nav.profile"
+  },
+  "home.heroTitle": "开启你的全球之旅",
+  "@home.heroTitle": {
+    "description": "home.heroTitle"
+  },
+  "home.heroSubtitle": "预订酒店、机票与目的地体验",
+  "@home.heroSubtitle": {
+    "description": "home.heroSubtitle"
+  },
+  "home.popularDestinations": "热门目的地",
+  "@home.popularDestinations": {
+    "description": "home.popularDestinations"
+  },
+  "search.placeholder": "搜索目的地、酒店或机票",
+  "@search.placeholder": {
+    "description": "search.placeholder"
+  },
+  "search.button": "搜索",
+  "@search.button": {
+    "description": "search.button"
+  },
+  "search.results": "搜索结果",
+  "@search.results": {
+    "description": "search.results"
+  },
+  "destination.price": "价格",
+  "@destination.price": {
+    "description": "destination.price"
+  },
+  "destination.perNight": "/晚",
+  "@destination.perNight": {
+    "description": "destination.perNight"
+  },
+  "destination.rating": "评分",
+  "@destination.rating": {
+    "description": "destination.rating"
+  },
+  "destination.bookNow": "立即预订",
+  "@destination.bookNow": {
+    "description": "destination.bookNow"
+  },
+  "booking.title": "我的预订",
+  "@booking.title": {
+    "description": "booking.title"
+  },
+  "booking.date": "日期",
+  "@booking.date": {
+    "description": "booking.date"
+  },
+  "booking.guests": "人数",
+  "@booking.guests": {
+    "description": "booking.guests"
+  },
+  "booking.status.pending": "待支付",
+  "@booking.status.pending": {
+    "description": "booking.status.pending"
+  },
+  "booking.status.paid": "已支付",
+  "@booking.status.paid": {
+    "description": "booking.status.paid"
+  },
+  "booking.status.cancelled": "已取消",
+  "@booking.status.cancelled": {
+    "description": "booking.status.cancelled"
+  },
+  "booking.viewAll": "查看全部",
+  "@booking.viewAll": {
+    "description": "booking.viewAll"
+  },
+  "profile.title": "个人中心",
+  "@profile.title": {
+    "description": "profile.title"
+  },
+  "profile.login": "登录",
+  "@profile.login": {
+    "description": "profile.login"
+  },
+  "profile.register": "注册",
+  "@profile.register": {
+    "description": "profile.register"
+  },
+  "profile.lang": "语言",
+  "@profile.lang": {
+    "description": "profile.lang"
+  },
+  "common.loading": "加载中…",
+  "@common.loading": {
+    "description": "common.loading"
+  },
+  "common.error": "出错了",
+  "@common.error": {
+    "description": "common.error"
+  },
+  "common.retry": "重试",
+  "@common.retry": {
+    "description": "common.retry"
+  },
+  "common.cancel": "取消",
+  "@common.cancel": {
+    "description": "common.cancel"
+  },
+  "common.currency": "¥",
+  "@common.currency": {
+    "description": "common.currency"
+  },
+  "common.noData": "暂无数据",
+  "@common.noData": {
+    "description": "common.noData"
+  },
+  "common.welcome": "欢迎",
+  "@common.welcome": {
+    "description": "common.welcome"
+  },
+  "common.success": "操作成功",
+  "@common.success": {
+    "description": "common.success"
+  }
+}

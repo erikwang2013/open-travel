@@ -1,0 +1,12 @@
+[package]
+name = "shared"
+version = "0.1.0"
+edition = "2024"
+description = "open-travel services 共享代码（JWT 密钥、Redis 分布式限流、axum Error 归一）"
+
+[dependencies]
+ecat-data = { path = "../../e-cat/ecat-data" }
+ecat-data-redis = { path = "../../e-cat/ecat-data-redis" }
+axum.workspace = true
+tower.workspace = true
+tracing.workspace = true

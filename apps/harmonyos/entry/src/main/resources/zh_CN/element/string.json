@@ -1,0 +1,25 @@
+{
+  "string": [
+    { "name": "app_name", "value": "开放旅行" },
+    { "name": "module_desc", "value": "开放旅行入口模块" },
+    { "name": "EntryAbility_desc", "value": "开放旅行主界面" },
+    { "name": "EntryAbility_label", "value": "开放旅行" },
+    { "name": "tab_home", "value": "首页" },
+    { "name": "tab_search", "value": "搜索" },
+    { "name": "tab_booking", "value": "预订" },
+    { "name": "tab_profile", "value": "我的" },
+    { "name": "hot_destinations", "value": "热门目的地" },
+    { "name": "view_all", "value": "查看全部" },
+    { "name": "destination_list_title", "value": "目的地列表" },
+    { "name": "destination_detail_title", "value": "目的地详情" },
+    { "name": "detail_placeholder", "value": "详情页开发中…" },
+    { "name": "search_hint", "value": "搜索目的地、酒店…" },
+    { "name": "search_placeholder", "value": "搜索功能开发中…" },
+    { "name": "booking_placeholder", "value": "暂无预订记录" },
+    { "name": "profile_subtitle", "value": "一个账号，畅游全球" },
+    { "name": "profile_enter", "value": "进入个人中心" },
+    { "name": "logout", "value": "退出登录" },
+    { "name": "settings_title", "value": "设置" },
+    { "name": "language_label", "value": "语言" }
+  ]
+}

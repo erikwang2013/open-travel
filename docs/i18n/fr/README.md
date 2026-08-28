@@ -1,0 +1,117 @@
+[简体中文](../../README.md) | [English](en/README.md) | [日本語](ja/README.md) | [한국어](ko/README.md) | [Русский](ru/README.md) | [Deutsch](de/README.md) | [Français](README.md) | [Español](es/README.md) | [Português](pt/README.md) | [हिन्दी](hi/README.md) | [العربية](ar/README.md) | [বাংলা](bn/README.md) | [Bahasa Indonesia](id/README.md)
+
+# Open Travel — Plateforme mondiale de voyage
+
+> Une plateforme de réservation de voyages destinée aux utilisateurs du monde entier : backend de microservices en Rust + clients multiplateformes Flutter / HarmonyOS, avec prise en charge de **12+ langues**, de paiements internationaux et d'une recherche multilingue.
+
+## Présentation du projet
+
+Open Travel est un monorepo de plateforme de voyage mondiale, construit sur **e-cat (un chat)** — un framework de microservices Rust comparable à [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 (v3.0.2 · 51 crates) — pour un backend haute performance, avec des clients Flutter multiplateforme et un client natif HarmonyOS, offrant une expérience de réservation unifiée aux utilisateurs du monde entier.
+
+| Dimension | Description |
+| :--- | :--- |
+| **Framework backend** | e-cat (Rust) : HTTP/axum + gRPC/tonic, écosystème de 51 crates de microservices |
+| **Clients multiplateformes** | `apps/flutter` (iOS / Android / Web / Desktop), `apps/harmonyos` (HarmonyOS) |
+| **Base de données** | MySQL (base `travel`, préfixe des tables `travel_`) + cache Redis + recherche multilingue OpenSearch |
+| **Sécurité** | ecat-security / ecat-auth (JWT) / ecat-tls : authentification, audit, limitation de débit, protection contre les injections |
+| **Internationalisation** | 12+ langues en packs ARB, prise en charge RTL, tokenisation multilingue OpenSearch |
+| **Paiements** | WeChat Pay, Alipay |
+
+## Fonctionnalités clés
+
+- 🏨 Recherche et réservation multilingues de destinations / hôtels / billets d'avion
+- 🌍 Adaptation indépendante pour 12+ langues (chinois, anglais, japonais, coréen, arabe, espagnol, français, allemand…)
+- 💳 Paiements internationaux (WeChat Pay / Alipay)
+- 🔐 Sécurité en profondeur : TLS 1.3, authentification JWT, journaux d'audit, filtrage des entrées, limitation de débit
+- 📱 Expérience cohérente sur toutes les plateformes : Flutter (iOS/Android/Web/Desktop) + HarmonyOS
+
+## Diagramme d'architecture
+
+![Diagramme d'architecture](../../svg/fr/architecture.svg)
+
+## Diagramme des fonctionnalités
+
+![Diagramme des fonctionnalités](../../svg/fr/features.svg)
+
+## Diagramme du projet
+
+![Diagramme du projet](../../svg/fr/project.svg)
+
+## Diagramme du cycle de requête
+
+![Diagramme du cycle de requête](../../svg/fr/request-cycle.svg)
+
+## Diagramme de l'architecture de sécurité
+
+![Diagramme de l'architecture de sécurité](../../svg/fr/security-architecture.svg)
+
+## Diagramme de la structure du projet
+
+![Diagramme de la structure du projet](../../svg/fr/project-structure.svg)
+
+## Structure du projet
+
+```
+open-travel/
+├── apps/                  # Répertoire des clients
+│   ├── flutter/           # Flutter : iOS / Android / Web / Desktop (i18n en 12+ langues)
+│   └── harmonyos/         # Client natif HarmonyOS
+├── e-cat/                 # Framework de microservices Rust e-cat (51 crates)
+├── docs/                  # Planification du projet, diagrammes (SVG), QR codes de paiement
+├── config/                # Configuration de l'environnement et du déploiement
+└── README.md
+```
+
+## Base de données
+
+- Nom de la base : `travel`
+- Préfixe des tables : `travel_` (par ex. `travel_users`, `travel_orders`, `travel_reviews`)
+- Stockages associés : Redis (sessions / cache des contenus populaires), OpenSearch (index de recherche multilingue)
+
+> Planification technique détaillée : [docs/travel-project-planning.md](../../travel-project-planning.md).
+
+---
+
+## Soutenez-nous
+
+Si ce projet vous a été utile, offrez un café à l'auteur ☕
+
+<p align="center">
+  <strong>WeChat Pay</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Alipay</strong><br/>
+  <img src="../../weixinpay.png" alt="QR code WeChat Pay" width="130" height="130" />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="../../alipay.png" alt="QR code Alipay" width="130" height="130" />
+</p>
+
+### Virement bancaire international (Global Bank Transfer)
+
+**Informations du bénéficiaire**
+
+- Nom du bénéficiaire : WANG KEXUN
+- Numéro de compte du bénéficiaire : 881015918251
+
+**Banque du bénéficiaire**
+
+- SWIFT Code de ZA Bank : AABLHKHHXXX
+- Nom de la banque : ZA Bank Limited
+- Code bancaire : 387
+- Adresse de la banque : Core F, Cyberport 3, 100 Cyberport Road, Hong Kong
+
+**Banque correspondante pour virements internationaux (si nécessaire)**
+
+Veuillez noter qu'il s'agit des informations de la banque correspondante (banque intermédiaire) pour les virements internationaux, et non de la banque du bénéficiaire. Renseignez-vous auprès de la banque émettrice pour savoir si ces informations sont requises.
+
+Pour les virements en dollars de Hong Kong, en renminbi et en dollars américains, la banque correspondante est **Citibank** —
+
+- Nom de la banque : Citibank N.A. Hong Kong
+- SWIFT Code : CITIHKHXXXX
+- Code bancaire : 006
+- Nom de l'agence : Hong Kong Branch
+- Numéro d'agence : 391
+- Adresse de la banque : Citibank Tower, Citibank Plaza, 3 Garden Road, Central, Hong Kong
+
+Pour les virements dans d'autres devises, la banque correspondante est **BNY Mellon** —
+
+- Nom de la banque : THE BANK OF NEW YORK MELLON
+- SWIFT Code : IRVTUS3NXXX
+- Adresse de la banque : THE BANK OF NEW YORK MELLON, 240 GREENWICH STREET, NEW YORK, United States

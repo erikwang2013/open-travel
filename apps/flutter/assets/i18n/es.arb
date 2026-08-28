@@ -1,0 +1,143 @@
+{
+  "@@locale": "es",
+  "appTitle": "Open Travel",
+  "@appTitle": {
+    "description": "appTitle"
+  },
+  "tagline": "Explora el mundo, reserva con un toque",
+  "@tagline": {
+    "description": "tagline"
+  },
+  "nav.home": "Inicio",
+  "@nav.home": {
+    "description": "nav.home"
+  },
+  "nav.search": "Buscar",
+  "@nav.search": {
+    "description": "nav.search"
+  },
+  "nav.bookings": "Reservas",
+  "@nav.bookings": {
+    "description": "nav.bookings"
+  },
+  "nav.profile": "Perfil",
+  "@nav.profile": {
+    "description": "nav.profile"
+  },
+  "home.heroTitle": "Comienza tu viaje global",
+  "@home.heroTitle": {
+    "description": "home.heroTitle"
+  },
+  "home.heroSubtitle": "Reserva hoteles, vuelos y experiencias",
+  "@home.heroSubtitle": {
+    "description": "home.heroSubtitle"
+  },
+  "home.popularDestinations": "Destinos populares",
+  "@home.popularDestinations": {
+    "description": "home.popularDestinations"
+  },
+  "search.placeholder": "Buscar destinos, hoteles o vuelos",
+  "@search.placeholder": {
+    "description": "search.placeholder"
+  },
+  "search.button": "Buscar",
+  "@search.button": {
+    "description": "search.button"
+  },
+  "search.results": "Resultados de búsqueda",
+  "@search.results": {
+    "description": "search.results"
+  },
+  "destination.price": "Precio",
+  "@destination.price": {
+    "description": "destination.price"
+  },
+  "destination.perNight": "/noche",
+  "@destination.perNight": {
+    "description": "destination.perNight"
+  },
+  "destination.rating": "Valoración",
+  "@destination.rating": {
+    "description": "destination.rating"
+  },
+  "destination.bookNow": "Reservar ahora",
+  "@destination.bookNow": {
+    "description": "destination.bookNow"
+  },
+  "booking.title": "Mis reservas",
+  "@booking.title": {
+    "description": "booking.title"
+  },
+  "booking.date": "Fecha",
+  "@booking.date": {
+    "description": "booking.date"
+  },
+  "booking.guests": "Huéspedes",
+  "@booking.guests": {
+    "description": "booking.guests"
+  },
+  "booking.status.pending": "Pendiente",
+  "@booking.status.pending": {
+    "description": "booking.status.pending"
+  },
+  "booking.status.paid": "Pagado",
+  "@booking.status.paid": {
+    "description": "booking.status.paid"
+  },
+  "booking.status.cancelled": "Cancelado",
+  "@booking.status.cancelled": {
+    "description": "booking.status.cancelled"
+  },
+  "booking.viewAll": "Ver todo",
+  "@booking.viewAll": {
+    "description": "booking.viewAll"
+  },
+  "profile.title": "Perfil",
+  "@profile.title": {
+    "description": "profile.title"
+  },
+  "profile.login": "Iniciar sesión",
+  "@profile.login": {
+    "description": "profile.login"
+  },
+  "profile.register": "Registrarse",
+  "@profile.register": {
+    "description": "profile.register"
+  },
+  "profile.lang": "Idioma",
+  "@profile.lang": {
+    "description": "profile.lang"
+  },
+  "common.loading": "Cargando…",
+  "@common.loading": {
+    "description": "common.loading"
+  },
+  "common.error": "Algo salió mal",
+  "@common.error": {
+    "description": "common.error"
+  },
+  "common.retry": "Reintentar",
+  "@common.retry": {
+    "description": "common.retry"
+  },
+  "common.cancel": "Cancelar",
+  "@common.cancel": {
+    "description": "common.cancel"
+  },
+  "common.currency": "$",
+  "@common.currency": {
+    "description": "common.currency"
+  },
+  "common.noData": "Sin datos",
+  "@common.noData": {
+    "description": "common.noData"
+  },
+  "common.welcome": "Bienvenido",
+  "@common.welcome": {
+    "description": "common.welcome"
+  },
+  "common.success": "Éxito",
+  "@common.success": {
+    "description": "common.success"
+  }
+}

@@ -1,0 +1,9 @@
+# OpenSearch 单节点最小配置（本地开发）
+cluster.name: travel-search
+discovery.type: single-node
+# 开发环境关闭内存锁定（生产建议开启并配置 ulimit）
+bootstrap.memory_lock: false
+network.host: 0.0.0.0
+http.port: 9200
+# 关闭默认安全插件（配合 compose 中 DISABLE_SECURITY_PLUGIN=true）
+plugins.security.disabled: true

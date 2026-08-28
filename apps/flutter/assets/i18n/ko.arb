@@ -1,0 +1,143 @@
+{
+  "@@locale": "ko",
+  "appTitle": "오픈트래블",
+  "@appTitle": {
+    "description": "appTitle"
+  },
+  "tagline": "세계를 탐험하고 한 번에 예약하세요",
+  "@tagline": {
+    "description": "tagline"
+  },
+  "nav.home": "홈",
+  "@nav.home": {
+    "description": "nav.home"
+  },
+  "nav.search": "검색",
+  "@nav.search": {
+    "description": "nav.search"
+  },
+  "nav.bookings": "예약",
+  "@nav.bookings": {
+    "description": "nav.bookings"
+  },
+  "nav.profile": "내 정보",
+  "@nav.profile": {
+    "description": "nav.profile"
+  },
+  "home.heroTitle": "당신의 글로벌 여행을 시작하세요",
+  "@home.heroTitle": {
+    "description": "home.heroTitle"
+  },
+  "home.heroSubtitle": "호텔, 항공권, 현지 체험 예약",
+  "@home.heroSubtitle": {
+    "description": "home.heroSubtitle"
+  },
+  "home.popularDestinations": "인기 여행지",
+  "@home.popularDestinations": {
+    "description": "home.popularDestinations"
+  },
+  "search.placeholder": "여행지, 호텔 또는 항공권 검색",
+  "@search.placeholder": {
+    "description": "search.placeholder"
+  },
+  "search.button": "검색",
+  "@search.button": {
+    "description": "search.button"
+  },
+  "search.results": "검색 결과",
+  "@search.results": {
+    "description": "search.results"
+  },
+  "destination.price": "가격",
+  "@destination.price": {
+    "description": "destination.price"
+  },
+  "destination.perNight": "/박",
+  "@destination.perNight": {
+    "description": "destination.perNight"
+  },
+  "destination.rating": "평점",
+  "@destination.rating": {
+    "description": "destination.rating"
+  },
+  "destination.bookNow": "지금 예약",
+  "@destination.bookNow": {
+    "description": "destination.bookNow"
+  },
+  "booking.title": "내 예약",
+  "@booking.title": {
+    "description": "booking.title"
+  },
+  "booking.date": "날짜",
+  "@booking.date": {
+    "description": "booking.date"
+  },
+  "booking.guests": "인원",
+  "@booking.guests": {
+    "description": "booking.guests"
+  },
+  "booking.status.pending": "결제 대기",
+  "@booking.status.pending": {
+    "description": "booking.status.pending"
+  },
+  "booking.status.paid": "결제 완료",
+  "@booking.status.paid": {
+    "description": "booking.status.paid"
+  },
+  "booking.status.cancelled": "취소됨",
+  "@booking.status.cancelled": {
+    "description": "booking.status.cancelled"
+  },
+  "booking.viewAll": "전체 보기",
+  "@booking.viewAll": {
+    "description": "booking.viewAll"
+  },
+  "profile.title": "내 정보",
+  "@profile.title": {
+    "description": "profile.title"
+  },
+  "profile.login": "로그인",
+  "@profile.login": {
+    "description": "profile.login"
+  },
+  "profile.register": "회원가입",
+  "@profile.register": {
+    "description": "profile.register"
+  },
+  "profile.lang": "언어",
+  "@profile.lang": {
+    "description": "profile.lang"
+  },
+  "common.loading": "불러오는 중…",
+  "@common.loading": {
+    "description": "common.loading"
+  },
+  "common.error": "오류가 발생했습니다",
+  "@common.error": {
+    "description": "common.error"
+  },
+  "common.retry": "다시 시도",
+  "@common.retry": {
+    "description": "common.retry"
+  },
+  "common.cancel": "취소",
+  "@common.cancel": {
+    "description": "common.cancel"
+  },
+  "common.currency": "₩",
+  "@common.currency": {
+    "description": "common.currency"
+  },
+  "common.noData": "데이터 없음",
+  "@common.noData": {
+    "description": "common.noData"
+  },
+  "common.welcome": "환영합니다",
+  "@common.welcome": {
+    "description": "common.welcome"
+  },
+  "common.success": "성공",
+  "@common.success": {
+    "description": "common.success"
+  }
+}

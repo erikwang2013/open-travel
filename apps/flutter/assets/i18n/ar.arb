@@ -1,0 +1,143 @@
+{
+  "@@locale": "ar",
+  "appTitle": "أوبن ترافل",
+  "@appTitle": {
+    "description": "appTitle"
+  },
+  "tagline": "استكشف العالم واحجز بلمسة واحدة",
+  "@tagline": {
+    "description": "tagline"
+  },
+  "nav.home": "الرئيسية",
+  "@nav.home": {
+    "description": "nav.home"
+  },
+  "nav.search": "بحث",
+  "@nav.search": {
+    "description": "nav.search"
+  },
+  "nav.bookings": "الحجوزات",
+  "@nav.bookings": {
+    "description": "nav.bookings"
+  },
+  "nav.profile": "حسابي",
+  "@nav.profile": {
+    "description": "nav.profile"
+  },
+  "home.heroTitle": "ابدأ رحلتك العالمية",
+  "@home.heroTitle": {
+    "description": "home.heroTitle"
+  },
+  "home.heroSubtitle": "احجز الفنادق والرحلات الجوية والتجارب",
+  "@home.heroSubtitle": {
+    "description": "home.heroSubtitle"
+  },
+  "home.popularDestinations": "الوجهات الشائعة",
+  "@home.popularDestinations": {
+    "description": "home.popularDestinations"
+  },
+  "search.placeholder": "ابحث عن وجهات أو فنادق أو رحلات جوية",
+  "@search.placeholder": {
+    "description": "search.placeholder"
+  },
+  "search.button": "بحث",
+  "@search.button": {
+    "description": "search.button"
+  },
+  "search.results": "نتائج البحث",
+  "@search.results": {
+    "description": "search.results"
+  },
+  "destination.price": "السعر",
+  "@destination.price": {
+    "description": "destination.price"
+  },
+  "destination.perNight": "/ليلة",
+  "@destination.perNight": {
+    "description": "destination.perNight"
+  },
+  "destination.rating": "التقييم",
+  "@destination.rating": {
+    "description": "destination.rating"
+  },
+  "destination.bookNow": "احجز الآن",
+  "@destination.bookNow": {
+    "description": "destination.bookNow"
+  },
+  "booking.title": "حجوزاتي",
+  "@booking.title": {
+    "description": "booking.title"
+  },
+  "booking.date": "التاريخ",
+  "@booking.date": {
+    "description": "booking.date"
+  },
+  "booking.guests": "الضيوف",
+  "@booking.guests": {
+    "description": "booking.guests"
+  },
+  "booking.status.pending": "قيد الانتظار",
+  "@booking.status.pending": {
+    "description": "booking.status.pending"
+  },
+  "booking.status.paid": "مدفوع",
+  "@booking.status.paid": {
+    "description": "booking.status.paid"
+  },
+  "booking.status.cancelled": "ملغي",
+  "@booking.status.cancelled": {
+    "description": "booking.status.cancelled"
+  },
+  "booking.viewAll": "عرض الكل",
+  "@booking.viewAll": {
+    "description": "booking.viewAll"
+  },
+  "profile.title": "حسابي",
+  "@profile.title": {
+    "description": "profile.title"
+  },
+  "profile.login": "تسجيل الدخول",
+  "@profile.login": {
+    "description": "profile.login"
+  },
+  "profile.register": "التسجيل",
+  "@profile.register": {
+    "description": "profile.register"
+  },
+  "profile.lang": "اللغة",
+  "@profile.lang": {
+    "description": "profile.lang"
+  },
+  "common.loading": "جارٍ التحميل…",
+  "@common.loading": {
+    "description": "common.loading"
+  },
+  "common.error": "حدث خطأ ما",
+  "@common.error": {
+    "description": "common.error"
+  },
+  "common.retry": "إعادة المحاولة",
+  "@common.retry": {
+    "description": "common.retry"
+  },
+  "common.cancel": "إلغاء",
+  "@common.cancel": {
+    "description": "common.cancel"
+  },
+  "common.currency": "ر.س",
+  "@common.currency": {
+    "description": "common.currency"
+  },
+  "common.noData": "لا توجد بيانات",
+  "@common.noData": {
+    "description": "common.noData"
+  },
+  "common.welcome": "مرحبًا بك",
+  "@common.welcome": {
+    "description": "common.welcome"
+  },
+  "common.success": "نجاح",
+  "@common.success": {
+    "description": "common.success"
+  }
+}

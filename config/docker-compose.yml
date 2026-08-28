@@ -1,0 +1,112 @@
+# open-travel 本地开发环境编排
+# 启动：docker compose --env-file .env -f config/docker-compose.yml up -d
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: travel-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-travel_dev}
+      MYSQL_DATABASE: travel
+    volumes:
+      # 首次初始化自动执行 schema.sql（仅空数据卷时生效）
+      - ./config/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+      - travel-mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-travel_dev}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  redis:
+    image: redis:alpine
+    container_name: travel-redis
+    restart: unless-stopped
+    # 会话存储 TTL 30 分钟、热门内容缓存 TTL 5 分钟（TTL 由应用写入时指定）
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  opensearch:
+    image: opensearchproject/opensearch:latest
+    container_name: travel-opensearch
+    restart: unless-stopped
+    environment:
+      # 单节点开发模式：关闭安全插件，无需自签证书
+      DISABLE_SECURITY_PLUGIN: "true"
+      OPENSEARCH_JAVA_OPTS: "-Xms512m -Xmx512m"
+    volumes:
+      - ./config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:ro
+    ports:
+      - "9200:9200"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  # e-cat (Rust) 业务服务（Phase 1：user/booking 两个二进制，共用一个镜像）
+  # 健康检查 /health、/ready；网关路由留 Phase 1 末/Phase 2 统一
+  ecat-user:
+    build:
+      context: ..
+      dockerfile: services/Dockerfile
+    command: ["user-service"]
+    container_name: travel-ecat-user
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
+    ports:
+      - "8001:8001"
+
+  # 网关：统一入口 8080，按 /api/v1/{user|booking} 前缀分流（config/nginx.conf）
+  nginx:
+    image: nginx:alpine
+    container_name: travel-nginx
+    restart: unless-stopped
+    depends_on:
+      - ecat-user
+      - ecat-booking
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8080:80"
+
+  ecat-booking:
+    build:
+      context: ..
+      dockerfile: services/Dockerfile
+    command: ["booking-service"]
+    container_name: travel-ecat-booking
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      opensearch:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
+    ports:
+      - "8002:8002"
+
+volumes:
+  travel-mysql-data:

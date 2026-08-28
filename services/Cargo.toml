@@ -1,0 +1,13 @@
+# open-travel 业务服务 workspace
+# 每个服务自成一个 crate（members 相对本文件所在目录，即根目录的 services/xxx）
+[workspace]
+members = ["user", "booking", "shared"]
+resolver = "2"
+
+[workspace.dependencies]
+axum = "0.8"
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+tower = "0.5"
+tracing = "0.1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

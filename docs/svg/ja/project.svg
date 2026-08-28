@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600">
+  <defs>
+    <style>
+      text { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }
+      .t-title { font-size: 20px; font-weight: 700; fill: #1f2328; }
+      .t-sub  { font-size: 12px; fill: #6e7781; }
+      .t-h    { font-size: 16px; font-weight: 700; fill: #1f2328; }
+      .t-m    { font-size: 15px; font-weight: 700; fill: #1f2328; }
+      .t-s    { font-size: 12px; fill: #6e7781; }
+      .t-code { font-family: ui-monospace, 'SF Mono', Consolas, 'Liberation Mono', monospace; font-size: 14px; font-weight: 700; fill: #1f2328; }
+      .panel  { fill: #f6f8fa; stroke: #d0d7de; stroke-width: 1.5; rx: 10; }
+      .box    { fill: #ffffff; stroke: #d0d7de; stroke-width: 1.5; rx: 10; }
+      .dot    { fill: #2f6fed; }
+    </style>
+  </defs>
+
+  <rect width="1000" height="600" fill="#ffffff"/>
+
+  <text x="500" y="36" text-anchor="middle" class="t-title">プロジェクト概要</text>
+  <text x="500" y="56" text-anchor="middle" class="t-sub">Open-Travel Monorepo Overview</text>
+
+  <!-- 左：Monorepo 组成 -->
+  <rect x="40" y="110" width="560" height="400" class="panel"/>
+  <text x="60" y="140" class="t-h">Monorepo リポジトリ構成</text>
+  <text x="60" y="160" class="t-s">単一リポジトリ・複数端末・複数サービス・設定共有</text>
+
+  <rect x="60" y="180" width="250" height="112" class="box"/>
+  <text x="76" y="206" class="t-code">apps/</text>
+  <text x="76" y="230" class="t-s">マルチ端末クライアント</text>
+  <text x="76" y="252" class="t-s">Flutter・HarmonyOS ハーモニーOS</text>
+  <text x="76" y="274" class="t-s">12+ 言語 i18n</text>
+
+  <rect x="330" y="180" width="250" height="112" class="box"/>
+  <text x="346" y="206" class="t-code">e-cat/</text>
+  <text x="346" y="230" class="t-s">Rust マイクロサービスフレームワーク</text>
+  <text x="346" y="252" class="t-s">51 crates・Kratos v3 に準拠</text>
+  <text x="346" y="274" class="t-s">axum · tonic · SQLx</text>
+
+  <rect x="60" y="312" width="115" height="78" class="box"/>
+  <text x="76" y="340" class="t-code">docs/</text>
+  <text x="76" y="364" class="t-s">技術ドキュメント</text>
+
+  <rect x="192" y="312" width="115" height="78" class="box"/>
+  <text x="208" y="340" class="t-code">config/</text>
+  <text x="208" y="364" class="t-s">設定ファイル</text>
+
+  <rect x="324" y="312" width="150" height="78" class="box"/>
+  <text x="340" y="340" class="t-code">README.md</text>
+  <text x="340" y="364" class="t-s">プロジェクト説明</text>
+
+  <rect x="60" y="410" width="520" height="80" class="box"/>
+  <text x="76" y="438" class="t-m">インフラストラクチャ</text>
+  <text x="76" y="462" class="t-s">HTTP axum · gRPC tonic · MySQL · Redis · OpenSearch · Kafka · Consul</text>
+  <text x="76" y="480" class="t-s">セキュリティコンポーネント：ecat-security・ecat-auth・ecat-tls</text>
+
+  <!-- 右：数据层 -->
+  <rect x="620" y="110" width="340" height="170" class="panel"/>
+  <text x="640" y="140" class="t-h">データ層</text>
+  <text x="640" y="160" class="t-s">Data Layer</text>
+  <circle cx="652" cy="184" r="4" class="dot"/>
+  <text x="664" y="188" class="t-s">MySQL — travel データベース（travel_* プレフィックス表）</text>
+  <circle cx="652" cy="212" r="4" class="dot"/>
+  <text x="664" y="216" class="t-s">Redis — キャッシュ・セッション保存</text>
+  <circle cx="652" cy="240" r="4" class="dot"/>
+  <text x="664" y="244" class="t-s">OpenSearch — 多言語検索</text>
+
+  <!-- 右：周辺エコシステム -->
+  <rect x="620" y="300" width="340" height="210" class="panel"/>
+  <text x="640" y="330" class="t-h">周辺エコシステム</text>
+  <text x="640" y="350" class="t-s">Surroundings</text>
+  <circle cx="652" cy="376" r="4" class="dot"/>
+  <text x="664" y="380" class="t-s">CI/CD パイプライン・自動テスト</text>
+  <circle cx="652" cy="404" r="4" class="dot"/>
+  <text x="664" y="408" class="t-s">Docker / K8s コンテナ化デプロイ</text>
+  <circle cx="652" cy="432" r="4" class="dot"/>
+  <text x="664" y="436" class="t-s">監視アラート・ログ収集</text>
+  <circle cx="652" cy="460" r="4" class="dot"/>
+  <text x="664" y="464" class="t-s">Consul サービス登録と発見</text>
+
+  <text x="500" y="558" text-anchor="middle" class="t-s">51 crates・12+ 言語・マルチ端末対応（iOS / Android / Web / Desktop / HarmonyOS）</text>
+  <text x="988" y="588" text-anchor="end" font-size="12" fill="#8b949e" fill-opacity="0.5" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">https://erik.xyz</text>
+</svg>

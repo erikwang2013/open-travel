@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="640" viewBox="0 0 1000 640">
+  <defs>
+    <style>
+      text { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }
+      .t-title { font-size: 20px; font-weight: 700; fill: #1f2328; }
+      .t-sub  { font-size: 12px; fill: #6e7781; }
+      .t-h    { font-size: 16px; font-weight: 700; fill: #1f2328; }
+      .t-m    { font-size: 15px; font-weight: 700; fill: #1f2328; }
+      .t-eng  { font-size: 11px; fill: #6e7781; }
+      .t-s    { font-size: 12px; fill: #6e7781; }
+      .panel  { fill: #f6f8fa; stroke: #d0d7de; stroke-width: 1.5; rx: 10; }
+      .card   { fill: #ffffff; stroke: #d0d7de; stroke-width: 1.5; rx: 10; }
+      .accent { fill: #2f6fed; }
+    </style>
+  </defs>
+
+  <rect width="1000" height="640" fill="#ffffff"/>
+
+  <text x="500" y="36" text-anchor="middle" class="t-title">Core Features Matrix</text>
+  <text x="500" y="56" text-anchor="middle" class="t-sub">Open-Travel Core Features Matrix</text>
+
+  <!-- 第一行 -->
+  <rect x="40" y="110" width="210" height="150" class="card"/>
+  <rect x="40" y="110" width="210" height="4" class="accent"/>
+  <text x="145" y="152" text-anchor="middle" class="t-m">User Center</text>
+  <text x="145" y="172" text-anchor="middle" class="t-eng">User Center</text>
+  <line x1="52" y1="184" x2="238" y2="184" stroke="#d0d7de" stroke-width="1"/>
+  <text x="145" y="208" text-anchor="middle" class="t-s">Sign up · Login · Profile</text>
+  <text x="145" y="230" text-anchor="middle" class="t-s">Multi-device sync · Favorites</text>
+
+  <rect x="265" y="110" width="210" height="150" class="card"/>
+  <rect x="265" y="110" width="210" height="4" class="accent"/>
+  <text x="370" y="152" text-anchor="middle" class="t-m">Multilingual Search</text>
+  <text x="370" y="172" text-anchor="middle" class="t-eng">Multilingual Search</text>
+  <line x1="277" y1="184" x2="463" y2="184" stroke="#d0d7de" stroke-width="1"/>
+  <text x="370" y="208" text-anchor="middle" class="t-s">12+ languages · OpenSearch</text>
+  <text x="370" y="230" text-anchor="middle" class="t-s">Tokenized highlighting · Popular picks</text>
+
+  <rect x="490" y="110" width="210" height="150" class="card"/>
+  <rect x="490" y="110" width="210" height="4" class="accent"/>
+  <text x="595" y="152" text-anchor="middle" class="t-m">Hotel / Flight Booking</text>
+  <text x="595" y="172" text-anchor="middle" class="t-eng">Hotel &amp; Flight Booking</text>
+  <line x1="502" y1="184" x2="688" y2="184" stroke="#d0d7de" stroke-width="1"/>
+  <text x="595" y="208" text-anchor="middle" class="t-s">Online booking · Price calendar</text>
+  <text x="595" y="230" text-anchor="middle" class="t-s">Itinerary planning · Order creation</text>
+
+  <rect x="715" y="110" width="210" height="150" class="card"/>
+  <rect x="715" y="110" width="210" height="4" class="accent"/>
+  <text x="820" y="152" text-anchor="middle" class="t-m">Online Payment</text>
+  <text x="820" y="172" text-anchor="middle" class="t-eng">Online Payment</text>
+  <line x1="727" y1="184" x2="913" y2="184" stroke="#d0d7de" stroke-width="1"/>
+  <text x="820" y="208" text-anchor="middle" class="t-s">WeChat Pay · Alipay</text>
+  <text x="820" y="230" text-anchor="middle" class="t-s">International payment · Secure signing</text>
+
+  <!-- 第二行 -->
+  <rect x="40" y="280" width="210" height="150" class="card"/>
+  <rect x="40" y="280" width="210" height="4" class="accent"/>
+  <text x="145" y="322" text-anchor="middle" class="t-m">Order Management</text>
+  <text x="145" y="342" text-anchor="middle" class="t-eng">Order Management</text>
+  <line x1="52" y1="354" x2="238" y2="354" stroke="#d0d7de" stroke-width="1"/>
+  <text x="145" y="378" text-anchor="middle" class="t-s">Order lookup · Status tracking</text>
+  <text x="145" y="400" text-anchor="middle" class="t-s">Cancellation · Changes · Notifications</text>
+
+  <rect x="265" y="280" width="210" height="150" class="card"/>
+  <rect x="265" y="280" width="210" height="4" class="accent"/>
+  <text x="370" y="322" text-anchor="middle" class="t-m">Review System</text>
+  <text x="370" y="342" text-anchor="middle" class="t-eng">Review System</text>
+  <line x1="277" y1="354" x2="463" y2="354" stroke="#d0d7de" stroke-width="1"/>
+  <text x="370" y="378" text-anchor="middle" class="t-s">Reviews · Ratings · Moderation</text>
+  <text x="370" y="400" text-anchor="middle" class="t-s">Content filtering · Rankings</text>
+
+  <rect x="490" y="280" width="210" height="150" class="card"/>
+  <rect x="490" y="280" width="210" height="4" class="accent"/>
+  <text x="595" y="322" text-anchor="middle" class="t-m">i18n ARB Locale</text>
+  <text x="595" y="342" text-anchor="middle" class="t-eng">i18n ARB Locale</text>
+  <line x1="502" y1="354" x2="688" y2="354" stroke="#d0d7de" stroke-width="1"/>
+  <text x="595" y="378" text-anchor="middle" class="t-s">12+ language resources</text>
+  <text x="595" y="400" text-anchor="middle" class="t-s">ARB format · Dynamic loading</text>
+
+  <rect x="715" y="280" width="210" height="150" class="card"/>
+  <rect x="715" y="280" width="210" height="4" class="accent"/>
+  <text x="820" y="322" text-anchor="middle" class="t-m">Kafka Notifications</text>
+  <text x="820" y="342" text-anchor="middle" class="t-eng">Kafka Notifications</text>
+  <line x1="727" y1="354" x2="913" y2="354" stroke="#d0d7de" stroke-width="1"/>
+  <text x="820" y="378" text-anchor="middle" class="t-s">Async messaging · Reliable delivery</text>
+  <text x="820" y="400" text-anchor="middle" class="t-s">Email · SMS · In-app messages</text>
+
+  <!-- 底部技术栈 -->
+  <rect x="40" y="470" width="920" height="80" class="panel"/>
+  <text x="60" y="500" class="t-h">Core Tech Stack</text>
+  <text x="60" y="528" class="t-s">e-cat (Rust) · Flutter · HarmonyOS · MySQL · Redis · OpenSearch · Kafka · WeChat Pay · Alipay · Consul</text>
+
+  <text x="500" y="590" text-anchor="middle" class="t-s">12+ languages · 51 crates · Multi-platform (iOS / Android / Web / Desktop / HarmonyOS)</text>
+  <text x="988" y="628" text-anchor="end" font-size="12" fill="#8b949e" fill-opacity="0.5" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">https://erik.xyz</text>
+</svg>

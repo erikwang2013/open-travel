@@ -1,0 +1,117 @@
+# Open Travel — Platform Wisata Global
+
+[简体中文](../../README.md) | [English](README.md) | [日本語](ja/README.md) | [한국어](ko/README.md) | [Русский](ru/README.md) | [Deutsch](de/README.md) | [Français](fr/README.md) | [Español](es/README.md) | [Português](pt/README.md) | [हिन्दी](hi/README.md) | [العربية](ar/README.md) | [বাংলা](bn/README.md) | [Bahasa Indonesia](id/README.md)
+
+> Platform pemesanan wisata untuk pengguna global: backend mikroservis Rust + klien multi-platform Flutter / HarmonyOS, mendukung **12+ bahasa**, pembayaran internasional, dan pencarian multibahasa.
+
+## Tentang Proyek
+
+Open Travel adalah monorepo platform wisata global yang menggunakan **e-cat (seekor kucing)** — **framework mikroservis Rust** (v3.0.2 · 51 crates) yang setara dengan [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 — untuk membangun backend berperforma tinggi, dipadukan dengan klien multi-platform Flutter dan klien native HarmonyOS, guna memberikan pengalaman pemesanan wisata yang seragam bagi pengguna global.
+
+| Aspek | Deskripsi |
+| :--- | :--- |
+| **Backend** | e-cat (Rust): HTTP/axum + gRPC/tonic, ekosistem mikroservis 51 crates |
+| **Klien multi-platform** | `apps/flutter` (iOS / Android / Web / Desktop), `apps/harmonyos` (HarmonyOS) |
+| **Database** | MySQL (database `travel`, prefiks tabel `travel_`) + Redis cache + OpenSearch pencarian multibahasa |
+| **Keamanan** | ecat-security / ecat-auth (JWT) / ecat-tls: autentikasi, audit, rate limiting, proteksi injeksi |
+| **Internasionalisasi** | Paket bahasa ARB 12+ bahasa, dukungan RTL, tokenisasi multibahasa OpenSearch |
+| **Pembayaran** | WeChat Pay, Alipay |
+
+## Fitur Utama
+
+- 🏨 Pencarian dan pemesanan multibahasa untuk destinasi / hotel / tiket pesawat
+- 🌍 Adaptasi independen 12+ bahasa (Mandarin, Inggris, Jepang, Korea, Arab, Spanyol, Prancis, Jerman...)
+- 💳 Pembayaran internasional (WeChat Pay / Alipay)
+- 🔐 Pertahanan berlapis: TLS 1.3, autentikasi JWT, log audit, penyaringan input, rate limiting
+- 📱 Pengalaman konsisten lintas platform: Flutter (iOS/Android/Web/Desktop) + HarmonyOS
+
+## Diagram Arsitektur
+
+![Diagram Arsitektur](../../svg/id/architecture.svg)
+
+## Diagram Fitur
+
+![Diagram Fitur](../../svg/id/features.svg)
+
+## Diagram Proyek
+
+![Diagram Proyek](../../svg/id/project.svg)
+
+## Diagram Siklus Permintaan
+
+![Diagram Siklus Permintaan](../../svg/id/request-cycle.svg)
+
+## Diagram Arsitektur Keamanan
+
+![Diagram Arsitektur Keamanan](../../svg/id/security-architecture.svg)
+
+## Diagram Struktur Proyek
+
+![Diagram Struktur Proyek](../../svg/id/project-structure.svg)
+
+## Struktur Proyek
+
+```
+open-travel/
+├── apps/                  # Direktori klien multi-platform
+│   ├── flutter/           # Flutter: iOS / Android / Web / Desktop (i18n 12+ bahasa)
+│   └── harmonyos/         # Klien native HarmonyOS
+├── e-cat/                 # Framework mikroservis Rust e-cat (51 crates)
+├── docs/                  # Perencanaan proyek, diagram (SVG), QR code pembayaran
+├── config/                # Konfigurasi lingkungan dan deployment
+└── README.md
+```
+
+## Database
+
+- Nama database: `travel`
+- Prefiks tabel: `travel_` (misalnya `travel_users`, `travel_orders`, `travel_reviews`)
+- Penyimpanan pendukung: Redis (sesi / cache populer), OpenSearch (indeks pencarian multibahasa)
+
+> Lihat perencanaan teknis terperinci di [docs/travel-project-planning.md](../../travel-project-planning.md).
+
+---
+
+## Dukung Kami
+
+Jika proyek ini bermanfaat bagi Anda, silakan traktir penulis secangkir kopi ☕
+
+<p align="center">
+  <strong>WeChat Pay</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Alipay</strong><br/>
+  <img src="../../weixinpay.png" alt="QR Code WeChat Pay" width="130" height="130" />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="../../alipay.png" alt="QR Code Alipay" width="130" height="130" />
+</p>
+
+### Donasi Transfer Bank Global (Global Bank Transfer)
+
+**Informasi Penerima**
+
+- Nama penerima: WANG KEXUN
+- Nomor rekening penerima: 881015918251
+
+**Bank Penerima**
+
+- Kode SWIFT ZA Bank: AABLHKHHXXX
+- Nama bank: ZA Bank Limited
+- Kode bank: 387
+- Alamat bank: Core F, Cyberport 3, 100 Cyberport Road, Hong Kong
+
+**Bank Koresponden Transfer Lintas Batas (jika diperlukan)**
+
+Perlu diperhatikan, ini adalah informasi bank koresponden (bank perantara) untuk transfer lintas batas, bukan informasi bank penerima. Silakan tanyakan kepada bank pengirim apakah perlu menyediakan informasi bank koresponden lintas batas.
+
+Bank koresponden untuk transfer dalam HKD, RMB, dan USD adalah **Citibank** —
+
+- Nama bank: Citibank N.A. Hong Kong
+- Kode SWIFT: CITIHKHXXXX
+- Kode bank: 006
+- Nama cabang: Hong Kong Branch
+- Kode cabang: 391
+- Alamat bank: Citibank Tower, Citibank Plaza, 3 Garden Road, Central, Hong Kong
+
+Bank koresponden untuk transfer mata uang lainnya adalah **BNY Mellon** —
+
+- Nama bank: THE BANK OF NEW YORK MELLON
+- Kode SWIFT: IRVTUS3NXXX
+- Alamat bank: THE BANK OF NEW YORK MELLON, 240 GREENWICH STREET, NEW YORK, United States

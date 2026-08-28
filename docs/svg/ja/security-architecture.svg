@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="680" viewBox="0 0 1000 680">
+  <defs>
+    <style>
+      text { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }
+      .t-title { font-size: 20px; font-weight: 700; fill: #1f2328; }
+      .t-sub  { font-size: 12px; fill: #6e7781; }
+      .t-h    { font-size: 16px; font-weight: 700; fill: #1f2328; }
+      .t-eng  { font-size: 11px; fill: #6e7781; }
+      .t-kw   { font-size: 17px; font-weight: 700; fill: #2f6fed; }
+      .t-s    { font-size: 12px; fill: #6e7781; }
+      .panel  { fill: #f6f8fa; stroke: #d0d7de; stroke-width: 1.5; rx: 10; }
+      .line   { stroke: #d0d7de; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <rect width="1000" height="680" fill="#ffffff"/>
+
+  <text x="500" y="36" text-anchor="middle" class="t-title">セキュリティアーキテクチャ</text>
+  <text x="500" y="56" text-anchor="middle" class="t-sub">Open-Travel Security Architecture・多層防御</text>
+
+  <!-- 第一行 -->
+  <rect x="40" y="100" width="300" height="210" class="panel"/>
+  <circle cx="60" cy="132" r="5" fill="#2f6fed"/>
+  <text x="74" y="137" class="t-h">伝送暗号化</text>
+  <text x="56" y="158" class="t-eng">Transport Security</text>
+  <line x1="56" y1="170" x2="324" y2="170" class="line"/>
+  <text x="190" y="200" text-anchor="middle" class="t-kw">TLS 1.3</text>
+  <text x="190" y="232" text-anchor="middle" class="t-s">Nginx で TLS 終端・全経路暗号化</text>
+  <text x="190" y="254" text-anchor="middle" class="t-s">証明書管理・ダウングレード保護</text>
+
+  <rect x="350" y="100" width="300" height="210" class="panel"/>
+  <circle cx="370" cy="132" r="5" fill="#00b894"/>
+  <text x="384" y="137" class="t-h">認証・認可</text>
+  <text x="366" y="158" class="t-eng">Authentication &amp; Authorization</text>
+  <line x1="366" y1="170" x2="634" y2="170" class="line"/>
+  <text x="500" y="200" text-anchor="middle" class="t-kw">JWT · OAuth2</text>
+  <text x="500" y="232" text-anchor="middle" class="t-s">ecat-auth モジュールの発行と検証</text>
+  <text x="500" y="254" text-anchor="middle" class="t-s">リフレッシュトークン・ロール権限</text>
+
+  <rect x="660" y="100" width="300" height="210" class="panel"/>
+  <circle cx="680" cy="132" r="5" fill="#ff9f43"/>
+  <text x="694" y="137" class="t-h">レート制限</text>
+  <text x="676" y="158" class="t-eng">Rate Limiting</text>
+  <line x1="676" y1="170" x2="944" y2="170" class="line"/>
+  <text x="810" y="200" text-anchor="middle" class="t-kw">Nginx + ゲートウェイ制限</text>
+  <text x="810" y="232" text-anchor="middle" class="t-s">IP / ユーザー単位の制限</text>
+  <text x="810" y="254" text-anchor="middle" class="t-s">スパム防止・DDoS 攻撃対策</text>
+
+  <!-- 第二行 -->
+  <rect x="40" y="330" width="300" height="210" class="panel"/>
+  <circle cx="60" cy="362" r="5" fill="#2f6fed"/>
+  <text x="74" y="367" class="t-h">入力フィルタリング</text>
+  <text x="56" y="388" class="t-eng">Input Filtering</text>
+  <line x1="56" y1="400" x2="324" y2="400" class="line"/>
+  <text x="190" y="430" text-anchor="middle" class="t-kw">XSS / SQL インジェクション対策</text>
+  <text x="190" y="462" text-anchor="middle" class="t-s">パラメータホワイトリスト検証・エスケープ</text>
+  <text x="190" y="484" text-anchor="middle" class="t-s">SQL プリコンパイル・インジェクション防止</text>
+
+  <rect x="350" y="330" width="300" height="210" class="panel"/>
+  <circle cx="370" cy="362" r="5" fill="#00b894"/>
+  <text x="384" y="367" class="t-h">監査ログ</text>
+  <text x="366" y="388" class="t-eng">Audit Logs</text>
+  <line x1="366" y1="400" x2="634" y2="400" class="line"/>
+  <text x="500" y="430" text-anchor="middle" class="t-kw">Kafka → ClickHouse</text>
+  <text x="500" y="462" text-anchor="middle" class="t-s">操作監査・全量記録</text>
+  <text x="500" y="484" text-anchor="middle" class="t-s">異常アラート・行動追跡</text>
+
+  <rect x="660" y="330" width="300" height="210" class="panel"/>
+  <circle cx="680" cy="362" r="5" fill="#ff9f43"/>
+  <text x="694" y="367" class="t-h">決済セキュリティ</text>
+  <text x="676" y="388" class="t-eng">Payment Security</text>
+  <line x1="676" y1="400" x2="944" y2="400" class="line"/>
+  <text x="810" y="430" text-anchor="middle" class="t-kw">WeChat Pay・Alipay</text>
+  <text x="810" y="462" text-anchor="middle" class="t-s">公式 SDK 署名・署名検証</text>
+  <text x="810" y="484" text-anchor="middle" class="t-s">コールバック検証・金額整合性</text>
+
+  <!-- 密码哈希 -->
+  <rect x="40" y="560" width="920" height="80" class="panel"/>
+  <circle cx="60" cy="592" r="5" fill="#2f6fed"/>
+  <text x="74" y="597" class="t-h">パスワードハッシュ bcrypt</text>
+  <text x="56" y="622" class="t-s">ecat-security モジュール・ソルト付きハッシュ・不可逆保存・レインボーテーブル攻撃防止</text>
+
+  <text x="500" y="662" text-anchor="middle" class="t-sub">多層防御 Defense in Depth・全経路セキュリティ強化</text>
+  <text x="988" y="668" text-anchor="end" font-size="12" fill="#8b949e" fill-opacity="0.5" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">https://erik.xyz</text>
+</svg>

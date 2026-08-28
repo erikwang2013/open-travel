@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="760" viewBox="0 0 1000 760">
+  <defs>
+    <style>
+      text { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }
+      .t-title { font-size: 20px; font-weight: 700; fill: #1f2328; }
+      .t-sub  { font-size: 12px; fill: #6e7781; }
+      .t-m    { font-size: 15px; font-weight: 700; fill: #1f2328; }
+      .t-s    { font-size: 12px; fill: #6e7781; }
+      .box    { fill: #ffffff; stroke: #d0d7de; stroke-width: 1.5; rx: 10; }
+      .accent { fill: #2f6fed; }
+      .num    { fill: #2f6fed; }
+      .arrow  { stroke: #8b949e; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <rect width="1000" height="760" fill="#ffffff"/>
+
+  <text x="500" y="36" text-anchor="middle" class="t-title">请求处理周期</text>
+  <text x="500" y="56" text-anchor="middle" class="t-sub">Open-Travel Request Cycle · 客户端 → 网关 → 服务 → 数据</text>
+
+  <!-- 步骤 1-9 -->
+  <rect x="170" y="86" width="790" height="64" class="box"/>
+  <rect x="170" y="86" width="4" height="64" class="accent"/>
+  <text x="200" y="112" class="t-m">客户端请求</text>
+  <text x="200" y="134" class="t-s">Flutter / HarmonyOS 客户端发起 HTTP 请求</text>
+  <circle cx="90" cy="118" r="16" class="num"/>
+  <text x="90" y="123" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="14" font-weight="700" fill="#ffffff">1</text>
+
+  <line x1="90" y1="136" x2="90" y2="172" class="arrow"/>
+
+  <rect x="170" y="156" width="790" height="64" class="box"/>
+  <rect x="170" y="156" width="4" height="64" class="accent"/>
+  <text x="200" y="182" class="t-m">Nginx API 网关</text>
+  <text x="200" y="204" class="t-s">TLS 解密 · 限流防刷 · 路由转发</text>
+  <circle cx="90" cy="188" r="16" class="num"/>
+  <text x="90" y="193" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="14" font-weight="700" fill="#ffffff">2</text>
+
+  <line x1="90" y1="206" x2="90" y2="242" class="arrow"/>
+
+  <rect x="170" y="226" width="790" height="64" class="box"/>
+  <rect x="170" y="226" width="4" height="64" class="accent"/>
+  <text x="200" y="252" class="t-m">e-cat 服务处理</text>
+  <text x="200" y="274" class="t-s">Rust 微服务 · 参数校验 · 业务逻辑</text>
+  <circle cx="90" cy="258" r="16" class="num"/>
+  <text x="90" y="263" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="14" font-weight="700" fill="#ffffff">3</text>
+
+  <line x1="90" y1="276" x2="90" y2="312" class="arrow"/>
+
+  <rect x="170" y="296" width="790" height="64" class="box"/>
+  <rect x="170" y="296" width="4" height="64" class="accent"/>
+  <text x="200" y="322" class="t-m">安全层认证</text>
+  <text x="200" y="344" class="t-s">JWT 校验 · OAuth2 · 审计日志</text>
+  <circle cx="90" cy="328" r="16" class="num"/>
+  <text x="90" y="333" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="14" font-weight="700" fill="#ffffff">4</text>
+
+  <line x1="90" y1="346" x2="90" y2="382" class="arrow"/>
+
+  <rect x="170" y="366" width="790" height="64" class="box"/>
+  <rect x="170" y="366" width="4" height="64" class="accent"/>
+  <text x="200" y="392" class="t-m">Redis 缓存</text>
+  <text x="200" y="414" class="t-s">缓存命中 → 直接返回 · 未命中 → 查询 MySQL</text>
+  <circle cx="90" cy="398" r="16" class="num"/>
+  <text x="90" y="403" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="14" font-weight="700" fill="#ffffff">5</text>
+
+  <line x1="90" y1="416" x2="90" y2="452" class="arrow"/>
+
+  <rect x="170" y="436" width="790" height="64" class="box"/>
+  <rect x="170" y="436" width="4" height="64" class="accent"/>
+  <text x="200" y="462" class="t-m">MySQL 查询 / 写入</text>
+  <text x="200" y="484" class="t-s">travel 库 · travel_* 前缀表（travel_users · travel_orders）</text>
+  <circle cx="90" cy="468" r="16" class="num"/>
+  <text x="90" y="473" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="14" font-weight="700" fill="#ffffff">6</text>
+
+  <line x1="90" y1="486" x2="90" y2="522" class="arrow"/>
+
+  <rect x="170" y="506" width="790" height="64" class="box"/>
+  <rect x="170" y="506" width="4" height="64" class="accent"/>
+  <text x="200" y="532" class="t-m">OpenSearch 搜索</text>
+  <text x="200" y="554" class="t-s">多语言分词 · 搜索聚合排序</text>
+  <circle cx="90" cy="538" r="16" class="num"/>
+  <text x="90" y="543" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="14" font-weight="700" fill="#ffffff">7</text>
+
+  <line x1="90" y1="556" x2="90" y2="592" class="arrow"/>
+
+  <rect x="170" y="576" width="790" height="64" class="box"/>
+  <rect x="170" y="576" width="4" height="64" class="accent"/>
+  <text x="200" y="602" class="t-m">多语言填充</text>
+  <text x="200" y="624" class="t-s">i18n ARB 语言包 · 12+ 语种动态加载</text>
+  <circle cx="90" cy="608" r="16" class="num"/>
+  <text x="90" y="613" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="14" font-weight="700" fill="#ffffff">8</text>
+
+  <line x1="90" y1="626" x2="90" y2="662" class="arrow"/>
+
+  <rect x="170" y="646" width="790" height="64" class="box"/>
+  <rect x="170" y="646" width="4" height="64" class="accent"/>
+  <text x="200" y="672" class="t-m">响应客户端</text>
+  <text x="200" y="694" class="t-s">组装 JSON · 返回客户端展示</text>
+  <circle cx="90" cy="678" r="16" class="num"/>
+  <text x="90" y="683" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="14" font-weight="700" fill="#ffffff">9</text>
+
+  <text x="500" y="738" text-anchor="middle" class="t-sub">请求处理时序 · Request Processing Sequence</text>
+  <text x="988" y="748" text-anchor="end" font-size="12" fill="#8b949e" fill-opacity="0.5" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">https://erik.xyz</text>
+</svg>

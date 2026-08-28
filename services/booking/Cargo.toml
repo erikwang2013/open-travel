@@ -1,0 +1,24 @@
+[package]
+name = "booking-service"
+version = "0.1.0"
+edition = "2024"
+description = "open-travel booking service (available dates)"
+
+[dependencies]
+shared = { path = "../shared" }
+ecat = { path = "../../e-cat/ecat", default-features = false }
+ecat-transport-http = { path = "../../e-cat/ecat-transport-http" }
+ecat-auth = { path = "../../e-cat/ecat-auth" }
+ecat-middleware = { path = "../../e-cat/ecat-middleware" }
+ecat-security = { path = "../../e-cat/ecat-security" }
+ecat-circuit-breaker = { path = "../../e-cat/ecat-circuit-breaker" }
+ecat-tracing = { path = "../../e-cat/ecat-tracing" }
+ecat-data = { path = "../../e-cat/ecat-data" }
+ecat-data-sqlx = { path = "../../e-cat/ecat-data-sqlx" }
+ecat-data-redis = { path = "../../e-cat/ecat-data-redis" }
+axum.workspace = true
+tokio.workspace = true
+tower.workspace = true
+tracing.workspace = true
+serde.workspace = true
+serde_json.workspace = true

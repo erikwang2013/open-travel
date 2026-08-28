@@ -1,0 +1,9 @@
+{
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "OpenTravel HarmonyOS entry module",
+  "main": "",
+  "author": "open-travel",
+  "license": "Apache-2.0",
+  "dependencies": {}
+}

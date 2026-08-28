@@ -1,0 +1,143 @@
+{
+  "@@locale": "ru",
+  "appTitle": "Опен Трэвел",
+  "@appTitle": {
+    "description": "appTitle"
+  },
+  "tagline": "Исследуйте мир — бронируйте в одно касание",
+  "@tagline": {
+    "description": "tagline"
+  },
+  "nav.home": "Главная",
+  "@nav.home": {
+    "description": "nav.home"
+  },
+  "nav.search": "Поиск",
+  "@nav.search": {
+    "description": "nav.search"
+  },
+  "nav.bookings": "Бронирования",
+  "@nav.bookings": {
+    "description": "nav.bookings"
+  },
+  "nav.profile": "Профиль",
+  "@nav.profile": {
+    "description": "nav.profile"
+  },
+  "home.heroTitle": "Начните ваше путешествие",
+  "@home.heroTitle": {
+    "description": "home.heroTitle"
+  },
+  "home.heroSubtitle": "Бронируйте отели, авиабилеты и экскурсии",
+  "@home.heroSubtitle": {
+    "description": "home.heroSubtitle"
+  },
+  "home.popularDestinations": "Популярные направления",
+  "@home.popularDestinations": {
+    "description": "home.popularDestinations"
+  },
+  "search.placeholder": "Поиск направлений, отелей или авиабилетов",
+  "@search.placeholder": {
+    "description": "search.placeholder"
+  },
+  "search.button": "Найти",
+  "@search.button": {
+    "description": "search.button"
+  },
+  "search.results": "Результаты поиска",
+  "@search.results": {
+    "description": "search.results"
+  },
+  "destination.price": "Цена",
+  "@destination.price": {
+    "description": "destination.price"
+  },
+  "destination.perNight": "/ночь",
+  "@destination.perNight": {
+    "description": "destination.perNight"
+  },
+  "destination.rating": "Рейтинг",
+  "@destination.rating": {
+    "description": "destination.rating"
+  },
+  "destination.bookNow": "Забронировать",
+  "@destination.bookNow": {
+    "description": "destination.bookNow"
+  },
+  "booking.title": "Мои бронирования",
+  "@booking.title": {
+    "description": "booking.title"
+  },
+  "booking.date": "Дата",
+  "@booking.date": {
+    "description": "booking.date"
+  },
+  "booking.guests": "Гости",
+  "@booking.guests": {
+    "description": "booking.guests"
+  },
+  "booking.status.pending": "Ожидает оплаты",
+  "@booking.status.pending": {
+    "description": "booking.status.pending"
+  },
+  "booking.status.paid": "Оплачено",
+  "@booking.status.paid": {
+    "description": "booking.status.paid"
+  },
+  "booking.status.cancelled": "Отменено",
+  "@booking.status.cancelled": {
+    "description": "booking.status.cancelled"
+  },
+  "booking.viewAll": "Смотреть все",
+  "@booking.viewAll": {
+    "description": "booking.viewAll"
+  },
+  "profile.title": "Профиль",
+  "@profile.title": {
+    "description": "profile.title"
+  },
+  "profile.login": "Войти",
+  "@profile.login": {
+    "description": "profile.login"
+  },
+  "profile.register": "Регистрация",
+  "@profile.register": {
+    "description": "profile.register"
+  },
+  "profile.lang": "Язык",
+  "@profile.lang": {
+    "description": "profile.lang"
+  },
+  "common.loading": "Загрузка…",
+  "@common.loading": {
+    "description": "common.loading"
+  },
+  "common.error": "Произошла ошибка",
+  "@common.error": {
+    "description": "common.error"
+  },
+  "common.retry": "Повторить",
+  "@common.retry": {
+    "description": "common.retry"
+  },
+  "common.cancel": "Отмена",
+  "@common.cancel": {
+    "description": "common.cancel"
+  },
+  "common.currency": "₽",
+  "@common.currency": {
+    "description": "common.currency"
+  },
+  "common.noData": "Нет данных",
+  "@common.noData": {
+    "description": "common.noData"
+  },
+  "common.welcome": "Добро пожаловать",
+  "@common.welcome": {
+    "description": "common.welcome"
+  },
+  "common.success": "Успешно",
+  "@common.success": {
+    "description": "common.success"
+  }
+}

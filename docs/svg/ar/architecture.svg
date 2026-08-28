@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="680" viewBox="0 0 1000 680">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8b949e"/>
+    </marker>
+    <style>
+      text { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }
+      .t-title { font-size: 20px; font-weight: 700; fill: #1f2328; }
+      .t-sub  { font-size: 12px; fill: #6e7781; }
+      .t-h    { font-size: 16px; font-weight: 700; fill: #1f2328; }
+      .t-h2   { font-size: 14px; font-weight: 700; fill: #1f2328; }
+      .t-m    { font-size: 14px; font-weight: 700; fill: #1f2328; }
+      .t-s    { font-size: 12px; fill: #6e7781; }
+      .panel  { fill: #f6f8fa; stroke: #d0d7de; stroke-width: 1.5; rx: 10; }
+      .box    { fill: #ffffff; stroke: #d0d7de; stroke-width: 1.5; rx: 10; }
+      .arrow  { stroke: #8b949e; stroke-width: 1.5; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1000" height="680" fill="#ffffff"/>
+
+  <text x="500" y="36" text-anchor="middle" class="t-title">بنية منصة السفر العالمية</text>
+  <text x="500" y="56" text-anchor="middle" class="t-sub">Open-Travel Global Platform Architecture</text>
+
+  <!-- 客户端层 -->
+  <rect x="30" y="80" width="720" height="96" class="panel"/>
+  <text x="48" y="110" class="t-h">طبقة العميل</text>
+  <text x="48" y="130" class="t-s">Client Layer</text>
+  <rect x="216" y="100" width="168" height="56" class="box"/>
+  <text x="300" y="124" text-anchor="middle" class="t-m">Flutter iOS / Android</text>
+  <text x="300" y="144" text-anchor="middle" class="t-s">تطبيق الهاتف المحمول</text>
+  <rect x="396" y="100" width="168" height="56" class="box"/>
+  <text x="480" y="124" text-anchor="middle" class="t-m">Flutter Web / Desktop</text>
+  <text x="480" y="144" text-anchor="middle" class="t-s">ويب · عميل سطح المكتب</text>
+  <rect x="576" y="100" width="168" height="56" class="box"/>
+  <text x="660" y="124" text-anchor="middle" class="t-m">HarmonyOS</text>
+  <text x="660" y="144" text-anchor="middle" class="t-s">عميل HarmonyOS</text>
+
+  <!-- API Gateway 层 -->
+  <rect x="30" y="192" width="720" height="96" class="panel"/>
+  <text x="48" y="222" class="t-h">طبقة API Gateway</text>
+  <text x="48" y="242" class="t-s">API Gateway</text>
+  <rect x="216" y="212" width="528" height="56" class="box"/>
+  <text x="480" y="236" text-anchor="middle" class="t-m">بوابة Nginx</text>
+  <text x="480" y="256" text-anchor="middle" class="t-s">تشفير TLS · تحديد المعدل · توجيه · مصادقة</text>
+
+  <!-- e-cat 核心服务层 -->
+  <rect x="30" y="304" width="720" height="224" class="panel"/>
+  <text x="48" y="334" class="t-h">طبقة خدمات e-cat الأساسية</text>
+  <text x="48" y="354" class="t-s">e-cat Core Services · ميكروسيرفيس Rust</text>
+  <rect x="216" y="372" width="168" height="64" class="box"/>
+  <text x="300" y="396" text-anchor="middle" class="t-m">User المستخدم</text>
+  <text x="300" y="418" text-anchor="middle" class="t-s">حساب · ملف · مفضلة</text>
+  <rect x="396" y="372" width="168" height="64" class="box"/>
+  <text x="480" y="396" text-anchor="middle" class="t-m">Booking الحجز</text>
+  <text x="480" y="418" text-anchor="middle" class="t-s">فنادق · طيران · رحلات</text>
+  <rect x="576" y="372" width="168" height="64" class="box"/>
+  <text x="660" y="396" text-anchor="middle" class="t-m">Payment الدفع</text>
+  <text x="660" y="418" text-anchor="middle" class="t-s">ويتشات · أليباي · دولي</text>
+  <rect x="216" y="452" width="168" height="64" class="box"/>
+  <text x="300" y="476" text-anchor="middle" class="t-m">Review التقييم</text>
+  <text x="300" y="498" text-anchor="middle" class="t-s">تعليقات · تقييم · مراجعة</text>
+  <rect x="396" y="452" width="168" height="64" class="box"/>
+  <text x="480" y="476" text-anchor="middle" class="t-m">Search البحث</text>
+  <text x="480" y="498" text-anchor="middle" class="t-s">متعدد اللغات · OpenSearch</text>
+  <rect x="576" y="452" width="168" height="64" class="box"/>
+  <text x="660" y="476" text-anchor="middle" class="t-m">I18n اللغات</text>
+  <text x="660" y="498" text-anchor="middle" class="t-s">حزم ARB · 12+ لغة</text>
+
+  <!-- 数据层 -->
+  <rect x="30" y="544" width="720" height="96" class="panel"/>
+  <text x="48" y="574" class="t-h">طبقة البيانات</text>
+  <text x="48" y="594" class="t-s">Data Layer</text>
+  <rect x="216" y="564" width="168" height="56" class="box"/>
+  <text x="300" y="588" text-anchor="middle" class="t-m">MySQL</text>
+  <text x="300" y="608" text-anchor="middle" class="t-s">قاعدة travel · جداول travel_*</text>
+  <rect x="396" y="564" width="168" height="56" class="box"/>
+  <text x="480" y="588" text-anchor="middle" class="t-m">Redis</text>
+  <text x="480" y="608" text-anchor="middle" class="t-s">كاش · جلسات</text>
+  <rect x="576" y="564" width="168" height="56" class="box"/>
+  <text x="660" y="588" text-anchor="middle" class="t-m">OpenSearch</text>
+  <text x="660" y="608" text-anchor="middle" class="t-s">بحث متعدد اللغات · تجميع</text>
+
+  <!-- e-cat 中间件安全层 -->
+  <rect x="770" y="80" width="200" height="560" class="panel"/>
+  <text x="786" y="108" class="t-h2">طبقة وسيط أمان e-cat</text>
+  <text x="786" y="128" class="t-s">Security Middleware</text>
+  <rect x="786" y="140" width="168" height="130" class="box"/>
+  <text x="870" y="172" text-anchor="middle" class="t-m">SecurityLayer</text>
+  <text x="870" y="196" text-anchor="middle" class="t-s">اعتراض أمني · تصفية الطلبات</text>
+  <text x="870" y="218" text-anchor="middle" class="t-s">منع إعادة الإرسال · مخاطر</text>
+  <rect x="786" y="290" width="168" height="130" class="box"/>
+  <text x="870" y="322" text-anchor="middle" class="t-m">Auth / مصادقة JWT</text>
+  <text x="870" y="346" text-anchor="middle" class="t-s">OAuth2 · تحقق Token</text>
+  <text x="870" y="368" text-anchor="middle" class="t-s">صلاحيات RBAC</text>
+  <rect x="786" y="440" width="168" height="130" class="box"/>
+  <text x="870" y="472" text-anchor="middle" class="t-m">تشفير نقل TLS</text>
+  <text x="870" y="496" text-anchor="middle" class="t-s">TLS 1.3 · شهادات</text>
+  <text x="870" y="518" text-anchor="middle" class="t-s">mTLS مصادقة ثنائية</text>
+
+  <!-- 箭头 -->
+  <line x1="390" y1="179" x2="390" y2="189" class="arrow"/>
+  <line x1="390" y1="291" x2="390" y2="301" class="arrow"/>
+  <line x1="390" y1="531" x2="390" y2="541" class="arrow"/>
+  <line x1="748" y1="240" x2="768" y2="240" class="arrow"/>
+  <line x1="748" y1="484" x2="768" y2="484" class="arrow"/>
+
+  <text x="500" y="664" text-anchor="middle" class="t-s">MySQL: قاعدة بيانات travel، جميع الجداول ببادئة travel_ (travel_users · travel_orders)</text>
+  <text x="988" y="668" text-anchor="end" font-size="12" fill="#8b949e" fill-opacity="0.5" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">https://erik.xyz</text>
+</svg>

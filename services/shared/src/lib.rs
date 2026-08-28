@@ -1,0 +1,159 @@
+//! open-travel 业务服务共享代码：JWT 密钥解析、Redis 分布式限流、axum Error 归一。
+
+use axum::body::Body;
+use axum::http::{Request, StatusCode};
+use axum::response::Response;
+use ecat_data::Cache;
+use ecat_data_redis::RedisCache;
+use std::convert::Infallible;
+use std::fmt;
+use std::pin::Pin;
+use std::sync::Arc;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
+
+const DEV_JWT_SECRET: &str = "dev-only-change-me-32-bytes-minimum-secret";
+
+/// JWT 密钥：优先读 JWT_SECRET 环境变量；未配置或长度不足时退回开发占位密钥并告警。
+/// 生产部署必须通过环境变量/配置中心下发，切勿使用占位密钥。
+pub fn jwt_secret() -> String {
+    match std::env::var("JWT_SECRET") {
+        Ok(secret) if secret.len() >= 32 => secret,
+        Ok(_) => {
+            tracing::warn!("JWT_SECRET 长度不足 32 字节，退回开发占位密钥");
+            DEV_JWT_SECRET.to_string()
+        }
+        Err(_) => {
+            tracing::warn!("JWT_SECRET 未设置，使用开发占位密钥（生产必须配置）");
+            DEV_JWT_SECRET.to_string()
+        }
+    }
+}
+
+/// e-cat 中间件的 Error 非 Infallible，无法满足 axum Router::layer 的 Into<Infallible>
+/// 约束；map_err 到不可构造的 NoError（From 实现 unreachable，实际永不执行）。
+#[derive(Debug)]
+pub struct NoError;
+
+impl fmt::Display for NoError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "infallible")
+    }
+}
+
+impl std::error::Error for NoError {}
+
+impl From<NoError> for Infallible {
+    fn from(_: NoError) -> Infallible {
+        unreachable!()
+    }
+}
+
+pub fn no_error<E>(_: E) -> NoError {
+    NoError
+}
+
+/// Redis 固定窗口分布式限流（替换 Phase 1 的进程内限流，多实例共享计数）。
+///
+/// key = `rl:{service}:{window_start}`，窗口内第一个请求建 key 并设 TTL，
+/// 后续请求 INCR；计数超过 max 返回 429。
+/// fail-open：Redis 不可用时放行并告警，避免限流组件拖垮业务。
+/// ponytail: 全局窗口按服务维度计数（未区分客户端 IP），需要按 IP 限流时
+/// 在 key 中拼接入 IP 即可。
+#[derive(Clone)]
+pub struct RedisRateLimitLayer {
+    cache: Option<Arc<RedisCache>>,
+    service: &'static str,
+    max: u64,
+    window_secs: u64,
+}
+
+impl RedisRateLimitLayer {
+    pub fn new(
+        cache: Option<Arc<RedisCache>>,
+        service: &'static str,
+        max: u64,
+        window_secs: u64,
+    ) -> Self {
+        Self { cache, service, max, window_secs }
+    }
+}
+
+impl<S> tower::Layer<S> for RedisRateLimitLayer {
+    type Service = RedisRateLimitService<S>;
+
+    fn layer(&self, inner: S) -> Self::Service {
+        RedisRateLimitService {
+            inner,
+            cache: self.cache.clone(),
+            service: self.service,
+            max: self.max,
+            window_secs: self.window_secs,
+        }
+    }
+}
+
+#[derive(Clone)]
+pub struct RedisRateLimitService<S> {
+    inner: S,
+    cache: Option<Arc<RedisCache>>,
+    service: &'static str,
+    max: u64,
+    window_secs: u64,
+}
+
+impl<S> tower::Service<Request<Body>> for RedisRateLimitService<S>
+where
+    S: tower::Service<Request<Body>, Response = Response> + Clone + Send + 'static,
+    S::Future: Send + 'static,
+{
+    type Response = Response;
+    type Error = S::Error;
+    type Future = Pin<
+        Box<dyn std::future::Future<Output = Result<Self::Response, Self::Error>> + Send>,
+    >;
+
+    fn poll_ready(
+        &mut self,
+        cx: &mut std::task::Context<'_>,
+    ) -> std::task::Poll<Result<(), Self::Error>> {
+        self.inner.poll_ready(cx)
+    }
+
+    fn call(&mut self, req: Request<Body>) -> Self::Future {
+        let fut = self.inner.call(req);
+        let Some(cache) = self.cache.clone() else {
+            return Box::pin(async move { fut.await });
+        };
+        let key = rate_key(self.service, self.window_secs);
+        let max = self.max;
+        let ttl = self.window_secs + 1;
+        Box::pin(async move {
+            match cache.increment(&key, 1).await {
+                Ok(n) if n > max as i64 => {
+                    return Ok(Response::builder()
+                        .status(StatusCode::TOO_MANY_REQUESTS)
+                        .body(Body::from("too many requests"))
+                        .expect("valid response"));
+                }
+                Ok(1) => {
+                    // 窗口内第一个请求：建 key 并设置 TTL（并发下重复 set 幂等无害）
+                    let _ = cache.set(&key, b"1", Duration::from_secs(ttl)).await;
+                }
+                Ok(_) => {}
+                Err(e) => {
+                    tracing::warn!("rate limit check failed, allowing request: {e}");
+                }
+            }
+            fut.await
+        })
+    }
+}
+
+fn rate_key(service: &str, window_secs: u64) -> String {
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0);
+    let window_start = now / window_secs * window_secs;
+    format!("rl:{service}:{window_start}")
+}

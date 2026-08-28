@@ -1,0 +1,143 @@
+{
+  "@@locale": "ja",
+  "appTitle": "オープントラベル",
+  "@appTitle": {
+    "description": "appTitle"
+  },
+  "tagline": "世界を探索、ワンタップで予約",
+  "@tagline": {
+    "description": "tagline"
+  },
+  "nav.home": "ホーム",
+  "@nav.home": {
+    "description": "nav.home"
+  },
+  "nav.search": "検索",
+  "@nav.search": {
+    "description": "nav.search"
+  },
+  "nav.bookings": "予約",
+  "@nav.bookings": {
+    "description": "nav.bookings"
+  },
+  "nav.profile": "マイページ",
+  "@nav.profile": {
+    "description": "nav.profile"
+  },
+  "home.heroTitle": "世界一周の旅を始めよう",
+  "@home.heroTitle": {
+    "description": "home.heroTitle"
+  },
+  "home.heroSubtitle": "ホテル、航空券、現地体験を予約",
+  "@home.heroSubtitle": {
+    "description": "home.heroSubtitle"
+  },
+  "home.popularDestinations": "人気の目的地",
+  "@home.popularDestinations": {
+    "description": "home.popularDestinations"
+  },
+  "search.placeholder": "目的地、ホテル、航空券を検索",
+  "@search.placeholder": {
+    "description": "search.placeholder"
+  },
+  "search.button": "検索",
+  "@search.button": {
+    "description": "search.button"
+  },
+  "search.results": "検索結果",
+  "@search.results": {
+    "description": "search.results"
+  },
+  "destination.price": "価格",
+  "@destination.price": {
+    "description": "destination.price"
+  },
+  "destination.perNight": "/泊",
+  "@destination.perNight": {
+    "description": "destination.perNight"
+  },
+  "destination.rating": "評価",
+  "@destination.rating": {
+    "description": "destination.rating"
+  },
+  "destination.bookNow": "今すぐ予約",
+  "@destination.bookNow": {
+    "description": "destination.bookNow"
+  },
+  "booking.title": "予約一覧",
+  "@booking.title": {
+    "description": "booking.title"
+  },
+  "booking.date": "日付",
+  "@booking.date": {
+    "description": "booking.date"
+  },
+  "booking.guests": "人数",
+  "@booking.guests": {
+    "description": "booking.guests"
+  },
+  "booking.status.pending": "未払い",
+  "@booking.status.pending": {
+    "description": "booking.status.pending"
+  },
+  "booking.status.paid": "支払い済み",
+  "@booking.status.paid": {
+    "description": "booking.status.paid"
+  },
+  "booking.status.cancelled": "キャンセル済み",
+  "@booking.status.cancelled": {
+    "description": "booking.status.cancelled"
+  },
+  "booking.viewAll": "すべて表示",
+  "@booking.viewAll": {
+    "description": "booking.viewAll"
+  },
+  "profile.title": "マイページ",
+  "@profile.title": {
+    "description": "profile.title"
+  },
+  "profile.login": "ログイン",
+  "@profile.login": {
+    "description": "profile.login"
+  },
+  "profile.register": "登録",
+  "@profile.register": {
+    "description": "profile.register"
+  },
+  "profile.lang": "言語",
+  "@profile.lang": {
+    "description": "profile.lang"
+  },
+  "common.loading": "読み込み中…",
+  "@common.loading": {
+    "description": "common.loading"
+  },
+  "common.error": "エラーが発生しました",
+  "@common.error": {
+    "description": "common.error"
+  },
+  "common.retry": "再試行",
+  "@common.retry": {
+    "description": "common.retry"
+  },
+  "common.cancel": "キャンセル",
+  "@common.cancel": {
+    "description": "common.cancel"
+  },
+  "common.currency": "¥",
+  "@common.currency": {
+    "description": "common.currency"
+  },
+  "common.noData": "データがありません",
+  "@common.noData": {
+    "description": "common.noData"
+  },
+  "common.welcome": "ようこそ",
+  "@common.welcome": {
+    "description": "common.welcome"
+  },
+  "common.success": "成功",
+  "@common.success": {
+    "description": "common.success"
+  }
+}
