@@ -46,27 +46,18 @@
   <text x="480" y="256" text-anchor="middle" class="t-s">TLS एन्क्रिप्शन · सीमाएँ · रूटिंग · प्रमाणीकरण</text>
 
   <!-- e-cat कोर सेवा परत -->
-  <rect x="30" y="304" width="720" height="224" class="panel"/>
+  <rect x="30" y="304" width="720" height="168" class="panel"/>
   <text x="48" y="334" class="t-h">e-cat कोर सेवा परत</text>
   <text x="48" y="354" class="t-s">e-cat Core Services · Rust माइक्रोसर्विस</text>
   <rect x="216" y="372" width="168" height="64" class="box"/>
   <text x="300" y="396" text-anchor="middle" class="t-m">User उपयोगकर्ता</text>
-  <text x="300" y="418" text-anchor="middle" class="t-s">खाता · प्रोफ़ाइल · पसंद</text>
+  <text x="300" y="418" text-anchor="middle" class="t-s">पंजीकरण · लॉगिन · प्रोफ़ाइल</text>
   <rect x="396" y="372" width="168" height="64" class="box"/>
   <text x="480" y="396" text-anchor="middle" class="t-m">Booking आरक्षण</text>
-  <text x="480" y="418" text-anchor="middle" class="t-s">होटल · उड़ान · यात्रा</text>
+  <text x="480" y="418" text-anchor="middle" class="t-s">लोकप्रिय गंतव्य · आकर्षण</text>
   <rect x="576" y="372" width="168" height="64" class="box"/>
-  <text x="660" y="396" text-anchor="middle" class="t-m">Payment भुगतान</text>
-  <text x="660" y="418" text-anchor="middle" class="t-s">WeChat · Alipay · विदेशी</text>
-  <rect x="216" y="452" width="168" height="64" class="box"/>
-  <text x="300" y="476" text-anchor="middle" class="t-m">Review समीक्षाएँ</text>
-  <text x="300" y="498" text-anchor="middle" class="t-s">समीक्षा · रेटिंग · मॉडरेशन</text>
-  <rect x="396" y="452" width="168" height="64" class="box"/>
-  <text x="480" y="476" text-anchor="middle" class="t-m">Search खोज</text>
-  <text x="480" y="498" text-anchor="middle" class="t-s">बहुभाषी · OpenSearch</text>
-  <rect x="576" y="452" width="168" height="64" class="box"/>
-  <text x="660" y="476" text-anchor="middle" class="t-m">I18n बहुभाषी</text>
-  <text x="660" y="498" text-anchor="middle" class="t-s">ARB पैक · 12+ भाषाएँ</text>
+  <text x="660" y="396" text-anchor="middle" class="t-m">Admin एडमिन</text>
+  <text x="660" y="418" text-anchor="middle" class="t-s">एडमिन लॉगिन · कंटेंट CRUD</text>
 
   <!-- डेटा परत -->
   <rect x="30" y="544" width="720" height="96" class="panel"/>
@@ -81,15 +72,18 @@
   <rect x="576" y="564" width="168" height="56" class="box"/>
   <text x="660" y="588" text-anchor="middle" class="t-m">OpenSearch</text>
   <text x="660" y="608" text-anchor="middle" class="t-s">बहुभाषी खोज · एकत्रीकरण</text>
-
-  <!-- e-cat सुरक्षा परत -->
-  <rect x="770" y="80" width="200" height="560" class="panel"/>
-  <text x="786" y="108" class="t-h2">e-cat सुरक्षा परत</text>
-  <text x="786" y="128" class="t-s">Security Middleware</text>
-  <rect x="786" y="140" width="168" height="130" class="box"/>
-  <text x="870" y="172" text-anchor="middle" class="t-m">SecurityLayer</text>
-  <text x="870" y="196" text-anchor="middle" class="t-s">सुरक्षा रोक · फ़िल्टर</text>
-  <text x="870" y="218" text-anchor="middle" class="t-s">रीप्ले रोक · जोखिम नियंत्रण</text>
+  <rect x="216" y="564" width="126" height="56" class="box"/>
+  <text x="279" y="588" text-anchor="middle" class="t-m">MySQL</text>
+  <text x="279" y="608" text-anchor="middle" class="t-s">मास्टर-रिप्लिका</text>
+  <rect x="350" y="564" width="126" height="56" class="box"/>
+  <text x="413" y="588" text-anchor="middle" class="t-m">Redis</text>
+  <text x="413" y="608" text-anchor="middle" class="t-s">कैश · सत्र</text>
+  <rect x="484" y="564" width="126" height="56" class="box"/>
+  <text x="547" y="588" text-anchor="middle" class="t-m">Kafka</text>
+  <text x="547" y="608" text-anchor="middle" class="t-s">ऑडिट लॉग</text>
+  <rect x="618" y="564" width="126" height="56" class="box"/>
+  <text x="681" y="588" text-anchor="middle" class="t-m">OpenSearch</text>
+  <text x="681" y="608" text-anchor="middle" class="t-s">बहुभाषी खोज · एकत्रीकरण</text>
   <rect x="786" y="290" width="168" height="130" class="box"/>
   <text x="870" y="322" text-anchor="middle" class="t-m">JWT प्रमाणीकरण</text>
   <text x="870" y="346" text-anchor="middle" class="t-s">OAuth2 · टोकन सत्यापन</text>
@@ -102,9 +96,9 @@
   <!-- 箭头 -->
   <line x1="390" y1="179" x2="390" y2="189" class="arrow"/>
   <line x1="390" y1="291" x2="390" y2="301" class="arrow"/>
-  <line x1="390" y1="531" x2="390" y2="541" class="arrow"/>
+  <line x1="390" y1="440" x2="390" y2="540" class="arrow"/>
   <line x1="748" y1="240" x2="768" y2="240" class="arrow"/>
-  <line x1="748" y1="484" x2="768" y2="484" class="arrow"/>
+  <line x1="748" y1="452" x2="768" y2="452" class="arrow"/>
 
   <text x="500" y="664" text-anchor="middle" class="t-s">MySQL: travel डीबी, सभी टेबल travel_ प्रीफ़िक्स के साथ (travel_users · travel_orders)</text>
   <text x="988" y="668" text-anchor="end" font-size="12" fill="#8b949e" fill-opacity="0.5" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">https://erik.xyz</text>

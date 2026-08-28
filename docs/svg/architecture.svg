@@ -46,27 +46,18 @@
   <text x="480" y="256" text-anchor="middle" class="t-s">TLS 加密 · 限流防刷 · 路由转发 · 认证鉴权</text>
 
   <!-- e-cat 核心服务层 -->
-  <rect x="30" y="304" width="720" height="224" class="panel"/>
+  <rect x="30" y="304" width="720" height="168" class="panel"/>
   <text x="48" y="334" class="t-h">e-cat 核心服务层</text>
   <text x="48" y="354" class="t-s">e-cat Core Services · Rust 微服务</text>
   <rect x="216" y="372" width="168" height="64" class="box"/>
   <text x="300" y="396" text-anchor="middle" class="t-m">User 用户</text>
-  <text x="300" y="418" text-anchor="middle" class="t-s">账号 · 资料 · 收藏</text>
+  <text x="300" y="418" text-anchor="middle" class="t-s">注册登录 · 个人资料</text>
   <rect x="396" y="372" width="168" height="64" class="box"/>
   <text x="480" y="396" text-anchor="middle" class="t-m">Booking 预订</text>
-  <text x="480" y="418" text-anchor="middle" class="t-s">酒店 · 机票 · 行程</text>
+  <text x="480" y="418" text-anchor="middle" class="t-s">热门目的地 · 景区</text>
   <rect x="576" y="372" width="168" height="64" class="box"/>
-  <text x="660" y="396" text-anchor="middle" class="t-m">Payment 支付</text>
-  <text x="660" y="418" text-anchor="middle" class="t-s">微信 · 支付宝 · 国际</text>
-  <rect x="216" y="452" width="168" height="64" class="box"/>
-  <text x="300" y="476" text-anchor="middle" class="t-m">Review 评价</text>
-  <text x="300" y="498" text-anchor="middle" class="t-s">点评 · 评分 · 审核</text>
-  <rect x="396" y="452" width="168" height="64" class="box"/>
-  <text x="480" y="476" text-anchor="middle" class="t-m">Search 搜索</text>
-  <text x="480" y="498" text-anchor="middle" class="t-s">多语言 · OpenSearch</text>
-  <rect x="576" y="452" width="168" height="64" class="box"/>
-  <text x="660" y="476" text-anchor="middle" class="t-m">I18n 多语言</text>
-  <text x="660" y="498" text-anchor="middle" class="t-s">ARB 语言包 · 12+ 语种</text>
+  <text x="660" y="396" text-anchor="middle" class="t-m">Admin 管理</text>
+  <text x="660" y="418" text-anchor="middle" class="t-s">管理登录 · 内容 CRUD</text>
 
   <!-- 数据层 -->
   <rect x="30" y="544" width="720" height="96" class="panel"/>
@@ -81,15 +72,18 @@
   <rect x="576" y="564" width="168" height="56" class="box"/>
   <text x="660" y="588" text-anchor="middle" class="t-m">OpenSearch</text>
   <text x="660" y="608" text-anchor="middle" class="t-s">多语言搜索 · 聚合</text>
-
-  <!-- e-cat 中间件安全层 -->
-  <rect x="770" y="80" width="200" height="560" class="panel"/>
-  <text x="786" y="108" class="t-h2">e-cat 中间件安全层</text>
-  <text x="786" y="128" class="t-s">Security Middleware</text>
-  <rect x="786" y="140" width="168" height="130" class="box"/>
-  <text x="870" y="172" text-anchor="middle" class="t-m">SecurityLayer</text>
-  <text x="870" y="196" text-anchor="middle" class="t-s">安全拦截 · 请求过滤</text>
-  <text x="870" y="218" text-anchor="middle" class="t-s">防重放 · 风控</text>
+  <rect x="216" y="564" width="126" height="56" class="box"/>
+  <text x="279" y="588" text-anchor="middle" class="t-m">MySQL</text>
+  <text x="279" y="608" text-anchor="middle" class="t-s">主从·读写分离</text>
+  <rect x="350" y="564" width="126" height="56" class="box"/>
+  <text x="413" y="588" text-anchor="middle" class="t-m">Redis</text>
+  <text x="413" y="608" text-anchor="middle" class="t-s">缓存 · 会话</text>
+  <rect x="484" y="564" width="126" height="56" class="box"/>
+  <text x="547" y="588" text-anchor="middle" class="t-m">Kafka</text>
+  <text x="547" y="608" text-anchor="middle" class="t-s">审计日志</text>
+  <rect x="618" y="564" width="126" height="56" class="box"/>
+  <text x="681" y="588" text-anchor="middle" class="t-m">OpenSearch</text>
+  <text x="681" y="608" text-anchor="middle" class="t-s">多语言搜索 · 聚合</text>
   <rect x="786" y="290" width="168" height="130" class="box"/>
   <text x="870" y="322" text-anchor="middle" class="t-m">Auth / JWT 认证</text>
   <text x="870" y="346" text-anchor="middle" class="t-s">OAuth2 · Token 校验</text>
@@ -102,9 +96,9 @@
   <!-- 箭头 -->
   <line x1="390" y1="179" x2="390" y2="189" class="arrow"/>
   <line x1="390" y1="291" x2="390" y2="301" class="arrow"/>
-  <line x1="390" y1="531" x2="390" y2="541" class="arrow"/>
+  <line x1="390" y1="440" x2="390" y2="540" class="arrow"/>
   <line x1="748" y1="240" x2="768" y2="240" class="arrow"/>
-  <line x1="748" y1="484" x2="768" y2="484" class="arrow"/>
+  <line x1="748" y1="452" x2="768" y2="452" class="arrow"/>
 
   <text x="500" y="664" text-anchor="middle" class="t-s">MySQL 数据库：travel 库，所有业务表以 travel_ 前缀命名（travel_users · travel_orders）</text>
   <text x="988" y="668" text-anchor="end" font-size="12" fill="#8b949e" fill-opacity="0.5" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">https://erik.xyz</text>

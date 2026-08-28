@@ -11,7 +11,7 @@ Open Travel 是一个全球旅游平台 monorepo，采用 **e-cat（一只猫）
 | 维度 | 说明 |
 | :--- | :--- |
 | **后端框架** | e-cat（Rust）：HTTP/axum + gRPC/tonic，51 crates 微服务生态 |
-| **多端客户端** | `apps/client/flutter`（iOS / Android / Web / Desktop）、`apps/client/harmonyos`（鸿蒙） |
+| **多端客户端** | `apps/client/flutter`（iOS / Android / Web / Desktop）、`apps/client/harmonyos`（鸿蒙）、`apps/admin`（Flutter Web 管理端） |
 | **数据库** | MySQL（库名 `travel`，表前缀 `travel_`）+ Redis 缓存 + OpenSearch 多语言搜索 |
 | **安全** | ecat-security / ecat-auth（JWT）/ ecat-tls：认证、审计、限流、防注入 |
 | **国际化** | 12+ 语种 ARB 语言包，RTL 支持，OpenSearch 多语言分词 |
@@ -30,7 +30,7 @@ Open Travel 是一个全球旅游平台 monorepo，采用 **e-cat（一只猫）
 
 ```bash
 cd e-cat
-cargo check -p user-service -p booking-service   # 编译检查业务服务
+cargo check -p user-service -p booking-service -p admin-service   # 编译检查业务服务
 
 docker compose -f config/docker-compose.yml up -d   # 启动数据源 + 服务 + 网关
 ```
@@ -41,9 +41,10 @@ docker compose -f config/docker-compose.yml up -d   # 启动数据源 + 服务 +
 
 | 服务 | 端口 | 说明 |
 |------|------|------|
-| user-service | 8001 | 用户资料 / 注册 |
-| booking-service | 8002 | 热门目的地日期 |
-| Nginx 网关 | 8082→80 | 按 `/api/user/`、`/api/booking/` 前缀分流 |
+| user-service | 8001 | 用户注册 / 登录 / 资料 |
+| booking-service | 8002 | 热门目的地日期 + 景区列表/详情 |
+| admin-service | 8003 | 管理端：登录 + 目的地/景区 CRUD |
+| Nginx 网关 | 8082→80 | 按 `/api/user/`、`/api/booking/`、`/api/admin/` 前缀分流 |
 | MySQL | 3308→3306 | 数据源（宿主端口冲突，临时映射） |
 | Redis | 6381→6379 | 缓存 / 限流 |
 | OpenSearch | 9201→9200 | 多语言搜索 |
@@ -56,6 +57,15 @@ docker compose -f config/docker-compose.yml up -d   # 启动数据源 + 服务 +
 curl http://localhost:8082/health
 curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/dates?region_id=1"
 # {"code":0,"message":"ok","data":[{"region_id":1,"name_en":"placeholder-destination"}]}
+
+# 管理端登录（admin@travel.local / Admin@123 为开发环境默认账号，仅本地使用）
+curl -X POST http://localhost:8082/api/admin/login -H "Content-Type: application/json" \
+  -H "X-Api-Version: v1" -d '{"email":"admin@travel.local","password":"Admin@123"}'
+# {"code":0,"message":"ok","data":{"token":"<jwt>"}}
+
+# 景区列表（按目的地查询，多语种字段按 lang 返回）
+curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/attractions?destination_id=1"
+# {"code":0,"message":"ok","data":[{...}]}
 ```
 
 ### 脚本

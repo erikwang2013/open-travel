@@ -51,7 +51,7 @@
 
   <rect x="60" y="410" width="520" height="80" class="box"/>
   <text x="76" y="438" class="t-m">インフラストラクチャ</text>
-  <text x="76" y="462" class="t-s">HTTP axum · gRPC tonic · MySQL · Redis · OpenSearch · Kafka · Consul</text>
+  <text x="76" y="462" class="t-s">HTTP axum · gRPC tonic · MySQL · Redis · OpenSearch · Kafka</text>
   <text x="76" y="480" class="t-s">セキュリティコンポーネント：ecat-security・ecat-auth・ecat-tls</text>
 
   <!-- 右：数据层 -->
@@ -76,7 +76,7 @@
   <circle cx="652" cy="432" r="4" class="dot"/>
   <text x="664" y="436" class="t-s">監視アラート・ログ収集</text>
   <circle cx="652" cy="460" r="4" class="dot"/>
-  <text x="664" y="464" class="t-s">Consul サービス登録と発見</text>
+  <text x="664" y="464" class="t-s">Nginx API ゲートウェイ サービス登録と発見</text>
 
   <text x="500" y="558" text-anchor="middle" class="t-s">51 crates・12+ 言語・マルチ端末対応（iOS / Android / Web / Desktop / HarmonyOS）</text>
   <text x="988" y="588" text-anchor="end" font-size="12" fill="#8b949e" fill-opacity="0.5" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">https://erik.xyz</text>

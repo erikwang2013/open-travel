@@ -11,7 +11,7 @@ Open Travel — это monorepo глобальной туристической 
 | Измерение | Описание |
 | :--- | :--- |
 | **Бэкенд-фреймворк** | e-cat (Rust): HTTP/axum + gRPC/tonic, экосистема из 51 микросервисного крейта |
-| **Мультиплатформенные клиенты** | `apps/flutter` (iOS / Android / Web / Desktop), `apps/harmonyos` (HarmonyOS) |
+| **Мультиплатформенные клиенты** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS) |
 | **База данных** | MySQL (БД `travel`, префикс таблиц `travel_`) + кэш Redis + многоязычный поиск OpenSearch |
 | **Безопасность** | ecat-security / ecat-auth (JWT) / ecat-tls: аутентификация, аудит, ограничение запросов, защита от инъекций |
 | **Интернационализация** | 12+ языков в ARB-пакетах, поддержка RTL, многоязычная сегментация OpenSearch |
@@ -69,6 +69,25 @@ open-travel/
 - Сопутствующие хранилища: Redis (сессии / кэш популярного), OpenSearch (индексы многоязычного поиска)
 
 > Подробное техническое планирование: [docs/travel-project-planning.md](../../travel-project-planning.md).
+
+## Быстрый старт
+
+```bash
+cd e-cat
+cargo check -p user-service -p booking-service -p admin-service   # проверка компиляции бизнес-сервисов
+```
+
+| Сервис | Порт | Описание |
+|---|---|---|
+| user-service | 8001 | Регистрация / вход / профиль пользователя |
+| booking-service | 8002 | Даты популярных направлений + список / детали достопримечательностей |
+| admin-service | 8003 | Админка: вход + CRUD направлений / достопримечательностей |
+| Nginx-шлюз | 8082→80 | Маршрутизация по префиксам `/api/user/`, `/api/booking/`, `/api/admin/` |
+| MySQL | 3308→3306 | Источник данных |
+| Redis | 6381→6379 | Кэш / ограничение скорости |
+| OpenSearch | 9201→9200 | Многоязычный поиск |
+
+Админ-консоль Flutter Web — в `apps/admin/`; учётная запись администратора по умолчанию для разработки: `admin@travel.local` / `Admin@123` (только локально).
 
 ---
 

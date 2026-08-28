@@ -68,6 +68,6 @@
   <!-- 数据库标注 -->
   <rect x="40" y="668" width="920" height="68" class="panel"/>
   <text x="64" y="696" class="t-h">ডেটাবেস Database — travel</text>
-  <text x="64" y="720" class="t-db">টেবিল প্রিফিক্স travel_: travel_users · travel_orders · travel_reviews · travel_hotels · travel_flights</text>
+  <text x="64" y="720" class="t-db">টেবিল প্রিফিক্স travel_: travel_users · travel_orders · travel_reviews · travel_destinations · travel_attractions</text>
   <text x="988" y="748" text-anchor="end" font-size="12" fill="#8b949e" fill-opacity="0.5" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">https://erik.xyz</text>
 </svg>

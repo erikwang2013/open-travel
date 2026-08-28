@@ -51,7 +51,7 @@
 
   <rect x="60" y="410" width="520" height="80" class="box"/>
   <text x="76" y="438" class="t-m">इन्फ्रास्ट्रक्चर</text>
-  <text x="76" y="462" class="t-s">HTTP axum · gRPC tonic · MySQL · Redis · OpenSearch · Kafka · Consul</text>
+  <text x="76" y="462" class="t-s">HTTP axum · gRPC tonic · MySQL · Redis · OpenSearch · Kafka</text>
   <text x="76" y="480" class="t-s">सुरक्षा: ecat-security · ecat-auth · ecat-tls</text>
 
   <!-- 右：डेटा परत -->
@@ -76,7 +76,7 @@
   <circle cx="652" cy="432" r="4" class="dot"/>
   <text x="664" y="436" class="t-s">मॉनिटरिंग · लॉग संग्रह</text>
   <circle cx="652" cy="460" r="4" class="dot"/>
-  <text x="664" y="464" class="t-s">Consul सेवा रजिस्ट्री</text>
+  <text x="664" y="464" class="t-s">Nginx API गेटवे सेवा रजिस्ट्री</text>
 
   <text x="500" y="558" text-anchor="middle" class="t-s">51 crates · 12+ भाषाएँ · मल्टी-प्लेटफ़ॉर्म (iOS / Android / Web / Desktop / HarmonyOS)</text>
   <text x="988" y="588" text-anchor="end" font-size="12" fill="#8b949e" fill-opacity="0.5" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">https://erik.xyz</text>

@@ -13,7 +13,7 @@ Open Travel एक वैश्विक यात्रा प्लेटफ�
 | आयाम | विवरण |
 | :--- | :--- |
 | **बैकएंड फ्रेमवर्क** | e-cat (Rust): HTTP/axum + gRPC/tonic, 51 crates माइक्रोसर्विस इकोसिस्टम |
-| **मल्टी-प्लेटफ़ॉर्म क्लाइंट** | `apps/flutter` (iOS / Android / Web / Desktop), `apps/harmonyos` (HarmonyOS) |
+| **मल्टी-प्लेटफ़ॉर्म क्लाइंट** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS) |
 | **डेटाबेस** | MySQL (डेटाबेस `travel`, टेबल प्रीफ़िक्स `travel_`) + Redis कैश + OpenSearch बहुभाषी खोज |
 | **सुरक्षा** | ecat-security / ecat-auth (JWT) / ecat-tls: प्रमाणीकरण, ऑडिट, रेट लिमिटिंग, इंजेक्शन रोकथाम |
 | **अंतर्राष्ट्रीयकरण** | 12+ भाषाओं के ARB भाषा पैक, RTL समर्थन, OpenSearch बहुभाषी टोकनाइज़ेशन |
@@ -71,6 +71,25 @@ open-travel/
 - सहायक स्टोरेज: Redis (सत्र / लोकप्रिय कैश), OpenSearch (बहुभाषी खोज इंडेक्स)
 
 > विस्तृत तकनीकी योजना के लिए देखें [docs/travel-project-planning.md](../../travel-project-planning.md)।
+
+## त्वरित आरंभ
+
+```bash
+cd e-cat
+cargo check -p user-service -p booking-service -p admin-service   # व्यावसायिक सेवाओं की कंपाइल जाँच
+```
+
+| सेवा | पोर्ट | विवरण |
+|---|---|---|
+| user-service | 8001 | उपयोगकर्ता पंजीकरण / लॉगिन / प्रोफ़ाइल |
+| booking-service | 8002 | लोकप्रिय गंतव्य तिथियाँ + आकर्षण सूची / विवरण |
+| admin-service | 8003 | व्यवस्थापन: लॉगिन + गंतव्य / आकर्षण CRUD |
+| Nginx गेटवे | 8082→80 | `/api/user/`, `/api/booking/`, `/api/admin/` प्रीफिक्स रूटिंग |
+| MySQL | 3308→3306 | डेटा स्रोत |
+| Redis | 6381→6379 | कैश / रेट लिमिटिंग |
+| OpenSearch | 9201→9200 | बहुभाषी खोज |
+
+व्यवस्थापन Flutter Web ऐप `apps/admin/` में है; विकास के लिए डिफ़ॉल्ट व्यवस्थापक खाता `admin@travel.local` / `Admin@123` है (केवल स्थानीय उपयोग)।
 
 ---
 

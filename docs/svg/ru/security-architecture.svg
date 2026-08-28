@@ -62,7 +62,7 @@
   <text x="384" y="367" class="t-h">Журналы аудита</text>
   <text x="366" y="388" class="t-eng">Audit Logs</text>
   <line x1="366" y1="400" x2="634" y2="400" class="line"/>
-  <text x="500" y="430" text-anchor="middle" class="t-kw">Kafka → ClickHouse</text>
+  <text x="500" y="430" text-anchor="middle" class="t-kw">Kafka → travel-audit</text>
   <text x="500" y="462" text-anchor="middle" class="t-s">Аудит действий · полный след</text>
   <text x="500" y="484" text-anchor="middle" class="t-s">Алерты · трассировка</text>
 

@@ -11,7 +11,7 @@ Open Travel is a global travel platform monorepo built on **e-cat (a cat)** — 
 | Dimension | Description |
 | :--- | :--- |
 | **Backend framework** | e-cat (Rust): HTTP/axum + gRPC/tonic, a 51-crate microservice ecosystem |
-| **Multi-platform clients** | `apps/flutter` (iOS / Android / Web / Desktop), `apps/harmonyos` (HarmonyOS) |
+| **Multi-platform clients** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS) |
 | **Database** | MySQL (database `travel`, table prefix `travel_`) + Redis cache + OpenSearch multilingual search |
 | **Security** | ecat-security / ecat-auth (JWT) / ecat-tls: authentication, audit, rate limiting, injection prevention |
 | **Internationalization** | 12+ language ARB locale packs, RTL support, OpenSearch multilingual tokenization |
@@ -69,6 +69,25 @@ open-travel/
 - Companion storage: Redis (sessions / hot caches), OpenSearch (multilingual search index)
 
 > See [docs/travel-project-planning.md](../../travel-project-planning.md) for detailed technical planning.
+
+## Quick Start
+
+```bash
+cd e-cat
+cargo check -p user-service -p booking-service -p admin-service   # compile check for business services
+```
+
+| Service | Port | Description |
+|---|---|---|
+| user-service | 8001 | User registration / login / profile |
+| booking-service | 8002 | Popular destination dates + attraction list / detail |
+| admin-service | 8003 | Admin: login + destination / attraction CRUD |
+| Nginx gateway | 8082→80 | Routes `/api/user/`, `/api/booking/`, `/api/admin/` prefixes |
+| MySQL | 3308→3306 | Data source |
+| Redis | 6381→6379 | Cache / rate limiting |
+| OpenSearch | 9201→9200 | Multilingual search |
+
+The admin Flutter Web console lives in `apps/admin/`; the development default admin account is `admin@travel.local` / `Admin@123` (local use only).
 
 ---
 

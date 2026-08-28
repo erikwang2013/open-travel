@@ -46,27 +46,18 @@
   <text x="480" y="256" text-anchor="middle" class="t-s">TLS 암호화·요청 제한·라우팅·인증</text>
 
   <!-- e-cat 핵심 서비스 계층 -->
-  <rect x="30" y="304" width="720" height="224" class="panel"/>
+  <rect x="30" y="304" width="720" height="168" class="panel"/>
   <text x="48" y="334" class="t-h">e-cat 핵심 서비스 계층</text>
   <text x="48" y="354" class="t-s">e-cat Core Services · Rust 마이크로서비스</text>
   <rect x="216" y="372" width="168" height="64" class="box"/>
   <text x="300" y="396" text-anchor="middle" class="t-m">User 사용자</text>
-  <text x="300" y="418" text-anchor="middle" class="t-s">계정·프로필·즐겨찾기</text>
+  <text x="300" y="418" text-anchor="middle" class="t-s">가입 · 로그인 · 프로필</text>
   <rect x="396" y="372" width="168" height="64" class="box"/>
   <text x="480" y="396" text-anchor="middle" class="t-m">Booking 예약</text>
-  <text x="480" y="418" text-anchor="middle" class="t-s">호텔·항공권·일정</text>
+  <text x="480" y="418" text-anchor="middle" class="t-s">인기 목적지 · 명소</text>
   <rect x="576" y="372" width="168" height="64" class="box"/>
-  <text x="660" y="396" text-anchor="middle" class="t-m">Payment 결제</text>
-  <text x="660" y="418" text-anchor="middle" class="t-s">WeChat Pay·Alipay·국제</text>
-  <rect x="216" y="452" width="168" height="64" class="box"/>
-  <text x="300" y="476" text-anchor="middle" class="t-m">Review 리뷰</text>
-  <text x="300" y="498" text-anchor="middle" class="t-s">리뷰·평점·검토</text>
-  <rect x="396" y="452" width="168" height="64" class="box"/>
-  <text x="480" y="476" text-anchor="middle" class="t-m">Search 검색</text>
-  <text x="480" y="498" text-anchor="middle" class="t-s">다국어·OpenSearch</text>
-  <rect x="576" y="452" width="168" height="64" class="box"/>
-  <text x="660" y="476" text-anchor="middle" class="t-m">I18n 다국어</text>
-  <text x="660" y="498" text-anchor="middle" class="t-s">ARB 언어팩·12+ 언어</text>
+  <text x="660" y="396" text-anchor="middle" class="t-m">Admin 관리</text>
+  <text x="660" y="418" text-anchor="middle" class="t-s">관리자 로그인 · 콘텐츠 CRUD</text>
 
   <!-- 데이터 계층 -->
   <rect x="30" y="544" width="720" height="96" class="panel"/>
@@ -81,15 +72,18 @@
   <rect x="576" y="564" width="168" height="56" class="box"/>
   <text x="660" y="588" text-anchor="middle" class="t-m">OpenSearch</text>
   <text x="660" y="608" text-anchor="middle" class="t-s">다국어 검색·집계</text>
-
-  <!-- e-cat 미들웨어 보안 계층 -->
-  <rect x="770" y="80" width="200" height="560" class="panel"/>
-  <text x="786" y="108" class="t-h2">e-cat 미들웨어 보안 계층</text>
-  <text x="786" y="128" class="t-s">Security Middleware</text>
-  <rect x="786" y="140" width="168" height="130" class="box"/>
-  <text x="870" y="172" text-anchor="middle" class="t-m">SecurityLayer</text>
-  <text x="870" y="196" text-anchor="middle" class="t-s">보안 차단·요청 필터링</text>
-  <text x="870" y="218" text-anchor="middle" class="t-s">재전송 방지·리스크 관리</text>
+  <rect x="216" y="564" width="126" height="56" class="box"/>
+  <text x="279" y="588" text-anchor="middle" class="t-m">MySQL</text>
+  <text x="279" y="608" text-anchor="middle" class="t-s">마스터-레플리카</text>
+  <rect x="350" y="564" width="126" height="56" class="box"/>
+  <text x="413" y="588" text-anchor="middle" class="t-m">Redis</text>
+  <text x="413" y="608" text-anchor="middle" class="t-s">キャッシュ・세션</text>
+  <rect x="484" y="564" width="126" height="56" class="box"/>
+  <text x="547" y="588" text-anchor="middle" class="t-m">Kafka</text>
+  <text x="547" y="608" text-anchor="middle" class="t-s">감사 로그</text>
+  <rect x="618" y="564" width="126" height="56" class="box"/>
+  <text x="681" y="588" text-anchor="middle" class="t-m">OpenSearch</text>
+  <text x="681" y="608" text-anchor="middle" class="t-s">다국어 검색·집계</text>
   <rect x="786" y="290" width="168" height="130" class="box"/>
   <text x="870" y="322" text-anchor="middle" class="t-m">Auth / JWT 인증</text>
   <text x="870" y="346" text-anchor="middle" class="t-s">OAuth2·토큰 검증</text>
@@ -102,9 +96,9 @@
   <!-- 箭头 -->
   <line x1="390" y1="179" x2="390" y2="189" class="arrow"/>
   <line x1="390" y1="291" x2="390" y2="301" class="arrow"/>
-  <line x1="390" y1="531" x2="390" y2="541" class="arrow"/>
+  <line x1="390" y1="440" x2="390" y2="540" class="arrow"/>
   <line x1="748" y1="240" x2="768" y2="240" class="arrow"/>
-  <line x1="748" y1="484" x2="768" y2="484" class="arrow"/>
+  <line x1="748" y1="452" x2="768" y2="452" class="arrow"/>
 
   <text x="500" y="664" text-anchor="middle" class="t-s">MySQL 데이터베이스: travel, 모든 업무 테이블은 travel_ 접두사로 명명（travel_users · travel_orders）</text>
   <text x="988" y="668" text-anchor="end" font-size="12" fill="#8b949e" fill-opacity="0.5" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">https://erik.xyz</text>

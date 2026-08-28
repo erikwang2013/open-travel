@@ -11,7 +11,7 @@ Open Travel は、[go-kratos/kratos](https://github.com/go-kratos/kratos) v3 に
 | 項目 | 説明 |
 | :--- | :--- |
 | **バックエンドフレームワーク** | e-cat（Rust）：HTTP/axum + gRPC/tonic、51 crates のマイクロサービスエコシステム |
-| **マルチプラットフォームクライアント** | `apps/flutter`（iOS / Android / Web / Desktop）、`apps/harmonyos`（HarmonyOS） |
+| **マルチプラットフォームクライアント** | `apps/client/flutter`（iOS / Android / Web / Desktop）、`apps/client/harmonyos`（HarmonyOS） |
 | **データベース** | MySQL（DB 名 `travel`、テーブルプレフィックス `travel_`）+ Redis キャッシュ + OpenSearch 多言語検索 |
 | **セキュリティ** | ecat-security / ecat-auth（JWT）/ ecat-tls：認証、監査、レート制限、インジェクション対策 |
 | **国際化** | 12+ 言語の ARB ロケールパック、RTL サポート、OpenSearch 多言語トークン化 |
@@ -69,6 +69,25 @@ open-travel/
 - 併用ストレージ：Redis（セッション / 人気キャッシュ）、OpenSearch（多言語検索インデックス）
 
 > 詳細な技術計画は [docs/travel-project-planning.md](../../travel-project-planning.md) を参照してください。
+
+## クイックスタート
+
+```bash
+cd e-cat
+cargo check -p user-service -p booking-service -p admin-service   # 業務サービスのコンパイルチェック
+```
+
+| サービス | ポート | 説明 |
+|---|---|---|
+| user-service | 8001 | ユーザー登録 / ログイン / プロフィール |
+| booking-service | 8002 | 人気目的地の日付 + 観光スポット一覧 / 詳細 |
+| admin-service | 8003 | 管理：ログイン + 目的地 / 観光スポット CRUD |
+| Nginx ゲートウェイ | 8082→80 | `/api/user/`、`/api/booking/`、`/api/admin/` プレフィックスで振り分け |
+| MySQL | 3308→3306 | データソース |
+| Redis | 6381→6379 | キャッシュ / レート制限 |
+| OpenSearch | 9201→9200 | 多言語検索 |
+
+管理端 Flutter Web は `apps/admin/`、開発環境のデフォルト管理者アカウントは `admin@travel.local` / `Admin@123`（ローカルのみ）。
 
 ---
 

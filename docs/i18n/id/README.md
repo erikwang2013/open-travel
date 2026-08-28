@@ -11,7 +11,7 @@ Open Travel adalah monorepo platform wisata global yang menggunakan **e-cat (see
 | Aspek | Deskripsi |
 | :--- | :--- |
 | **Backend** | e-cat (Rust): HTTP/axum + gRPC/tonic, ekosistem mikroservis 51 crates |
-| **Klien multi-platform** | `apps/flutter` (iOS / Android / Web / Desktop), `apps/harmonyos` (HarmonyOS) |
+| **Klien multi-platform** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS) |
 | **Database** | MySQL (database `travel`, prefiks tabel `travel_`) + Redis cache + OpenSearch pencarian multibahasa |
 | **Keamanan** | ecat-security / ecat-auth (JWT) / ecat-tls: autentikasi, audit, rate limiting, proteksi injeksi |
 | **Internasionalisasi** | Paket bahasa ARB 12+ bahasa, dukungan RTL, tokenisasi multibahasa OpenSearch |
@@ -69,6 +69,25 @@ open-travel/
 - Penyimpanan pendukung: Redis (sesi / cache populer), OpenSearch (indeks pencarian multibahasa)
 
 > Lihat perencanaan teknis terperinci di [docs/travel-project-planning.md](../../travel-project-planning.md).
+
+## Mulai Cepat
+
+```bash
+cd e-cat
+cargo check -p user-service -p booking-service -p admin-service   # pemeriksaan kompilasi layanan bisnis
+```
+
+| Layanan | Port | Deskripsi |
+|---|---|---|
+| user-service | 8001 | Pendaftaran / login / profil pengguna |
+| booking-service | 8002 | Tanggal destinasi populer + daftar / detail atraksi |
+| admin-service | 8003 | Admin: login + CRUD destinasi / atraksi |
+| Gateway Nginx | 8082→80 | Routing prefiks `/api/user/`, `/api/booking/`, `/api/admin/` |
+| MySQL | 3308→3306 | Sumber data |
+| Redis | 6381→6379 | Cache / pembatasan kecepatan |
+| OpenSearch | 9201→9200 | Pencarian multibahasa |
+
+Konsol admin Flutter Web ada di `apps/admin/`; akun admin default pengembangan adalah `admin@travel.local` / `Admin@123` (hanya untuk penggunaan lokal).
 
 ---
 

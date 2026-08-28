@@ -11,7 +11,7 @@ Open Travel একটি বৈশ্বিক ভ্রমণ প্ল্য�
 | মাত্রা | বিবরণ |
 | :--- | :--- |
 | **ব্যাকএন্ড ফ্রেমওয়ার্ক** | e-cat (Rust): HTTP/axum + gRPC/tonic, 51 crates মাইক্রোসার্ভিস ইকোসিস্টেম |
-| **মাল্টি-প্ল্যাটফর্ম ক্লায়েন্ট** | `apps/flutter` (iOS / Android / Web / Desktop), `apps/harmonyos` (HarmonyOS) |
+| **মাল্টি-প্ল্যাটফর্ম ক্লায়েন্ট** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS) |
 | **ডেটাবেস** | MySQL (ডেটাবেস `travel`, টেবিল প্রিফিক্স `travel_`) + Redis ক্যাশ + OpenSearch বহুভাষিক অনুসন্ধান |
 | **নিরাপত্তা** | ecat-security / ecat-auth (JWT) / ecat-tls: অথেনটিকেশন, অডিট, রেট লিমিটিং, ইনজেকশন সুরক্ষা |
 | **আন্তর্জাতিককরণ** | 12+ ভাষার ARB ভাষা প্যাক, RTL সাপোর্ট, OpenSearch বহুভাষিক টোকেনাইজেশন |
@@ -69,6 +69,25 @@ open-travel/
 - সহযোগী স্টোরেজ: Redis (সেশন / জনপ্রিয় ক্যাশ), OpenSearch (বহুভাষিক সার্চ ইনডেক্স)
 
 > বিস্তারিত প্রযুক্তিগত পরিকল্পনা দেখুন [docs/travel-project-planning.md](../../travel-project-planning.md)।
+
+## দ্রুত শুরু
+
+```bash
+cd e-cat
+cargo check -p user-service -p booking-service -p admin-service   # বিজনেস সার্ভিসের কম্পাইল চেক
+```
+
+| সার্ভিস | পোর্ট | বিবরণ |
+|---|---|---|
+| user-service | 8001 | ইউজার নিবন্ধন / লগইন / প্রোফাইল |
+| booking-service | 8002 | জনপ্রিয় গন্তব্যের তারিখ + আকর্ষণ তালিকা / বিস্তারিত |
+| admin-service | 8003 | অ্যাডমিন: লগইন + গন্তব্য / আকর্ষণ CRUD |
+| Nginx গেটওয়ে | 8082→80 | `/api/user/`, `/api/booking/`, `/api/admin/` প্রিফিক্স রাউটিং |
+| MySQL | 3308→3306 | ডেটা সোর্স |
+| Redis | 6381→6379 | ক্যাশ / রেট লিমিটিং |
+| OpenSearch | 9201→9200 | বহুভাষিক অনুসন্ধান |
+
+অ্যাডমিন Flutter Web অ্যাপ `apps/admin/`-এ রয়েছে; ডেভেলপমেন্টের ডিফল্ট অ্যাডমিন অ্যাকাউন্ট `admin@travel.local` / `Admin@123` (শুধুমাত্র লোকাল ব্যবহার)।
 
 ---
 

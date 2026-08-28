@@ -11,7 +11,7 @@ Open Travel est un monorepo de plateforme de voyage mondiale, construit sur **e-
 | Dimension | Description |
 | :--- | :--- |
 | **Framework backend** | e-cat (Rust) : HTTP/axum + gRPC/tonic, écosystème de 51 crates de microservices |
-| **Clients multiplateformes** | `apps/flutter` (iOS / Android / Web / Desktop), `apps/harmonyos` (HarmonyOS) |
+| **Clients multiplateformes** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS) |
 | **Base de données** | MySQL (base `travel`, préfixe des tables `travel_`) + cache Redis + recherche multilingue OpenSearch |
 | **Sécurité** | ecat-security / ecat-auth (JWT) / ecat-tls : authentification, audit, limitation de débit, protection contre les injections |
 | **Internationalisation** | 12+ langues en packs ARB, prise en charge RTL, tokenisation multilingue OpenSearch |
@@ -69,6 +69,25 @@ open-travel/
 - Stockages associés : Redis (sessions / cache des contenus populaires), OpenSearch (index de recherche multilingue)
 
 > Planification technique détaillée : [docs/travel-project-planning.md](../../travel-project-planning.md).
+
+## Démarrage rapide
+
+```bash
+cd e-cat
+cargo check -p user-service -p booking-service -p admin-service   # vérification de compilation des services métier
+```
+
+| Service | Port | Description |
+|---|---|---|
+| user-service | 8001 | Inscription / connexion / profil utilisateur |
+| booking-service | 8002 | Dates des destinations populaires + liste / détail des attractions |
+| admin-service | 8003 | Admin : connexion + CRUD destinations / attractions |
+| Passerelle Nginx | 8082→80 | Routage par préfixe `/api/user/`, `/api/booking/`, `/api/admin/` |
+| MySQL | 3308→3306 | Source de données |
+| Redis | 6381→6379 | Cache / limitation de débit |
+| OpenSearch | 9201→9200 | Recherche multilingue |
+
+La console d'administration Flutter Web se trouve dans `apps/admin/` ; le compte admin par défaut pour le développement est `admin@travel.local` / `Admin@123` (usage local uniquement).
 
 ---
 

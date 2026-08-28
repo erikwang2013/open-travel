@@ -11,7 +11,7 @@ Open Travel은 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3를 벤
 | 항목 | 설명 |
 | :--- | :--- |
 | **백엔드 프레임워크** | e-cat(Rust): HTTP/axum + gRPC/tonic, 51 crates 마이크로서비스 생태계 |
-| **멀티 플랫폼 클라이언트** | `apps/flutter`(iOS / Android / Web / Desktop), `apps/harmonyos`(HarmonyOS) |
+| **멀티 플랫폼 클라이언트** | `apps/client/flutter`(iOS / Android / Web / Desktop), `apps/client/harmonyos`(HarmonyOS) |
 | **데이터베이스** | MySQL(DB명 `travel`, 테이블 접두사 `travel_`) + Redis 캐시 + OpenSearch 다국어 검색 |
 | **보안** | ecat-security / ecat-auth(JWT) / ecat-tls: 인증, 감사, 속도 제한, 주입 방지 |
 | **국제화** | 12+ 언어 ARB 로케일 팩, RTL 지원, OpenSearch 다국어 토큰화 |
@@ -69,6 +69,25 @@ open-travel/
 - 보조 스토리지: Redis(세션 / 인기 캐시), OpenSearch(다국어 검색 인덱스)
 
 > 자세한 기술 계획은 [docs/travel-project-planning.md](../../travel-project-planning.md)를 참조하세요.
+
+## 빠른 시작
+
+```bash
+cd e-cat
+cargo check -p user-service -p booking-service -p admin-service   # 비즈니스 서비스 컴파일 확인
+```
+
+| 서비스 | 포트 | 설명 |
+|---|---|---|
+| user-service | 8001 | 사용자 가입 / 로그인 / 프로필 |
+| booking-service | 8002 | 인기 목적지 날짜 + 관광지 목록 / 상세 |
+| admin-service | 8003 | 관리자: 로그인 + 목적지 / 관광지 CRUD |
+| Nginx 게이트웨이 | 8082→80 | `/api/user/`, `/api/booking/`, `/api/admin/` 프리픽스 라우팅 |
+| MySQL | 3308→3306 | 데이터 소스 |
+| Redis | 6381→6379 | 캐시 / 속도 제한 |
+| OpenSearch | 9201→9200 | 다국어 검색 |
+
+관리자 Flutter Web은 `apps/admin/`에 있으며, 개발 환경 기본 관리자 계정은 `admin@travel.local` / `Admin@123`(로컬 전용)입니다.
 
 ---
 

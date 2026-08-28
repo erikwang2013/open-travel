@@ -11,7 +11,7 @@ Open Travel هو مستودع مونوريبو لمنصة سفر عالمية، 
 | البعد | الوصف |
 | :--- | :--- |
 | **إطار العمل الخلفي** | e-cat (Rust): HTTP/axum + gRPC/tonic، نظام ميكروسيرفيس من 51 crate |
-| **العملاء متعددو المنصات** | `apps/flutter` (iOS / Android / Web / Desktop)، `apps/harmonyos` (HarmonyOS) |
+| **العملاء متعددو المنصات** | `apps/client/flutter` (iOS / Android / Web / Desktop)، `apps/client/harmonyos` (HarmonyOS) |
 | **قاعدة البيانات** | MySQL (قاعدة بيانات `travel`، بادئة الجداول `travel_`) + Redis للتخزين المؤقت + OpenSearch للبحث متعدد اللغات |
 | **الأمان** | ecat-security / ecat-auth (JWT) / ecat-tls: مصادقة، تدقيق، تحديد معدل، حماية من الحقن |
 | **التدويل** | حزم لغات ARB لأكثر من 12 لغة، دعم RTL، تجزئة متعددة اللغات في OpenSearch |
@@ -69,6 +69,25 @@ open-travel/
 - التخزين المرافق: Redis (الجلسات / التخزين المؤقت للشائع)، OpenSearch (فهرس البحث متعدد اللغات)
 
 > التخطيط الفني التفصيلي في [docs/travel-project-planning.md](../../travel-project-planning.md).
+
+## بدء سريع
+
+```bash
+cd e-cat
+cargo check -p user-service -p booking-service -p admin-service   # التحقق من تجميع خدمات الأعمال
+```
+
+| الخدمة | المنفذ | الوصف |
+|---|---|---|
+| user-service | 8001 | تسجيل / دخول / ملف المستخدم |
+| booking-service | 8002 | تواريخ الوجهات الشائعة + قائمة / تفاصيل المعالم |
+| admin-service | 8003 | الإدارة: تسجيل الدخول + إدارة الوجهات / المعالم |
+| بوابة Nginx | 8082→80 | توجيه حسب البادئات `/api/user/` و`/api/booking/` و`/api/admin/` |
+| MySQL | 3308→3306 | مصدر البيانات |
+| Redis | 6381→6379 | التخزين المؤقت / الحد من المعدل |
+| OpenSearch | 9201→9200 | البحث متعدد اللغات |
+
+تطبيق الإدارة Flutter Web موجود في `apps/admin/`؛ حساب المدير الافتراضي للتطوير هو `admin@travel.local` / `Admin@123` (للاستخدام المحلي فقط).
 
 ---
 

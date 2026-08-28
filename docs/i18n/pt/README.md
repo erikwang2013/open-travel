@@ -13,7 +13,7 @@ Open Travel é um monorepo de plataforma global de viagens que usa **e-cat (um g
 | Dimensão | Descrição |
 | :--- | :--- |
 | **Framework de backend** | e-cat (Rust): HTTP/axum + gRPC/tonic, ecossistema de microsserviços com 51 crates |
-| **Clientes multiplataforma** | `apps/flutter` (iOS / Android / Web / Desktop), `apps/harmonyos` (HarmonyOS) |
+| **Clientes multiplataforma** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS) |
 | **Banco de dados** | MySQL (banco `travel`, prefixo de tabelas `travel_`) + cache Redis + busca multilíngue OpenSearch |
 | **Segurança** | ecat-security / ecat-auth (JWT) / ecat-tls: autenticação, auditoria, limitação de taxa, prevenção de injeção |
 | **Internacionalização** | Pacotes de idiomas ARB em 12+ idiomas, suporte a RTL, segmentação multilíngue do OpenSearch |
@@ -71,6 +71,25 @@ open-travel/
 - Armazenamento auxiliar: Redis (sessões / cache de populares), OpenSearch (índice de busca multilíngue)
 
 > Para o planejamento técnico detalhado, consulte [docs/travel-project-planning.md](../../travel-project-planning.md).
+
+## Início rápido
+
+```bash
+cd e-cat
+cargo check -p user-service -p booking-service -p admin-service   # verificação de compilação dos serviços de negócio
+```
+
+| Serviço | Porta | Descrição |
+|---|---|---|
+| user-service | 8001 | Registro / login / perfil do usuário |
+| booking-service | 8002 | Datas de destinos populares + lista / detalhe de atrações |
+| admin-service | 8003 | Admin: login + CRUD de destinos / atrações |
+| Gateway Nginx | 8082→80 | Roteamento por prefixos `/api/user/`, `/api/booking/`, `/api/admin/` |
+| MySQL | 3308→3306 | Fonte de dados |
+| Redis | 6381→6379 | Cache / limitação de taxa |
+| OpenSearch | 9201→9200 | Busca multilíngue |
+
+O console administrativo Flutter Web fica em `apps/admin/`; a conta de administrador padrão de desenvolvimento é `admin@travel.local` / `Admin@123` (apenas uso local).
 
 ---
 

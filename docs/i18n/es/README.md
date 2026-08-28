@@ -13,7 +13,7 @@ Open Travel es un monorepo de una plataforma global de viajes que utiliza **e-ca
 | Dimensión | Descripción |
 | :--- | :--- |
 | **Framework de backend** | e-cat (Rust): HTTP/axum + gRPC/tonic, ecosistema de microservicios con 51 crates |
-| **Clientes multiplataforma** | `apps/flutter` (iOS / Android / Web / Desktop), `apps/harmonyos` (HarmonyOS) |
+| **Clientes multiplataforma** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS) |
 | **Base de datos** | MySQL (base de datos `travel`, prefijo de tablas `travel_`) + caché Redis + búsqueda multilingüe OpenSearch |
 | **Seguridad** | ecat-security / ecat-auth (JWT) / ecat-tls: autenticación, auditoría, limitación de velocidad, prevención de inyección |
 | **Internacionalización** | Paquetes de idiomas ARB en 12+ idiomas, compatibilidad con RTL, segmentación multilingüe de OpenSearch |
@@ -71,6 +71,25 @@ open-travel/
 - Almacenamiento auxiliar: Redis (sesiones / caché de populares), OpenSearch (índice de búsqueda multilingüe)
 
 > Para la planificación técnica detallada, consulte [docs/travel-project-planning.md](../../travel-project-planning.md).
+
+## Inicio rápido
+
+```bash
+cd e-cat
+cargo check -p user-service -p booking-service -p admin-service   # verificación de compilación de los servicios de negocio
+```
+
+| Servicio | Puerto | Descripción |
+|---|---|---|
+| user-service | 8001 | Registro / inicio de sesión / perfil de usuario |
+| booking-service | 8002 | Fechas de destinos populares + lista / detalle de atracciones |
+| admin-service | 8003 | Administración: inicio de sesión + CRUD de destinos / atracciones |
+| Puerta de enlace Nginx | 8082→80 | Enrutamiento por prefijos `/api/user/`, `/api/booking/`, `/api/admin/` |
+| MySQL | 3308→3306 | Fuente de datos |
+| Redis | 6381→6379 | Caché / limitación de velocidad |
+| OpenSearch | 9201→9200 | Búsqueda multilingüe |
+
+La consola de administración Flutter Web está en `apps/admin/`; la cuenta de administrador predeterminada de desarrollo es `admin@travel.local` / `Admin@123` (solo uso local).
 
 ---
 

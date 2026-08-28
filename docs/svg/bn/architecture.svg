@@ -46,27 +46,18 @@
   <text x="480" y="256" text-anchor="middle" class="t-s">TLS এনক্রিপশন · রেট লিমিট · রাউটিং · অথেনটিকেশন</text>
 
   <!-- e-cat 核心服务层 -->
-  <rect x="30" y="304" width="720" height="224" class="panel"/>
+  <rect x="30" y="304" width="720" height="168" class="panel"/>
   <text x="48" y="334" class="t-h">e-cat কোর সার্ভিস লেয়ার</text>
   <text x="48" y="354" class="t-s">e-cat Core Services · Rust মাইক্রোসার্ভিস</text>
   <rect x="216" y="372" width="168" height="64" class="box"/>
   <text x="300" y="396" text-anchor="middle" class="t-m">User ব্যবহারকারী</text>
-  <text x="300" y="418" text-anchor="middle" class="t-s">অ্যাকাউন্ট · প্রোফাইল · পছন্দ</text>
+  <text x="300" y="418" text-anchor="middle" class="t-s">রেজিস্টার · লগইন · প্রোফাইল</text>
   <rect x="396" y="372" width="168" height="64" class="box"/>
   <text x="480" y="396" text-anchor="middle" class="t-m">Booking বুকিং</text>
-  <text x="480" y="418" text-anchor="middle" class="t-s">হোটেল · ফ্লাইট · ইতিনারি</text>
+  <text x="480" y="418" text-anchor="middle" class="t-s">জনপ্রিয় গন্তব্য · আকর্ষণ</text>
   <rect x="576" y="372" width="168" height="64" class="box"/>
-  <text x="660" y="396" text-anchor="middle" class="t-m">Payment পেমেন্ট</text>
-  <text x="660" y="418" text-anchor="middle" class="t-s">WeChat · আলিপে · আন্তর্জাতিক</text>
-  <rect x="216" y="452" width="168" height="64" class="box"/>
-  <text x="300" y="476" text-anchor="middle" class="t-m">Review রিভিউ</text>
-  <text x="300" y="498" text-anchor="middle" class="t-s">রিভিউ · রেটিং · মডারেশন</text>
-  <rect x="396" y="452" width="168" height="64" class="box"/>
-  <text x="480" y="476" text-anchor="middle" class="t-m">Search সার্চ</text>
-  <text x="480" y="498" text-anchor="middle" class="t-s">বহুভাষিক · OpenSearch</text>
-  <rect x="576" y="452" width="168" height="64" class="box"/>
-  <text x="660" y="476" text-anchor="middle" class="t-m">I18n বহুভাষা</text>
-  <text x="660" y="498" text-anchor="middle" class="t-s">ARB ভাষা প্যাক · 12+ ভাষা</text>
+  <text x="660" y="396" text-anchor="middle" class="t-m">Admin অ্যাডমিন</text>
+  <text x="660" y="418" text-anchor="middle" class="t-s">অ্যাডমিন লগইন · কনটেন্ট CRUD</text>
 
   <!-- 数据层 -->
   <rect x="30" y="544" width="720" height="96" class="panel"/>
@@ -81,15 +72,18 @@
   <rect x="576" y="564" width="168" height="56" class="box"/>
   <text x="660" y="588" text-anchor="middle" class="t-m">OpenSearch</text>
   <text x="660" y="608" text-anchor="middle" class="t-s">বহুভাষিক সার্চ · এগ্রিগেশন</text>
-
-  <!-- e-cat 中间件安全层 -->
-  <rect x="770" y="80" width="200" height="560" class="panel"/>
-  <text x="786" y="108" class="t-h2">e-cat মিডলওয়্যার সিকিউরিটি</text>
-  <text x="786" y="128" class="t-s">Security Middleware</text>
-  <rect x="786" y="140" width="168" height="130" class="box"/>
-  <text x="870" y="172" text-anchor="middle" class="t-m">SecurityLayer</text>
-  <text x="870" y="196" text-anchor="middle" class="t-s">ব্লক · রিকোয়েস্ট ফিল্টার</text>
-  <text x="870" y="218" text-anchor="middle" class="t-s">রিপ্লে সুরক্ষা · ঝুঁকি নিয়ন্ত্রণ</text>
+  <rect x="216" y="564" width="126" height="56" class="box"/>
+  <text x="279" y="588" text-anchor="middle" class="t-m">MySQL</text>
+  <text x="279" y="608" text-anchor="middle" class="t-s">মাস্টার-রেপ্লিকা</text>
+  <rect x="350" y="564" width="126" height="56" class="box"/>
+  <text x="413" y="588" text-anchor="middle" class="t-m">Redis</text>
+  <text x="413" y="608" text-anchor="middle" class="t-s">ক্যাশ · সেশন</text>
+  <rect x="484" y="564" width="126" height="56" class="box"/>
+  <text x="547" y="588" text-anchor="middle" class="t-m">Kafka</text>
+  <text x="547" y="608" text-anchor="middle" class="t-s">অডিট লগ</text>
+  <rect x="618" y="564" width="126" height="56" class="box"/>
+  <text x="681" y="588" text-anchor="middle" class="t-m">OpenSearch</text>
+  <text x="681" y="608" text-anchor="middle" class="t-s">বহুভাষিক সার্চ · এগ্রিগেশন</text>
   <rect x="786" y="290" width="168" height="130" class="box"/>
   <text x="870" y="322" text-anchor="middle" class="t-m">Auth / JWT অথেনটিকেশন</text>
   <text x="870" y="346" text-anchor="middle" class="t-s">OAuth2 · Token ভেরিফিকেশন</text>
@@ -102,9 +96,9 @@
   <!-- 箭头 -->
   <line x1="390" y1="179" x2="390" y2="189" class="arrow"/>
   <line x1="390" y1="291" x2="390" y2="301" class="arrow"/>
-  <line x1="390" y1="531" x2="390" y2="541" class="arrow"/>
+  <line x1="390" y1="440" x2="390" y2="540" class="arrow"/>
   <line x1="748" y1="240" x2="768" y2="240" class="arrow"/>
-  <line x1="748" y1="484" x2="768" y2="484" class="arrow"/>
+  <line x1="748" y1="452" x2="768" y2="452" class="arrow"/>
 
   <text x="500" y="664" text-anchor="middle" class="t-s">MySQL ডেটাবেস: travel, সব বিজনেস টেবিল travel_ প্রিফিক্সে (travel_users · travel_orders)</text>
   <text x="988" y="668" text-anchor="end" font-size="12" fill="#8b949e" fill-opacity="0.5" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">https://erik.xyz</text>
