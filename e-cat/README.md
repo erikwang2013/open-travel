@@ -14,7 +14,7 @@ Open Travel 是一个全球旅游平台 monorepo。后端基于 **e-cat（一只
 | **后端** | e-cat（Rust）：HTTP/axum + gRPC/tonic，51 crates 微服务生态 |
 | **业务服务** | user-service（:8001）、booking-service（:8002），位于 `e-cat/services/` |
 | **网关** | Nginx（`config/nginx.conf`），按 URL 前缀分流 |
-| **多端客户端** | `apps/flutter`（iOS / Android / Web / Desktop）、`apps/harmonyos`（鸿蒙） |
+| **多端客户端** | `apps/client/flutter`（iOS / Android / Web / Desktop）、`apps/client/harmonyos`（鸿蒙） |
 | **数据源** | MySQL + Redis 缓存 + OpenSearch 多语言搜索 |
 | **安全** | ecat-security / ecat-auth（JWT）/ ecat-tls：认证、审计、限流、防注入 |
 | **国际化** | 12+ 语种，RTL 支持，OpenSearch 多语言分词 |
@@ -23,7 +23,7 @@ Open Travel 是一个全球旅游平台 monorepo。后端基于 **e-cat（一只
 
 ```
 open-travel/
-├── apps/                  # 多端客户端（flutter / harmonyos）
+├── apps/                  # client/ 多端客户端 + admin/ 管理端
 ├── config/                # docker-compose.yml、nginx.conf、schema.sql、opensearch.yml
 ├── docs/                  # 规划文档、联调/压测报告、SVG 架构图、i18n 翻译
 ├── scripts/               # opensearch_init / loadtest / cdn_setup / cdn_upload / release

@@ -14,7 +14,7 @@ Open Travel is a global travel platform monorepo. The backend is built on **e-ca
 | **Backend** | e-cat (Rust): HTTP/axum + gRPC/tonic, 51-crate microservice ecosystem |
 | **Services** | user-service (:8001), booking-service (:8002), under `e-cat/services/` |
 | **Gateway** | Nginx (`config/nginx.conf`), prefix-based routing |
-| **Clients** | `apps/flutter` (iOS / Android / Web / Desktop), `apps/harmonyos` (HarmonyOS) |
+| **Clients** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS) |
 | **Data** | MySQL + Redis cache + OpenSearch multilingual search |
 | **Security** | ecat-security / ecat-auth (JWT) / ecat-tls: auth, audit, rate limiting, injection defense |
 | **i18n** | 12+ languages, RTL support, OpenSearch multilingual tokenization |
@@ -23,7 +23,7 @@ Open Travel is a global travel platform monorepo. The backend is built on **e-ca
 
 ```
 open-travel/
-├── apps/                  # Multi-platform clients (flutter / harmonyos)
+├── apps/                  # client/ multi-platform clients + admin/ admin console
 ├── config/                # docker-compose.yml, nginx.conf, schema.sql, opensearch.yml
 ├── docs/                  # Planning docs, integration/loadtest reports, SVG diagrams, i18n
 ├── scripts/               # opensearch_init / loadtest / cdn_setup / cdn_upload / release

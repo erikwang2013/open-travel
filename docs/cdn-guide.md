@@ -1,6 +1,6 @@
 # open-travel CDN 部署指南（Phase 4-3）
 
-CDN 仅加速**静态资源**：docs 图片（`docs/svg/*`、`docs/*.png`）、Flutter web 构建产物（`apps/flutter/build/web`）、App 图标。API 走 nginx 网关（动态接口）不经过 CDN；CDN 配置中的 `/api/*` 不缓存规则是兜底保护。
+CDN 仅加速**静态资源**：docs 图片（`docs/svg/*`、`docs/*.png`）、Flutter web 构建产物（`apps/client/flutter/build/web`）、App 图标。API 走 nginx 网关（动态接口）不经过 CDN；CDN 配置中的 `/api/*` 不缓存规则是兜底保护。
 
 默认方案 **CloudFront + S3**（免费额度内 ≈ $0/月）；也可用 **阿里云 OSS + CDN**。两种方案脚本均支持，`--provider cloudfront|oss` 二选一。
 

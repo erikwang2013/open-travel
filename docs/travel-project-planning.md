@@ -10,9 +10,11 @@
 ```
 open-travel/
 ├── apps/
-│   ├── flutter/          # 多端客户端（iOS / Android / Web / Desktop），12+ 语种 ARB 资源
-│   └── harmonyos/        # 鸿蒙端（ArkUI）
-│   └── (未来) wechat-mini/  # 微信小程序
+│   ├── client/           # 客户端目录
+│   │   ├── flutter/      # 多端客户端（iOS / Android / Web / Desktop），12+ 语种 ARB 资源
+│   │   ├── harmonyos/    # 鸿蒙端（ArkUI）
+│   │   └── (未来) wechat-mini/  # 微信小程序
+│   └── admin/            # 管理端（Flutter Web）
 ├── e-cat/                # Rust 微服务框架「一只猫」，v3.0.2，51 crates
 │   ├── ecat/                 # 应用生命周期：AppBuilder → App
 │   ├── ecat-transport-http/  # HTTP（axum）
@@ -37,7 +39,7 @@ open-travel/
 
 ```
 ┌──────────────────────────────┐
-│  apps/flutter / apps/harmonyos│
+│  apps/client/flutter / apps/client/harmonyos│
 │  (iOS/Android/Web/Desktop/鸿蒙)│
 └──────────────┬───────────────┘
                │ HTTPS / gRPC / WebSocket
@@ -180,14 +182,14 @@ router
 }
 ```
 
-### 5.2 Flutter 端（apps/flutter）
+### 5.2 Flutter 端（apps/client/flutter）
 
 - `flutter_localizations` + `intl`，ARB 文件按语种组织：`assets/i18n/{lang}.arb`。
 - 语种清单（12+）：en、zh、ja、ko、ru、de、fr、es、pt、hi、ar、bn、id。
 - RTL 语种（阿拉伯语）自动切换 `Directionality` / ReadingOrder。
 - 桌面端（Windows/macOS）侧边栏 + 列表布局；移动端卡片流 + 分页加载。
 
-### 5.3 鸿蒙端（apps/harmonyos）
+### 5.3 鸿蒙端（apps/client/harmonyos）
 
 - ArkUI + 系统 i18n 能力，resource 按语种分包。
 - 与 Flutter 共享后端 API（REST + WebSocket），未来可扩展微信小程序端。
@@ -246,7 +248,7 @@ services:
     depends_on: [mysql, redis, opensearch]
     ports: ["8080:8000"]
   flutter-web:
-    build: ./apps/flutter
+    build: ./apps/client/flutter
 ```
 
 ### 7.2 GitHub Actions

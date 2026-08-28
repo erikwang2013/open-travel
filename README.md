@@ -11,7 +11,7 @@ Open Travel 是一个全球旅游平台 monorepo，采用 **e-cat（一只猫）
 | 维度 | 说明 |
 | :--- | :--- |
 | **后端框架** | e-cat（Rust）：HTTP/axum + gRPC/tonic，51 crates 微服务生态 |
-| **多端客户端** | `apps/flutter`（iOS / Android / Web / Desktop）、`apps/harmonyos`（鸿蒙） |
+| **多端客户端** | `apps/client/flutter`（iOS / Android / Web / Desktop）、`apps/client/harmonyos`（鸿蒙） |
 | **数据库** | MySQL（库名 `travel`，表前缀 `travel_`）+ Redis 缓存 + OpenSearch 多语言搜索 |
 | **安全** | ecat-security / ecat-auth（JWT）/ ecat-tls：认证、审计、限流、防注入 |
 | **国际化** | 12+ 语种 ARB 语言包，RTL 支持，OpenSearch 多语言分词 |
@@ -108,9 +108,11 @@ curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/dates?region_id=1
 
 ```
 open-travel/
-├── apps/                  # 多端客户端目录
-│   ├── flutter/           # Flutter：iOS / Android / Web / Desktop（12+ 语种 i18n）
-│   └── harmonyos/         # 鸿蒙原生客户端
+├── apps/                  # client/ 多端客户端 + admin/ 管理端
+│   ├── client/
+│   │   ├── flutter/       # Flutter：iOS / Android / Web / Desktop（12+ 语种 i18n）
+│   │   └── harmonyos/     # 鸿蒙原生客户端
+│   └── admin/             # Flutter Web 管理端
 ├── e-cat/                 # e-cat Rust 微服务框架（51 crates）
 ├── docs/                  # 项目规划、架构图（SVG）、支付二维码
 ├── config/                # 环境与部署配置
