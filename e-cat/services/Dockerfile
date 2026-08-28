@@ -1,7 +1,7 @@
-# open-travel 业务服务镜像（user-service / booking-service / admin-service）
+# open-travel 业务服务镜像（user/booking/admin/search/line/order 六个二进制）
 # 构建上下文必须为仓库根（e-cat workspace 在 ./e-cat）
 # 用法：docker build -f e-cat/services/Dockerfile -t travel-services .
-#       docker run travel-services user-service   （或 booking-service）
+#       docker run travel-services user-service   （或任一服务名）
 
 FROM rust:1.88-slim AS build
 WORKDIR /build
@@ -11,7 +11,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     protobuf-compiler cmake g++ make pkg-config libssl-dev libsasl2-dev libzstd-dev \
     && rm -rf /var/lib/apt/lists/*
 COPY e-cat ./e-cat
-RUN cargo build --release --manifest-path e-cat/Cargo.toml -p user-service -p booking-service -p admin-service
+RUN cargo build --release --manifest-path e-cat/Cargo.toml \
+    -p user-service -p booking-service -p admin-service -p search-service -p line-service -p order-service
 
 FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -20,5 +21,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=build /build/e-cat/target/release/user-service /usr/local/bin/user-service
 COPY --from=build /build/e-cat/target/release/booking-service /usr/local/bin/booking-service
 COPY --from=build /build/e-cat/target/release/admin-service /usr/local/bin/admin-service
-EXPOSE 8001 8002 8003
+COPY --from=build /build/e-cat/target/release/search-service /usr/local/bin/search-service
+COPY --from=build /build/e-cat/target/release/line-service /usr/local/bin/line-service
+COPY --from=build /build/e-cat/target/release/order-service /usr/local/bin/order-service
+EXPOSE 8001 8002 8003 8004 8005 8006
 CMD ["booking-service"]

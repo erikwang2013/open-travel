@@ -58,6 +58,72 @@ void main() {
     expect(b.name, 'ID 1');
   });
 
+  test('Order.fromJson tolerant and status keys map', () {
+    final o = Order.fromJson({
+      'id': 9,
+      'order_type': 1,
+      'product_id': 3,
+      'amount_cents': 88800,
+      'status': 4,
+      'created_at': '2026-08-29 10:00:00',
+      'product_snapshot': {'title': 'Tokyo Tour', 'cover_url': 'http://x/1.jpg'},
+    }, 'zh');
+    expect(o.id, 9);
+    expect(o.amountCents, 88800);
+    expect(o.status, 4);
+    expect(o.isPending, isFalse);
+    expect(snapshotTitle(o.productSnapshot, 'zh'), 'Tokyo Tour');
+    expect(orderStatusKey(0), 'booking.status.pending');
+    expect(orderStatusKey(1), 'booking.status.paid');
+    expect(orderStatusKey(2), 'order.status.confirmed');
+    expect(orderStatusKey(3), 'order.status.completed');
+    expect(orderStatusKey(4), 'booking.status.cancelled');
+  });
+
+  test('snapshotTitle parses JSON string and falls back', () {
+    expect(snapshotTitle('{"title":"Bali"}', 'en'), 'Bali');
+    expect(snapshotTitle('plain text', 'en'), 'plain text');
+    expect(snapshotTitle({'name_zh': '东京'}, 'en'), '东京');
+    expect(snapshotTitle(null, 'en'), '');
+  });
+
+  test('Line/LineDate fromJson tolerant', () {
+    final l = Line.fromJson({
+      'id': 1,
+      'title': 'Paris 3 Days',
+      'destination_id': 2,
+      'days': 3,
+      'price_cents': 250000,
+      'max_pax': 8,
+      'itinerary': [
+        {'day': 1, 'title': 'Arrival', 'description': 'Check in'},
+        {'day': 2},
+      ],
+    }, 'en');
+    expect(l.days, 3);
+    expect(l.itinerary.length, 2);
+    expect(l.itinerary[0].title, 'Arrival');
+    expect(l.itinerary[1].description, '');
+
+    final d = LineDate.fromJson({'date': '2026-10-01', 'price_cents': 3000, 'seats_left': 5}, 'en');
+    expect(d.available, isTrue);
+    final sold = LineDate.fromJson({'date': '2026-10-02', 'seats_left': 0, 'sold_out': true}, 'en');
+    expect(sold.available, isFalse);
+  });
+
+  test('SearchItem.fromJson tolerant', () {
+    final s = SearchItem.fromJson({
+      'id': 5,
+      'type': 'destination',
+      'name_en': 'Kyoto',
+      'name_zh': '京都',
+      'price_cents': 9900,
+    }, 'zh');
+    expect(s.isDestination, isTrue);
+    expect(s.name, '京都');
+    expect(s.priceCents, 9900);
+  });
+
   test('localizedName falls back zh then en', () {
     final json = {'name_zh': '东京', 'name_en': 'Tokyo'};
     expect(localizedName(json, 'ja'), '东京');

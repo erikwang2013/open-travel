@@ -50,7 +50,7 @@ const ATTR_SELECT: &[&str] = &[
 
 /// 从 body 中挑出白名单内的字段（跳过 null），返回列名与参数。
 /// description 契约上是 JSON 对象，落库统一为 JSON 字符串（text/json 列）。
-fn pick(body: &Map<String, Value>, fields: &[&str]) -> (Vec<String>, Vec<Value>) {
+pub(crate) fn pick(body: &Map<String, Value>, fields: &[&str]) -> (Vec<String>, Vec<Value>) {
     let mut cols = Vec::new();
     let mut vals = Vec::new();
     for f in fields {
@@ -68,7 +68,7 @@ fn pick(body: &Map<String, Value>, fields: &[&str]) -> (Vec<String>, Vec<Value>)
     (cols, vals)
 }
 
-fn col_alias(c: &str) -> &str {
+pub(crate) fn col_alias(c: &str) -> &str {
     c.rsplit(" AS ").next().unwrap_or(c)
 }
 
@@ -96,11 +96,11 @@ fn desc_to_json(v: Value) -> Value {
     serde_json::from_str(&candidate).unwrap_or_else(|_| Value::String(candidate))
 }
 
-fn db_unavailable() -> Response {
+pub(crate) fn db_unavailable() -> Response {
     err::<Value>(StatusCode::SERVICE_UNAVAILABLE, 503, "database unavailable").into_response()
 }
 
-fn not_found(entity: &str) -> Response {
+pub(crate) fn not_found(entity: &str) -> Response {
     err::<Value>(StatusCode::NOT_FOUND, 404, &format!("{entity} not found")).into_response()
 }
 
@@ -135,7 +135,7 @@ fn default_page_size() -> u64 {
     10
 }
 
-fn clamp_page(q: &PageQuery) -> (u64, u64) {
+pub(crate) fn clamp_page(q: &PageQuery) -> (u64, u64) {
     (q.page.max(1), q.page_size.clamp(1, 100))
 }
 

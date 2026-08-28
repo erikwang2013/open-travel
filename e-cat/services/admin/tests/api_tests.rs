@@ -17,6 +17,8 @@ use ecat_data::RdbmsClient;
 use ecat_data_sqlx::SqlxClient;
 use serde_json::json;
 use service::handlers::*;
+use service::line_date_handlers::*;
+use service::line_handlers::*;
 use service::*;
 use shared::jwt_secret;
 use std::collections::HashMap;
@@ -541,3 +543,266 @@ async fn update_and_delete_not_found_404() {
 }
 
 
+
+// ===== 线路 itinerary 双向转换（纯函数，无 DB）=====
+
+#[test]
+fn itinerary_roundtrip_frontend_array() {
+    let front = r#"[
+        {"day":1,"title":{"en":"E1","zh":"中1","ja":"日1","ko":"","ru":""},"description":{"en":"d-en","zh":"d-zh","ja":"","ko":"","ru":""}},
+        {"day":2,"title":{"en":"E2","zh":"中2","ja":"日2","ko":"韩2","ru":"俄2"},"description":{"ja":"only-ja"}}
+    ]"#;
+    // 入库：数组 → {"days":[...]}，title 平铺、description 取 zh 优先
+    let stored = itinerary_to_storage(front);
+    let v: serde_json::Value = serde_json::from_str(&stored).unwrap();
+    assert!(v["days"].is_array(), "存储应为 days 数组: {v}");
+    assert_eq!(v["days"][0]["title_zh"], "中1");
+    assert_eq!(v["days"][0]["title_en"], "E1");
+    assert_eq!(v["days"][0]["description"], "d-zh", "zh 优先");
+    assert_eq!(v["days"][1]["description"], "only-ja", "无 zh/en 时取非空语言");
+    assert_eq!(v["days"][1]["title_ru"], "俄2");
+    assert_eq!(v["days"][1]["title_ko"], "韩2");
+    // 出参：{"days":[...]} → 前端数组，title 合成对象、description 回填 zh
+    let back = itinerary_from_storage(&stored);
+    let out: serde_json::Value = serde_json::from_str(&back).unwrap();
+    assert!(out.is_array());
+    assert_eq!(out[0]["title"]["zh"], "中1");
+    assert_eq!(out[0]["title"]["ja"], "日1");
+    assert_eq!(out[0]["description"]["zh"], "d-zh");
+    assert_eq!(out[1]["title"]["ko"], "韩2");
+    assert_eq!(out[1]["description"], serde_json::json!({"zh": "only-ja"}));
+    // 前端数组格式直接出参：语义等值（紧凑序列化，键序可能不同）
+    let direct: serde_json::Value = serde_json::from_str(&itinerary_from_storage(front)).unwrap();
+    let expect: serde_json::Value = serde_json::from_str(front).unwrap();
+    assert_eq!(direct, expect);
+}
+
+#[test]
+fn itinerary_legacy_days_format_compat() {
+    let legacy = r#"{"days":[{"day":1,"title_en":"Old","title_zh":"旧","description":"legacy desc"}]}"#;
+    // 老数据转前端格式不报错
+    let out: serde_json::Value = serde_json::from_str(&itinerary_from_storage(legacy)).unwrap();
+    assert_eq!(out[0]["title"]["en"], "Old");
+    assert_eq!(out[0]["title"]["ja"], "");
+    assert_eq!(out[0]["description"]["zh"], "legacy desc");
+    // 老格式再入库：仍为 days 数组结构
+    let again: serde_json::Value = serde_json::from_str(&itinerary_to_storage(legacy)).unwrap();
+    assert_eq!(again["days"][0]["title_zh"], "旧");
+    // 不可解析内容原样返回
+    assert_eq!(itinerary_to_storage("not-json"), "not-json");
+    assert_eq!(itinerary_from_storage("not-json"), "not-json");
+}
+
+// ===== 线路/班期 CRUD：真实 DB 全流程（MySQL 3308 不可用时跳过）=====
+
+#[tokio::test]
+async fn lines_crud_full_flow() {
+    let Some(db) = real_db().await else { return };
+    let st = state_with(db);
+    let kw = unique_name("t-line");
+    let itin = serde_json::json!([
+        {"day": 1, "title": {"en": "Day1", "zh": "第一天", "ja": "", "ko": "", "ru": ""},
+         "description": {"en": "desc-en", "zh": "描述", "ja": "", "ko": "", "ru": ""}}
+    ]);
+    let itin_str = serde_json::to_string(&itin).unwrap();
+
+    // 前置：目的地
+    let (status, body) = body_json(create_destination(
+        State(st.clone()),
+        admin_guard(),
+        Json(json!({ "name_en": format!("{kw}-dest"), "name_zh": "线路测试目的地" })),
+    ).await).await;
+    assert_eq!(status, StatusCode::OK, "create dest failed: {body}");
+    let dest_id = body["data"]["id"].as_u64().unwrap();
+
+    // 缺 title_zh → 400
+    let (status, body) = body_json(create_line(
+        State(st.clone()),
+        admin_guard(),
+        Json(json!({ "destination_id": dest_id, "title_en": "x" })),
+    ).await).await;
+    assert_eq!(status, StatusCode::BAD_REQUEST);
+    assert_eq!(body["message"], "title_zh is required");
+
+    // 创建线路（含 itinerary 数组格式）
+    let (status, body) = body_json(create_line(
+        State(st.clone()),
+        admin_guard(),
+        Json(json!({
+            "title_en": format!("{kw} line"),
+            "title_zh": format!("{kw} 线路"),
+            "title_ja": "テスト",
+            "destination_id": dest_id,
+            "days": 3,
+            "departure_date": "2026-10-01",
+            "price_cents": 88800,
+            "max_pax": 15,
+            "itinerary": itin_str,
+            "status": 1,
+            "cover_url": "https://img.example/line.jpg",
+        })),
+    ).await).await;
+    assert_eq!(status, StatusCode::OK, "create line failed: {body}");
+    let line_id = body["data"]["id"].as_u64().unwrap();
+    assert_eq!(body["data"]["price_cents"], 88800);
+    assert_eq!(body["data"]["departure_date"], "2026-10-01");
+    // itinerary 出参须为前端数组格式字符串
+    let out_itin: serde_json::Value = serde_json::from_str(body["data"]["itinerary"].as_str().unwrap()).unwrap();
+    assert_eq!(out_itin[0]["title"]["zh"], "第一天");
+    assert_eq!(out_itin[0]["description"]["zh"], "描述");
+
+    // 列表：items 键 + keyword 命中
+    let (status, body) = body_json(list_lines(
+        State(st.clone()),
+        admin_guard(),
+        Query(PageQuery { page: 1, page_size: 10, status: None, keyword: Some(kw.clone()), destination_id: None }),
+    ).await).await;
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(body["data"]["total"], 1, "keyword 应命中 1 条: {body}");
+    assert_eq!(body["data"]["items"].as_array().unwrap().len(), 1);
+
+    // 更新：改价格 + 换 itinerary
+    let itin2 = serde_json::json!([
+        {"day": 1, "title": {"en": "N1", "zh": "新一天", "ja": "", "ko": "", "ru": ""},
+         "description": {"en": "", "zh": "新描述", "ja": "", "ko": "", "ru": ""}}
+    ]);
+    let (status, body) = body_json(update_line(
+        State(st.clone()),
+        admin_guard(),
+        Path(line_id),
+        Json(json!({ "price_cents": 99900, "itinerary": serde_json::to_string(&itin2).unwrap() })),
+    ).await).await;
+    assert_eq!(status, StatusCode::OK, "update line failed: {body}");
+    assert_eq!(body["data"]["price_cents"], 99900);
+    let out_itin: serde_json::Value = serde_json::from_str(body["data"]["itinerary"].as_str().unwrap()).unwrap();
+    assert_eq!(out_itin[0]["title"]["zh"], "新一天");
+
+    // 上下架
+    let (status, body) = body_json(update_line_status(
+        State(st.clone()),
+        admin_guard(),
+        Path(line_id),
+        Json(StatusReq { status: 0 }),
+    ).await).await;
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(body["data"]["status"], 0);
+
+    // 班期：创建 / 重复 409 / 列表裸数组 / 更新 / 删除
+    let (status, body) = body_json(create_line_date(
+        State(st.clone()),
+        admin_guard(),
+        Path(line_id),
+        Json(json!({ "depart_date": "2026-11-05", "price_cents": 90000, "seats_left": 8 })),
+    ).await).await;
+    assert_eq!(status, StatusCode::OK, "create date failed: {body}");
+    let date_id = body["data"]["id"].as_u64().unwrap();
+    assert_eq!(body["data"]["depart_date"], "2026-11-05");
+    assert_eq!(body["data"]["status"], 1, "缺省上架");
+
+    let (status, body) = body_json(create_line_date(
+        State(st.clone()),
+        admin_guard(),
+        Path(line_id),
+        Json(json!({ "depart_date": "2026-11-05", "price_cents": 1 })),
+    ).await).await;
+    assert_eq!(status, StatusCode::CONFLICT, "重复日期应 409: {body}");
+    assert_eq!(body["message"], "depart date already exists");
+
+    let (status, body) = body_json(create_line_date(
+        State(st.clone()),
+        admin_guard(),
+        Path(line_id),
+        Json(json!({ "depart_date": "2026-11-06" })),
+    ).await).await;
+    assert_eq!(status, StatusCode::OK, "create date2 failed: {body}");
+    let date2_id = body["data"]["id"].as_u64().unwrap();
+
+    // 列表：data 为裸数组
+    let (status, body) = body_json(list_line_dates(
+        State(st.clone()),
+        admin_guard(),
+        Path(line_id),
+    ).await).await;
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(body["data"].as_array().unwrap().len(), 2);
+
+    // 更新班期（价格 + 停售）
+    let (status, body) = body_json(update_line_date(
+        State(st.clone()),
+        admin_guard(),
+        Path((line_id, date_id)),
+        Json(json!({ "price_cents": 95000, "seats_left": 5, "status": 0 })),
+    ).await).await;
+    assert_eq!(status, StatusCode::OK, "update date failed: {body}");
+    assert_eq!(body["data"]["price_cents"], 95000);
+    assert_eq!(body["data"]["status"], 0);
+
+    // 改到已存在日期 → 409
+    let (status, _) = body_json(update_line_date(
+        State(st.clone()),
+        admin_guard(),
+        Path((line_id, date_id)),
+        Json(json!({ "depart_date": "2026-11-06" })),
+    ).await).await;
+    assert_eq!(status, StatusCode::CONFLICT);
+
+    // 有关联班期时删线路 → 409；删完班期后可删
+    let (status, body) = body_json(delete_line(State(st.clone()), admin_guard(), Path(line_id)).await).await;
+    assert_eq!(status, StatusCode::CONFLICT);
+    assert_eq!(body["code"], 409);
+    for d in [date_id, date2_id] {
+        let (status, _) = body_json(delete_line_date(State(st.clone()), admin_guard(), Path((line_id, d))).await).await;
+        assert_eq!(status, StatusCode::OK);
+    }
+    let (status, _) = body_json(delete_line(State(st.clone()), admin_guard(), Path(line_id)).await).await;
+    assert_eq!(status, StatusCode::OK);
+    let (status, _) = body_json(delete_destination(State(st.clone()), admin_guard(), Path(dest_id)).await).await;
+    assert_eq!(status, StatusCode::OK);
+}
+
+#[tokio::test]
+async fn line_and_date_not_found_404() {
+    let Some(db) = real_db().await else { return };
+    let st = state_with(db);
+    let (status, body) = body_json(update_line(
+        State(st.clone()),
+        admin_guard(),
+        Path(99_999_999),
+        Json(json!({ "title_zh": "x" })),
+    ).await).await;
+    assert_eq!(status, StatusCode::NOT_FOUND);
+    assert_eq!(body["message"], "line not found");
+    let (status, _) = body_json(delete_line(State(st.clone()), admin_guard(), Path(99_999_999)).await).await;
+    assert_eq!(status, StatusCode::NOT_FOUND);
+    // 不存在的线路挂班期 → 404
+    let (status, body) = body_json(create_line_date(
+        State(st.clone()),
+        admin_guard(),
+        Path(99_999_999),
+        Json(json!({ "depart_date": "2026-12-01", "price_cents": 1 })),
+    ).await).await;
+    assert_eq!(status, StatusCode::NOT_FOUND);
+    assert_eq!(body["message"], "line not found");
+    let (status, _) = body_json(update_line_date(
+        State(st.clone()),
+        admin_guard(),
+        Path((99_999_999, 99_999_999)),
+        Json(json!({ "price_cents": 1 })),
+    ).await).await;
+    assert_eq!(status, StatusCode::NOT_FOUND);
+    let (status, _) = body_json(delete_line_date(
+        State(st.clone()),
+        admin_guard(),
+        Path((99_999_999, 99_999_999)),
+    ).await).await;
+    assert_eq!(status, StatusCode::NOT_FOUND);
+    // 非法日期格式 → 400
+    let (status, body) = body_json(create_line_date(
+        State(st.clone()),
+        admin_guard(),
+        Path(99_999_999),
+        Json(json!({ "depart_date": "11/05/2026", "price_cents": 1 })),
+    ).await).await;
+    assert_eq!(status, StatusCode::BAD_REQUEST);
+    assert_eq!(body["message"], "depart_date must be YYYY-MM-DD");
+}

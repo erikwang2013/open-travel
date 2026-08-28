@@ -1,0 +1,2 @@
+# 排除构建产物，避免 COPY e-cat 时把 target/（数百 MB-GB）带入构建上下文
+target

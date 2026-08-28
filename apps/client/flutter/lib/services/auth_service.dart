@@ -83,7 +83,10 @@ class AuthService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Options get _authOptions => Options(headers: {'Authorization': 'Bearer $_token'});
+  /// JWT 请求头，供订单等需登录接口复用。
+  Options get authOptions => Options(headers: {'Authorization': 'Bearer $_token'});
+
+  Options get _authOptions => authOptions;
 
   Map<String, dynamic> _unwrap(Map<String, dynamic>? body) {
     final data = body?['data'];

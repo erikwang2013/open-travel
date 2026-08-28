@@ -131,3 +131,65 @@ ALTER TABLE travel_users ADD COLUMN nickname VARCHAR(100) NOT NULL DEFAULT '' CO
 -- 种子管理员（开发环境，密码 Admin@123；勿在生产使用）
 INSERT IGNORE INTO travel_admins (email, password_hash, name) VALUES
 ('admin@travel.local', '$2b$12$mEe1EEwFS0wOGDsTpdT1HO54VYP8Lr17ci2IEYoOg43MApvlkwWGi', 'Administrator');
+
+-- ===== Phase 3 增量（P3-01 / P3-04 / P3-07）=====
+-- 线路主表（P3-04）：多语种标题 + 多日行程（JSON）+ 固定班期表见 travel_line_dates
+CREATE TABLE IF NOT EXISTS travel_lines (
+  id             BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '线路ID',
+  title_en       VARCHAR(255) NOT NULL COMMENT '英文标题',
+  title_zh       VARCHAR(255) NOT NULL COMMENT '中文标题',
+  title_ja       VARCHAR(255) NOT NULL COMMENT '日文标题',
+  title_ko       VARCHAR(255) NOT NULL DEFAULT '' COMMENT '韩文标题',
+  title_ru       VARCHAR(255) NOT NULL DEFAULT '' COMMENT '俄文标题',
+  destination_id BIGINT UNSIGNED NOT NULL COMMENT '目的地ID',
+  days           SMALLINT UNSIGNED NOT NULL COMMENT '行程天数',
+  departure_date DATE COMMENT '默认出发日期（日历见 travel_line_dates）',
+  price_cents    BIGINT NOT NULL COMMENT '基准价（分）',
+  max_pax        SMALLINT UNSIGNED NOT NULL DEFAULT 20 COMMENT '成团人数',
+  itinerary      TEXT COMMENT '行程 JSON：[{day, title_en/zh/ja, description}]',
+  status         TINYINT NOT NULL DEFAULT 1 COMMENT '状态（0下架/1上架）',
+  cover_url      VARCHAR(500) NOT NULL DEFAULT '' COMMENT '封面图',
+  created_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  updated_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  INDEX idx_line_destination (destination_id),
+  INDEX idx_line_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='旅游线路表';
+
+-- 线路出发日历（P3-06）：日期 + 价格 + 余位（余位随订单预占/取消联动）
+CREATE TABLE IF NOT EXISTS travel_line_dates (
+  id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '班期ID',
+  line_id      BIGINT UNSIGNED NOT NULL COMMENT '线路ID',
+  depart_date  DATE NOT NULL COMMENT '出发日期',
+  price_cents  BIGINT NOT NULL COMMENT '当日价（分）',
+  seats_left   INT NOT NULL DEFAULT 0 COMMENT '余位',
+  status       TINYINT NOT NULL DEFAULT 1 COMMENT '状态（0停售/1可售）',
+  created_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  UNIQUE KEY uk_line_date (line_id, depart_date),
+  INDEX idx_date_status (depart_date, status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='线路出发班期表';
+
+-- 搜索热词表（P3-01）：检索日志落库，热词按周期聚合（P5-03）
+CREATE TABLE IF NOT EXISTS travel_searches (
+  id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '检索ID',
+  keyword      VARCHAR(255) NOT NULL COMMENT '检索关键词',
+  lang         VARCHAR(8) NOT NULL DEFAULT 'en' COMMENT '检索语言',
+  result_count INT NOT NULL DEFAULT 0 COMMENT '命中数',
+  user_id      BIGINT UNSIGNED NULL COMMENT '用户ID（未登录为空）',
+  created_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '检索时间',
+  INDEX idx_search_keyword (keyword, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='搜索记录表';
+
+-- P3-07 订单表扩展：统一商品域（order_type）+ 商品快照 + 待支付超时
+-- 新状态机：0待支付 → 1已支付 → 2已确认 → 3已完成 / 4已取消
+ALTER TABLE travel_orders
+  ADD COLUMN order_type       TINYINT      NOT NULL DEFAULT 1 COMMENT '商品类型（1线路/2机票/3酒店）' AFTER user_id,
+  ADD COLUMN product_id       BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '商品ID' AFTER order_type,
+  ADD COLUMN product_snapshot TEXT COMMENT '商品快照（JSON：标题/价格/日期等）' AFTER product_id,
+  ADD COLUMN expire_at        DATETIME NULL COMMENT '待支付超时时间（超时自动取消）' AFTER amount_cents,
+  MODIFY COLUMN status TINYINT NOT NULL DEFAULT 0 COMMENT '状态（0待支付/1已支付/2已确认/3已完成/4已取消）';
+
+-- P3-07 状态重映射迁移（幂等：旧编号已迁移后不再触发）
+-- travel_orders：旧 2=已取消 → 新 4
+UPDATE travel_orders SET status = 4 WHERE status = 2;
+-- travel_bookings：旧 0待确认/1已确认/2已完成/3已取消 → 新 0待支付/1已支付/2已确认/3已完成/4已取消
+UPDATE travel_bookings SET status = CASE status WHEN 1 THEN 2 WHEN 2 THEN 3 WHEN 3 THEN 4 ELSE status END;

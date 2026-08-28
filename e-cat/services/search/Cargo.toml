@@ -1,0 +1,25 @@
+[package]
+name = "search-service"
+version = "0.1.0"
+edition = "2024"
+description = "open-travel search service (opensearch content sync + multi-condition search)"
+
+[dependencies]
+shared = { path = "../shared" }
+ecat = { path = "../../ecat", default-features = false }
+ecat-transport-http = { path = "../../ecat-transport-http" }
+ecat-middleware = { path = "../../ecat-middleware" }
+ecat-security = { path = "../../ecat-security" }
+ecat-circuit-breaker = { path = "../../ecat-circuit-breaker" }
+ecat-tracing = { path = "../../ecat-tracing" }
+ecat-data = { path = "../../ecat-data" }
+ecat-data-sqlx = { path = "../../ecat-data-sqlx" }
+ecat-data-redis = { path = "../../ecat-data-redis" }
+ecat-data-opensearch = { path = "../../ecat-data-opensearch" }
+axum.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "time"] }
+tower.workspace = true
+tracing.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+base64 = "0.22"

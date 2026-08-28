@@ -4,6 +4,7 @@ import '../models/travel_models.dart';
 import '../services/content_service.dart';
 import '../services/localization_service.dart';
 import 'destination_detail_page.dart';
+import 'search_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -61,6 +62,10 @@ class _HomePageState extends State<HomePage> {
       padding: const EdgeInsets.all(16),
       children: [
         TextField(
+          readOnly: true,
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const SearchPage()),
+          ),
           decoration: InputDecoration(
             hintText: loc.getString('search.placeholder'),
             prefixIcon: const Icon(Icons.search),

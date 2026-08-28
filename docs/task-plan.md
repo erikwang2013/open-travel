@@ -46,20 +46,20 @@
 
 | 任务编号 | 任务 | 所属模块 | 依赖 | 验收标准 | 负责端 | 状态 |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| P3-01 | search-service 创建 + `travel_searches` 表 + 内容写入 OpenSearch 索引（同步任务） | 搜索服务 | P2-05 | 目的地/景点数据进索引，增量同步可用 | 后端 | 待开始 |
-| P3-02 | search-service `GET /api/search?q=&destination_id=&lang=&price_min=&price_max=&page=` 多条件检索接口 + 热词日志 | 搜索服务 | P3-01 | 关键词/目的地/价格过滤生效，结果按语言分词匹配 | 后端 | 待开始 |
-| P3-03 | 客户端搜索页（关键词 + 目的地/日期/价格多条件筛选） | 客户端 | P3-02 | 搜索交互闭环，空结果有提示 | 客户端 | 待开始 |
-| P3-04 | `travel_lines` 表（title_*/destination_id/days/departure_date/price_cents/max_pax/itinerary JSON/status）+ 种子数据 | 数据层 | P2-01 | 增量 DDL 可执行，种子 ≥5 条线路 | 后端 | 待开始 |
-| P3-05 | line-service：`GET /api/lines?destination_id=` 列表 + `GET /api/lines/:id` 详情（行程/价格/成团/余位） | 线路服务 | P3-04 | 列表/详情接口 curl 验证通过，404/参数校验齐全 | 后端 | 待开始 |
-| P3-06 | line-service 出发日历与余位：`GET /api/lines/:id/dates`（日期+价格+余位，Redis 缓存） | 线路服务 | P3-05 | 日历数据准确，余位与订单联动（预占扣减） | 后端 | 待开始 |
-| P3-07 | 订单状态机统一落地：`travel_orders` 扩展（order_type 1线路/2机票/3酒店、product_id、product_snapshot、expire_at）+ `travel_bookings` status 重映射迁移 | 数据层 | P1-02 | 迁移脚本可逆，旧数据 status 正确映射新编号 | 后端 | 待开始 |
-| P3-08 | order-service：`POST /api/orders` 下单（商品+日历价+Redis 预占库存+快照）+ 订单状态机（待支付→已支付→已确认→已完成/已取消） | 订单服务 | P3-07, P3-06 | 下单成功扣余位，重复下单防超卖，超时未付释放 | 后端 | 待开始 |
-| P3-09 | order-service：`GET /api/orders` 列表 + `GET /api/orders/:id` 详情 + `POST /api/orders/:id/cancel` 取消（释放库存） | 订单服务 | P3-08 | 状态流转正确，取消后余位回补 | 后端 | 待开始 |
-| P3-10 | 管理端线路管理：CRUD + 行程编排（多日 JSON）+ 价格/成团人数 + 出发日历维护 | 管理端 | P2-08, P3-04 | 线路全流程管理可用，出发日历可视化编辑 | 管理端 | 待开始 |
-| P3-11 | 客户端线路列表/详情页（行程安排、出发日历、价格与余位） | 客户端 | P3-05, P3-06 | 详情字段完整，余位实时展示 | 客户端 | 待开始 |
-| P3-12 | 客户端线路预订流程（选出发日期 → 确认订单 → 提交） | 客户端 | P3-08, P3-11 | 下单成功跳订单详情，库存不足有提示 | 客户端 | 待开始 |
-| P3-13 | 客户端订单中心（列表/详情/取消/支付引导，状态实时刷新） | 客户端 | P3-09 | 订单列表详情正确，取消后状态更新 | 客户端 | 待开始 |
-| P3-14 | 鸿蒙端搜索/线路/订单页面同构补齐 | 客户端 | P3-13 | 鸿蒙端三页面可用 | 客户端 | 待开始 |
+| P3-01 | search-service 创建 + `travel_searches` 表 + 内容写入 OpenSearch 索引（同步任务） | 搜索服务 | P2-05 | 目的地/景点数据进索引，增量同步可用 | 后端 | 已完成 |
+| P3-02 | search-service `GET /api/search?q=&destination_id=&lang=&price_min=&price_max=&page=` 多条件检索接口 + 热词日志 | 搜索服务 | P3-01 | 关键词/目的地/价格过滤生效，结果按语言分词匹配 | 后端 | 已完成 |
+| P3-03 | 客户端搜索页（关键词 + 目的地/日期/价格多条件筛选） | 客户端 | P3-02 | 搜索交互闭环，空结果有提示 | 客户端 | 已完成 |
+| P3-04 | `travel_lines` 表（title_*/destination_id/days/departure_date/price_cents/max_pax/itinerary JSON/status）+ 种子数据 | 数据层 | P2-01 | 增量 DDL 可执行，种子 ≥5 条线路 | 后端 | 已完成 |
+| P3-05 | line-service：`GET /api/lines?destination_id=` 列表 + `GET /api/lines/:id` 详情（行程/价格/成团/余位） | 线路服务 | P3-04 | 列表/详情接口 curl 验证通过，404/参数校验齐全 | 后端 | 已完成 |
+| P3-06 | line-service 出发日历与余位：`GET /api/lines/:id/dates`（日期+价格+余位，Redis 缓存） | 线路服务 | P3-05 | 日历数据准确，余位与订单联动（预占扣减） | 后端 | 已完成 |
+| P3-07 | 订单状态机统一落地：`travel_orders` 扩展（order_type 1线路/2机票/3酒店、product_id、product_snapshot、expire_at）+ `travel_bookings` status 重映射迁移 | 数据层 | P1-02 | 迁移脚本可逆，旧数据 status 正确映射新编号 | 后端 | 已完成 |
+| P3-08 | order-service：`POST /api/orders` 下单（商品+日历价+Redis 预占库存+快照）+ 订单状态机（待支付→已支付→已确认→已完成/已取消） | 订单服务 | P3-07, P3-06 | 下单成功扣余位，重复下单防超卖，超时未付释放 | 后端 | 已完成 |
+| P3-09 | order-service：`GET /api/orders` 列表 + `GET /api/orders/:id` 详情 + `POST /api/orders/:id/cancel` 取消（释放库存） | 订单服务 | P3-08 | 状态流转正确，取消后余位回补 | 后端 | 已完成 |
+| P3-10 | 管理端线路管理：CRUD + 行程编排（多日 JSON）+ 价格/成团人数 + 出发日历维护 | 管理端 | P2-08, P3-04 | 线路全流程管理可用，出发日历可视化编辑 | 管理端 | 已完成 |
+| P3-11 | 客户端线路列表/详情页（行程安排、出发日历、价格与余位） | 客户端 | P3-05, P3-06 | 详情字段完整，余位实时展示 | 客户端 | 已完成 |
+| P3-12 | 客户端线路预订流程（选出发日期 → 确认订单 → 提交） | 客户端 | P3-08, P3-11 | 下单成功跳订单详情，库存不足有提示 | 客户端 | 已完成 |
+| P3-13 | 客户端订单中心（列表/详情/取消/支付引导，状态实时刷新） | 客户端 | P3-09 | 订单列表详情正确，取消后状态更新 | 客户端 | 已完成 |
+| P3-14 | 鸿蒙端搜索/线路/订单页面同构补齐 | 客户端 | P3-13 | 鸿蒙端三页面可用 | 客户端 | 已完成 |
 
 ## 五、Phase 4 机票/酒店与支付
 
@@ -69,7 +69,7 @@
 | P4-02 | flight-service：`GET /api/flights/search?from=&to=&date=&cabin=` 航班查询/比价 + `GET /api/flights/:id` 详情 | 机票服务 | P4-01 | 查询支持日期/舱位过滤，结果按价格排序 | 后端 | 待开始 |
 | P4-03 | `travel_hotels`（name_*/city_code/star/lat/lng/cover_url/status）+ `travel_hotel_rooms`（room_type_*/price_cents/breakfast/inventory）表 + 种子 | 数据层 | P2-01 | 增量 DDL 可执行，种子 ≥5 家酒店含房型 | 后端 | 待开始 |
 | P4-04 | hotel-service：`GET /api/hotels/search?city=&check_in=&check_out=` 搜索 + `GET /api/hotels/:id` 详情（房型/房价日历） | 酒店服务 | P4-03 | 搜索/详情接口 curl 验证通过，房价日历准确 | 后端 | 待开始 |
-| P4-05 | `travel_payments` 表（order_id/channel/amount_cents/status/txn_no/paid_at） | 数据层 | P3-08 | 增量 DDL 可执行 | 后端 | 待开始 |
+| P4-05 | `travel_payments` 表（order_id/channel/amount_cents/status/txn_no/paid_at） | 数据层 | P3-08 | 增量 DDL 可执行 | 后端 | 已完成 |
 | P4-06 | payment-service：`POST /api/payments` 发起支付（渠道下单）+ 回调接口（验签 + 按流水号幂等）+ 每日对账脚本 | 支付服务 | P4-05 | 回调重复投递不重复入账，验签失败拒绝 | 后端 | 待开始 |
 | P4-07 | 订单支付闭环：支付成功 → 订单确认 → 库存确认 → Kafka 事件（订单/通知） | 订单服务 | P4-06, P3-08 | 支付后订单状态自动流转，事件消费方收到通知 | 后端 | 待开始 |
 | P4-08 | 管理端订单管理（列表/筛选/详情/改退操作/支付记录查看） | 管理端 | P3-09, P4-06 | 订单全流程可视，改退操作生效 | 管理端 | 待开始 |
@@ -89,7 +89,7 @@
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | P5-01 | 评价体系：review-service（或并入 booking）`POST /api/reviews` + 列表接口，接入 `travel_reviews` 表，详情页展示评分 | 评价服务 | P2-03 | 评价提交/列表可用，评分聚合准确 | 后端 | 已完成 |
 | P5-02 | 管理端数据看板（订单量/GMV/转化率、Top 目的地与线路排行、图表） | 管理端 | P4-08 | 看板数据与订单库一致，图表渲染正常 | 管理端 | 待开始 |
-| P5-03 | 热词推荐（`travel_searches` 聚合，搜索页热门关键词） | 搜索服务 | P3-02 | 热词按周期聚合展示 | 后端 | 待开始 |
+| P5-03 | 热词推荐（`travel_searches` 聚合，搜索页热门关键词） | 搜索服务 | P3-02 | 热词按周期聚合展示 | 后端 | 已完成 |
 | P5-04 | i18n 完善：13 ARB 全页面适配、RTL 语种方向、后端内容未翻译回退英文 | 全端 | P2-11, P3-13, P4-12 | 全页面 13 语种无缺失 key，AR 界面 RTL 正确 | 全端 | 待开始 |
 | P5-05 | 鸿蒙端全页面同构补齐（我的/订单/支付/搜索） | 客户端 | P3-14, P4-12 | 鸿蒙端功能与 Flutter 对齐 | 客户端 | 待开始 |
 | P5-06 | 性能优化（索引/缓存/慢查询治理）+ 压测报告 | 后端 | P4-13 | 压测报告达标（P99 < 500ms），慢查询清零 | 后端 | 待开始 |
@@ -97,4 +97,4 @@
 
 ---
 
-**任务统计**：Phase 1 共 7 项（全部已完成），Phase 2 共 14 项（全部已完成），Phase 3 共 14 项，Phase 4 共 17 项，Phase 5 共 7 项，合计 **59 项**（已完成 17 项，规划中 42 项）。
+**任务统计**：Phase 1 共 7 项（全部已完成），Phase 2 共 14 项（全部已完成），Phase 3 共 14 项，Phase 4 共 17 项，Phase 5 共 7 项，合计 **59 项**（已完成 31 项，规划中 28 项）。

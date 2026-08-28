@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../api.dart';
 import 'attractions_page.dart';
 import 'destinations_page.dart';
+import 'lines_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,7 +15,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _index = 0;
 
-  static const _pages = [DestinationsPage(), AttractionsPage()];
+  static const _pages = [DestinationsPage(), AttractionsPage(), LinesPage()];
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +35,10 @@ class _HomePageState extends State<HomePage> {
                   icon: Icon(Icons.attractions_outlined),
                   selectedIcon: Icon(Icons.attractions),
                   label: Text('景区管理')),
+              NavigationRailDestination(
+                  icon: Icon(Icons.route_outlined),
+                  selectedIcon: Icon(Icons.route),
+                  label: Text('线路管理')),
             ],
             trailing: Padding(
               padding: const EdgeInsets.only(top: 12),

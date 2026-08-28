@@ -32,6 +32,12 @@ use tower::ServiceBuilder;
 #[path = "handlers.rs"]
 pub(crate) mod handlers;
 
+#[path = "line_handlers.rs"]
+pub(crate) mod line_handlers;
+
+#[path = "line_date_handlers.rs"]
+pub(crate) mod line_date_handlers;
+
 const PORT: &str = "0.0.0.0:8003";
 const TOKEN_TTL_SECS: u64 = 24 * 3600;
 // 防枚举：未知邮箱对固定 hash 执行一次 bcrypt verify，与真实校验耗时一致
@@ -238,6 +244,28 @@ pub(crate) fn api_router(state: AppState) -> Router {
         )
         .route("/api/admin/attractions/{id}", put(handlers::update_attraction))
         .route("/api/admin/attractions/{id}", delete(handlers::delete_attraction))
+        .route(
+            "/api/admin/lines",
+            get(line_handlers::list_lines).post(line_handlers::create_line),
+        )
+        .route("/api/admin/lines/{id}", put(line_handlers::update_line))
+        .route("/api/admin/lines/{id}", delete(line_handlers::delete_line))
+        .route(
+            "/api/admin/lines/{id}/status",
+            put(line_handlers::update_line_status),
+        )
+        .route(
+            "/api/admin/lines/{id}/dates",
+            get(line_date_handlers::list_line_dates).post(line_date_handlers::create_line_date),
+        )
+        .route(
+            "/api/admin/lines/{id}/dates/{date_id}",
+            put(line_date_handlers::update_line_date),
+        )
+        .route(
+            "/api/admin/lines/{id}/dates/{date_id}",
+            delete(line_date_handlers::delete_line_date),
+        )
         .layer(ServiceBuilder::new().map_err(no_error).layer(state.jwt.clone()));
 
     Router::new()

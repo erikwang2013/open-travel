@@ -3069,6 +3069,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "line-service"
+version = "0.1.0"
+dependencies = [
+ "axum 0.8.9",
+ "base64",
+ "ecat",
+ "ecat-circuit-breaker",
+ "ecat-data",
+ "ecat-data-redis",
+ "ecat-data-sqlx",
+ "ecat-middleware",
+ "ecat-security",
+ "ecat-tracing",
+ "ecat-transport-http",
+ "serde",
+ "serde_json",
+ "shared",
+ "tokio",
+ "tower 0.5.3",
+ "tracing",
+]
+
+[[package]]
 name = "linux-raw-sys"
 version = "0.3.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3538,6 +3561,31 @@ name = "openssl-probe"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7c87def4c32ab89d880effc9e097653c8da5d6ef28e6b539d313baaacfbafcbe"
+
+[[package]]
+name = "order-service"
+version = "0.1.0"
+dependencies = [
+ "axum 0.8.9",
+ "base64",
+ "ecat",
+ "ecat-auth",
+ "ecat-circuit-breaker",
+ "ecat-data",
+ "ecat-data-redis",
+ "ecat-data-sqlx",
+ "ecat-middleware",
+ "ecat-mq-kafka",
+ "ecat-security",
+ "ecat-tracing",
+ "ecat-transport-http",
+ "serde",
+ "serde_json",
+ "shared",
+ "tokio",
+ "tower 0.5.3",
+ "tracing",
+]
 
 [[package]]
 name = "p12-keystore"
@@ -4548,6 +4596,30 @@ dependencies = [
  "pbkdf2 0.12.2",
  "salsa20",
  "sha2 0.10.9",
+]
+
+[[package]]
+name = "search-service"
+version = "0.1.0"
+dependencies = [
+ "axum 0.8.9",
+ "base64",
+ "ecat",
+ "ecat-circuit-breaker",
+ "ecat-data",
+ "ecat-data-opensearch",
+ "ecat-data-redis",
+ "ecat-data-sqlx",
+ "ecat-middleware",
+ "ecat-security",
+ "ecat-tracing",
+ "ecat-transport-http",
+ "serde",
+ "serde_json",
+ "shared",
+ "tokio",
+ "tower 0.5.3",
+ "tracing",
 ]
 
 [[package]]

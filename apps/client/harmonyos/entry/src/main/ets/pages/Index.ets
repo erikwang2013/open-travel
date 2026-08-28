@@ -69,19 +69,47 @@ struct Index {
   }
 
   @Builder
+  quickEntry(title: Resource, url: string) {
+    Row() {
+      Text(title)
+        .fontSize(16)
+        .layoutWeight(1)
+      Text('›')
+        .fontSize(20)
+        .fontColor('#999999')
+    }
+    .width('100%')
+    .padding(16)
+    .backgroundColor('#FFFFFF')
+    .borderRadius(10)
+    .margin({ top: 12 })
+    .onClick(() => {
+      router.pushUrl({ url: url });
+    })
+  }
+
+  @Builder
   searchTab() {
     Column() {
       TextInput({ placeholder: $r('app.string.search_hint') })
         .width('90%')
+        .height(44)
         .margin({ top: 24 })
-      Blank()
-      Text($r('app.string.search_placeholder'))
-        .fontSize(14)
-        .fontColor('#999999')
+      Button($r('app.string.search_button'))
+        .width('90%')
+        .height(44)
+        .backgroundColor('#0A59F7')
+        .margin({ top: 12 })
+        .onClick(() => {
+          router.pushUrl({ url: 'pages/SearchPage' });
+        })
+      this.quickEntry($r('app.string.line_go'), 'pages/LineList')
+      this.quickEntry($r('app.string.order_go'), 'pages/OrderList')
       Blank()
     }
     .width('100%')
     .height('100%')
+    .backgroundColor('#F5F5F5')
   }
 
   @Builder
@@ -91,6 +119,14 @@ struct Index {
       Text($r('app.string.booking_placeholder'))
         .fontSize(14)
         .fontColor('#999999')
+      Button($r('app.string.order_go'), { type: ButtonType.Normal })
+        .fontSize(14)
+        .fontColor('#0A59F7')
+        .backgroundColor(Color.Transparent)
+        .margin({ top: 8 })
+        .onClick(() => {
+          router.pushUrl({ url: 'pages/OrderList' });
+        })
       Blank()
     }
     .width('100%')

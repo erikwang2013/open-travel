@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../services/localization_service.dart';
-import 'booking_list_page.dart';
 import 'home_page.dart';
+import 'orders_page.dart';
 import 'profile_page.dart';
+import 'search_page.dart';
 
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -18,7 +19,7 @@ class _HomeShellState extends State<HomeShell> {
   @override
   Widget build(BuildContext context) {
     final loc = LocalizationService.instance;
-    const pages = [HomePage(), BookingListPage(), ProfilePage()];
+    const pages = [HomePage(), SearchPage(), OrdersPage(), ProfilePage()];
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth > 800) {
@@ -34,6 +35,10 @@ class _HomeShellState extends State<HomeShell> {
                       icon: const Icon(Icons.home_outlined),
                       selectedIcon: const Icon(Icons.home),
                       label: Text(loc.getString('nav.home')),
+                    ),
+                    NavigationRailDestination(
+                      icon: const Icon(Icons.search),
+                      label: Text(loc.getString('nav.search')),
                     ),
                     NavigationRailDestination(
                       icon: const Icon(Icons.card_travel_outlined),
@@ -63,6 +68,10 @@ class _HomeShellState extends State<HomeShell> {
                 icon: const Icon(Icons.home_outlined),
                 selectedIcon: const Icon(Icons.home),
                 label: loc.getString('nav.home'),
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.search),
+                label: loc.getString('nav.search'),
               ),
               NavigationDestination(
                 icon: const Icon(Icons.card_travel_outlined),

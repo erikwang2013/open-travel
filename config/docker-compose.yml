@@ -144,6 +144,9 @@ services:
       - ecat-user
       - ecat-booking
       - ecat-admin
+      - ecat-search
+      - ecat-line
+      - ecat-order
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
@@ -193,6 +196,74 @@ services:
       KAFKA_BROKERS: kafka:9092
     ports:
       - "8003:8003"
+
+  # Phase 3：搜索服务（P3-01/02 检索 + 热词；OpenSearch 内容同步）
+  ecat-search:
+    build:
+      context: ..
+      dockerfile: e-cat/services/Dockerfile
+    command: ["search-service"]
+    container_name: travel-ecat-search
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      opensearch:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel?charset=utf8mb4
+      REPLICA_DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql-replica:3306/travel?charset=utf8mb4
+      REDIS_URL: redis://redis:6379
+      OPENSEARCH_URL: http://opensearch:9200
+      JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
+    ports:
+      - "8004:8004"
+
+  # Phase 3：线路服务（P3-05/06 线路列表/详情/出发日历余位）
+  ecat-line:
+    build:
+      context: ..
+      dockerfile: e-cat/services/Dockerfile
+    command: ["line-service"]
+    container_name: travel-ecat-line
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel?charset=utf8mb4
+      REPLICA_DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql-replica:3306/travel?charset=utf8mb4
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
+    ports:
+      - "8005:8005"
+
+  # Phase 3：订单服务（P3-08/09 下单/预占/状态机/取消）
+  ecat-order:
+    build:
+      context: ..
+      dockerfile: e-cat/services/Dockerfile
+    command: ["order-service"]
+    container_name: travel-ecat-order
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel?charset=utf8mb4
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
+      KAFKA_BROKERS: kafka:9092
+    ports:
+      - "8006:8006"
 
 volumes:
   travel-mysql-data:

@@ -365,6 +365,130 @@ curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorizatio
 
 鉴权：需要 admin JWT。`404`：景区不存在；成功：`data` 为 `null`。
 
+### 搜索服务（search-service）
+
+公开接口，无需 JWT。OpenSearch 索引优先，索引不可用时回退 MySQL `LIKE` 检索；检索词写入 `travel_searches` 热词日志。
+
+#### `GET /api/search` — 多条件检索
+
+| 查询参数 | 必填 | 说明 |
+|------|------|------|
+| `q` | 否 | 关键词（空则按目的地过滤或返回全部） |
+| `destination_id` | 否 | 目的地过滤 |
+| `lang` | 否 | 语言，默认 `en`；命中多语种字段 |
+| `price_min` / `price_max` | 否 | 价格区间（分） |
+| `page` | 否 | 页码，默认 `1` |
+
+响应 `data`：`{ "total", "page", "page_size", "items": [ { "id", "type"("destination"\|"attraction"), "name", "price_cents", "cover_url", "description" } ] }`。
+
+```bash
+curl -H "X-Api-Version: v1" "http://localhost:8082/api/search?q=tokyo&lang=zh"
+```
+
+### 线路服务（line-service）
+
+公开接口，无需 JWT。列表走 Redis 缓存（TTL 5 分钟），详情/日历直读 MySQL（从库优先）。
+
+#### `GET /api/lines` — 线路列表
+
+| 查询参数 | 必填 | 说明 |
+|------|------|------|
+| `destination_id` | 否 | 目的地过滤，缺省返回全部上架线路 |
+| `lang` | 否 | 语言，默认 `en`；标题按 `title_{lang}` → `title_zh` → `title_en` 回退 |
+
+响应 `data`：`[ { "id", "title", "destination_id", "days", "price_cents", "max_pax", "cover_url" } ]`。
+
+#### `GET /api/lines/{id}` — 线路详情
+
+`data` 含 `itinerary`：`[ { "day", "title", "description" } ]`（按 lang 取行程标题，回退链同上）。`404`：线路不存在或已下架。
+
+#### `GET /api/lines/{id}/dates` — 出发日历与余位
+
+未来班期（`depart_date >= 今天`）按日期升序，余位实时读取（随订单预占扣减），**不缓存**。
+
+响应 `data`：`[ { "id", "date", "price_cents", "seats_left", "sold_out" } ]`（`sold_out = seats_left == 0`）。
+
+### 订单服务（order-service）
+
+全部接口需要 **用户 JWT**（`POST /api/user/login` 签发）。限流独立统计。
+
+#### `POST /api/orders` — 下单
+
+请求体：`{ "order_type": 1, "product_id": 10020001, "line_date_id": 1, "quantity": 1 }`。
+
+- 仅支持 `order_type=1`（线路）；机票/酒店（2/3）返回 `501`
+- **防超卖双防线**：Redis 原子预占（`INCRBY travel:stock:{line_date_id}`）+ 数据库原子扣减（`seats_left >= quantity` 才扣）
+- 快照含标题/单价/出发日期/数量，订单 `expire_at = now + 15 分钟`，超时未支付由后台任务释放余位
+- `409`：余位不足（`insufficient stock`）
+
+```bash
+curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X POST \
+  http://localhost:8082/api/orders -d '{"order_type":1,"product_id":10020001,"line_date_id":1,"quantity":1}'
+```
+
+响应 `data`：`{ "id", "order_type", "product_id", "status", "amount_cents", "snapshot", "expire_at", "created_at" }`。
+
+#### `GET /api/orders` — 订单列表
+
+当前用户订单按创建时间倒序，分页参数 `page` / `page_size`。响应 `data`：`{ "items": [ ...订单对象 ], "total", "page", "page_size" }`。
+
+#### `GET /api/orders/{id}` — 订单详情
+
+仅限本人订单，否则 `404`。
+
+#### `POST /api/orders/{id}/cancel` — 取消订单
+
+仅 `status=0`（待支付）可取消；取消后释放余位（DB 回补 + Redis 预占回滚），订单置 `status=4`。其他状态 `409`。
+
+### 管理端线路（admin-service 扩展）
+
+鉴权同管理服务：需要 admin JWT（`role=admin`）。
+
+#### `GET /api/admin/lines` — 线路列表
+
+分页参数 `page` / `page_size`（同目的地列表），`keyword` 匹配 `title_zh` / `title_en`。
+
+响应 `data`：`{ "items": [ { "id", "title_en", "title_zh", "title_ja", "title_ko", "title_ru", "destination_id", "days", "departure_date", "price_cents", "max_pax", "itinerary", "status", "cover_url" } ], "total", "page", "page_size" }`。
+
+#### `POST /api/admin/lines` — 创建线路
+
+请求体：5 个 `title_*`（`title_en` / `title_zh` 必填，否则 400）、`destination_id`、`days`、`departure_date`、`price_cents`、`max_pax`、`cover_url`、`status`、`itinerary`。
+
+- `itinerary` 为前端数组格式 JSON 字符串：`[{"day":1,"title":{"en":"...","zh":"..."},"description":{"zh":"...","en":"..."}}]`，后端转换为存储格式 `{"days":[{day,title_en,title_zh,...,description}]}`（`description` 取 zh 优先、en 回退）
+- 兼容种子数据已有的 `{"days":[...]}` 格式（原样落库）
+
+#### `PUT /api/admin/lines/{id}` — 更新线路
+
+可写字段与创建相同（至少一个，否则 400）。`404`：线路不存在。
+
+#### `PUT /api/admin/lines/{id}/status` — 上下架
+
+请求体 `{ "status": 0 | 1 }`（非法值 400）。
+
+#### `DELETE /api/admin/lines/{id}` — 删除线路
+
+- `409`：线路仍有班期（`line has related dates, delete them first`）
+- `404`：线路不存在
+
+#### `GET /api/admin/lines/{id}/dates` — 班期列表
+
+响应 `data`：裸数组 `[ { "id", "line_id", "depart_date", "price_cents", "seats_left", "status" } ]`。
+
+#### `POST /api/admin/lines/{id}/dates` — 新增班期
+
+请求体 `{ "depart_date", "price_cents", "seats_left", "status" }`。
+
+- `409`：同线路同日班期已存在（唯一键 `uk_line_date` 兜底）
+- `404`：线路不存在
+
+#### `PUT /api/admin/lines/{id}/dates/{date_id}` — 更新班期
+
+可写字段同新增（至少一个，否则 400）；更新 `depart_date` 撞唯一键返回 `409`。`404`：班期不存在。
+
+#### `DELETE /api/admin/lines/{id}/dates/{date_id}` — 删除班期
+
+`404`：班期不存在；成功：`data` 为 `null`。
+
 ## 中间件链
 
 业务路由挂载完整中间件链（执行顺序：外层 → 内层）：
@@ -372,6 +496,8 @@ curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorizatio
 - **user-service**：`Tracing → CircuitBreaker → Security → RateLimit(Redis) → Auth(JWT)`
 - **booking-service**：`Tracing → CircuitBreaker → Security → RateLimit`
 - **admin-service**：`Tracing → CircuitBreaker → Security → RateLimit(Redis) → JWT(Auth)`（`/api/admin/login` 公开，仅 CRUD 挂 JWT）
+- **search-service / line-service**：`Tracing → CircuitBreaker → Security → RateLimit`（公开，无 JWT）
+- **order-service**：`Tracing → CircuitBreaker → Security → RateLimit → JWT(Auth)`（全部接口需用户 JWT）
 
 ## 相关文档
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/travel_models.dart';
 import '../services/content_service.dart';
 import '../services/localization_service.dart';
+import 'lines_page.dart';
 
 class DestinationDetailPage extends StatefulWidget {
   const DestinationDetailPage({super.key, required this.destination});
@@ -56,6 +57,16 @@ class _DestinationDetailPageState extends State<DestinationDetailPage> {
             const SizedBox(height: 12),
             Text(d.description),
           ],
+          const SizedBox(height: 16),
+          FilledButton.icon(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => LinesPage(destinationId: d.id, destinationName: d.name),
+              ),
+            ),
+            icon: const Icon(Icons.route),
+            label: Text(loc.getString('lines.viewLines')),
+          ),
           const SizedBox(height: 24),
           Text(
             loc.getString('detail.attractions'),

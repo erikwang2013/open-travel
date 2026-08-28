@@ -5,6 +5,12 @@
     "pages/DestinationDetail",
     "pages/AttractionList",
     "pages/AttractionDetail",
-    "pages/Profile"
+    "pages/Profile",
+    "pages/SearchPage",
+    "pages/LineList",
+    "pages/LineDetail",
+    "pages/OrderList",
+    "pages/OrderDetail",
+    "pages/LoginPage"
   ]
 }
