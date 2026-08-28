@@ -1,0 +1,73 @@
+-- 景点种子数据（幂等：固定 ID 区间 100000-199999，先删后插，可重复执行）
+-- 用法：docker exec -i travel-mysql mysql -uroot -ptravel_dev travel < scripts/seed_attractions.sql
+DELETE FROM travel_attractions WHERE id BETWEEN 100000 AND 199999;
+
+INSERT INTO travel_attractions
+  (id, destination_id, name_en, name_zh, name_ja, name_ko, name_ar, name_es, name_fr, name_de,
+   name_pt, name_hi, name_bn, name_id, name_ru, description, price_cents, open_hours, rating_avg)
+VALUES
+-- ===== Tokyo (东京) =====
+(100000, (SELECT id FROM travel_destinations WHERE name_en='Tokyo'),
+ 'Tokyo Skytree','东京晴空塔','東京スカイツリー','도쿄 스카이트리','طوكيو سكاي تري','Tokyo Skytree','Tokyo Skytree','Tokyo Skytree',
+ 'Tokyo Skytree','टोक्यो स्काईट्री','টোকিও স্কাইট্রি','Tokyo Skytree','Токийское небесное дерево',
+ '{"en":"634m broadcasting tower with observation decks","zh":"634米高的电视塔，设有观景台","ja":"高さ634mの電波塔、展望台あり"}', 21000, '08:00-22:00', 4.7),
+(100001, (SELECT id FROM travel_destinations WHERE name_en='Tokyo'),
+ 'Senso-ji Temple','浅草寺','浅草寺','센소지','معبد سينسوجي','Templo Senso-ji','Temple Senso-ji','Senso-ji-Tempel',
+ 'Templo Senso-ji','सेन्सो-जी मंदिर','সেনসো-জি মন্দির','Kuil Senso-ji','Храм Сэнсо-дзи',
+ '{"en":"Ancient Buddhist temple in Asakusa","zh":"浅草古老的佛教寺庙","ja":"浅草にある古い仏教寺院"}', 0, '06:00-17:00', 4.6),
+(100002, (SELECT id FROM travel_destinations WHERE name_en='Tokyo'),
+ 'Meiji Shrine','明治神宫','明治神宮','메이지 신궁','ضريح ميجي','Santuario Meiji','Sanctuaire Meiji','Meiji-Schrein',
+ 'Santuário Meiji','मेइजी श्राइन','মেইজি মন্দির','Kuil Meiji','Святилище Мэйдзи',
+ '{"en":"Shinto shrine in a forested park","zh":"坐落于森林公园中的神社","ja":"森に囲まれた神社"}', 0, '06:40-16:20', 4.8),
+-- ===== Hong Kong (香港) =====
+(100003, (SELECT id FROM travel_destinations WHERE name_en='Hong Kong'),
+ 'Victoria Harbour','维多利亚港','ビクトリア・ハーバー','빅토리아 하버','ميناء فيكتوريا','Puerto Victoria','Port Victoria','Victoria-Hafen',
+ 'Porto Victoria','विक्टोरिया हार्बर','ভিক্টোরিয়া হারবার','Pelabuhan Victoria','Гавань Виктории',
+ '{"en":"Iconic harbor with nightly light show","zh":"地标性海港，每晚有灯光秀","ja":"夜景のライトショーで有名な港"}', 0, '00:00-24:00', 4.7),
+(100004, (SELECT id FROM travel_destinations WHERE name_en='Hong Kong'),
+ 'Victoria Peak','太平山顶','ビクトリア・ピーク','빅토리아 피크','قمة فيكتوريا','Pico Victoria','Pic Victoria','Victoria Peak',
+ 'Pico Victoria','विक्टोरिया पीक','ভিক্টোরিয়া পিক','Puncak Victoria','Пик Виктории',
+ '{"en":"Highest point with skyline view via tram","zh":"山顶俯瞰城市天际线，可乘缆车到达","ja":"トラムで行く街の絶景スポット"}', 8800, '07:30-23:00', 4.6),
+(100005, (SELECT id FROM travel_destinations WHERE name_en='Hong Kong'),
+ 'Hong Kong Disneyland','香港迪士尼乐园','香港ディズニーランド','홍콩 디즈니랜드','ديزني لاند هونغ كونغ','Disneyland Hong Kong','Hong Kong Disneyland','Hongkong Disneyland',
+ 'Hong Kong Disneyland','हांगकांग डिज़नीलैंड','হংকং ডিজনিল্যান্ড','Disneyland Hong Kong','Гонконгский Диснейленд',
+ '{"en":"Theme park with Disney rides and shows","zh":"迪士尼主题乐园，含游乐设施和演出","ja":"ディズニーのアトラクションとショーを楽しめるテーマパーク"}', 63900, '10:00-20:30', 4.5),
+-- ===== Paris (巴黎) =====
+(100006, (SELECT id FROM travel_destinations WHERE name_en='Paris'),
+ 'Eiffel Tower','埃菲尔铁塔','エッフェル塔','에펠탑','برج إيفل','Torre Eiffel','Tour Eiffel','Eiffelturm',
+ 'Torre Eiffel','एफिल टावर','আইফেল টাওয়ার','Menara Eiffel','Эйфелева башня',
+ '{"en":"Iron lattice tower, symbol of Paris","zh":"巴黎标志性铁塔","ja":"パリのシンボル、鉄の塔"}', 29500, '09:00-23:45', 4.7),
+(100007, (SELECT id FROM travel_destinations WHERE name_en='Paris'),
+ 'Louvre Museum','卢浮宫','ルーヴル美術館','루브르 박물관','متحف اللوفر','Museo del Louvre','Musée du Louvre','Louvre-Museum',
+ 'Museu do Louvre','लौवर संग्रहालय','লুভর জাদুঘর','Museum Louvre','Лувр',
+ '{"en":"World-famous art museum housing the Mona Lisa","zh":"世界著名艺术博物馆，藏有蒙娜丽莎","ja":"モナリザを収蔵する世界的な美術館"}', 22000, '09:00-18:00', 4.8),
+(100008, (SELECT id FROM travel_destinations WHERE name_en='Paris'),
+ 'Palace of Versailles','凡尔赛宫','ヴェルサイユ宮殿','베르사유 궁전','قصر فرساي','Palacio de Versalles','Château de Versailles','Schloss Versailles',
+ 'Palácio de Versalhes','वर्साय महल','ভার্সাই প্রাসাদ','Istana Versailles','Версальский дворец',
+ '{"en":"Royal palace with opulent gardens","zh":"皇家宫殿，拥有奢华的园林","ja":"豪華な庭園を持つ王宮"}', 21500, '09:00-18:30', 4.6),
+-- ===== London (伦敦) =====
+(100009, (SELECT id FROM travel_destinations WHERE name_en='London'),
+ 'Big Ben','大本钟','ビッグ・ベン','빅벤','بيغ بن','Big Ben','Big Ben','Big Ben',
+ 'Big Ben','बिग बेन','বিগ বেন','Big Ben','Биг-Бен',
+ '{"en":"Iconic clock tower of the Palace of Westminster","zh":"威斯敏斯特宫的标志性钟塔","ja":"ウェストミンスター宮殿の時計塔"}', 0, '00:00-24:00', 4.6),
+(100010, (SELECT id FROM travel_destinations WHERE name_en='London'),
+ 'British Museum','大英博物馆','大英博物館','대영박물관','المتحف البريطاني','Museo Británico','Musée britannique','Britisches Museum',
+ 'Museu Britânico','ब्रिटिश म्यूज़ियम','ব্রিটিশ মিউজিয়াম','Museum Inggris','Британский музей',
+ '{"en":"Museum of world history and culture","zh":"世界历史与文化博物馆","ja":"世界の歴史と文化を展示する博物館"}', 0, '10:00-17:00', 4.8),
+(100011, (SELECT id FROM travel_destinations WHERE name_en='London'),
+ 'Tower of London','伦敦塔','ロンドン塔','런던 타워','برج لندن','Torre de Londres','Tour de Londres','Tower of London',
+ 'Torre de Londres','टॉवर ऑफ लंदन','লন্ডন টাওয়ার','Menara London','Лондонский Тауэр',
+ '{"en":"Historic castle and former royal prison","zh":"历史城堡，曾为皇家监狱","ja":"歴史ある城塞、かつての王立監獄"}', 34800, '09:00-17:30', 4.7),
+-- ===== New York (纽约) =====
+(100012, (SELECT id FROM travel_destinations WHERE name_en='New York'),
+ 'Statue of Liberty','自由女神像','自由の女神像','자유의 여신상','تمثال الحرية','Estatua de la Libertad','Statue de la Liberté','Freiheitsstatue',
+ 'Estátua da Liberdade','स्टैच्यू ऑफ लिबर्टी','স্ট্যাচু অফ লিবার্টি','Patung Liberty','Статуя Свободы',
+ '{"en":"Neoclassical sculpture on Liberty Island","zh":"自由岛上的新古典主义雕塑","ja":"リバティ島にある自由の象徴"}', 24500, '08:30-17:00', 4.8),
+(100013, (SELECT id FROM travel_destinations WHERE name_en='New York'),
+ 'Central Park','中央公园','セントラル・パーク','센트럴 파크','سنترال بارك','Central Park','Central Park','Central Park',
+ 'Central Park','सेंट्रल पार्क','সেন্ট্রাল পার্ক','Central Park','Центральный парк',
+ '{"en":"Large urban park in Manhattan","zh":"曼哈顿的大型城市公园","ja":"マンハッタンにある広大な都市公園"}', 0, '06:00-01:00', 4.7),
+(100014, (SELECT id FROM travel_destinations WHERE name_en='New York'),
+ 'Empire State Building','帝国大厦','エンパイア・ステート・ビル','엠파이어 스테이트 빌딩','مبنى إمباير ستيت','Empire State Building','Empire State Building','Empire State Building',
+ 'Empire State Building','एम्पायर स्टेट बिल्डिंग','এম্পায়ার স্টেট বিল্ডিং','Empire State Building','Эмпайр-стейт-билдинг',
+ '{"en":"Art Deco skyscraper with observation deck","zh":"装饰艺术风格摩天大楼，设有观景台","ja":"展望台のあるアールデコ様式の超高層ビル"}', 44000, '08:00-02:00', 4.6);

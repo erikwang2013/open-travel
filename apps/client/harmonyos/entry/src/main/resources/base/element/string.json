@@ -20,6 +20,16 @@
     { "name": "profile_enter", "value": "进入个人中心" },
     { "name": "logout", "value": "退出登录" },
     { "name": "settings_title", "value": "设置" },
-    { "name": "language_label", "value": "语言" }
+    { "name": "language_label", "value": "语言" },
+    { "name": "attraction_list_title", "value": "景点列表" },
+    { "name": "attraction_detail_title", "value": "景点详情" },
+    { "name": "attraction_empty", "value": "暂无景点数据" },
+    { "name": "attraction_not_found", "value": "景点不存在或已下架" },
+    { "name": "load_failed", "value": "加载失败" },
+    { "name": "retry", "value": "重试" },
+    { "name": "ticket_price", "value": "票价" },
+    { "name": "free_entry", "value": "免费" },
+    { "name": "open_hours", "value": "开放时间" },
+    { "name": "rating", "value": "评分" }
   ]
 }

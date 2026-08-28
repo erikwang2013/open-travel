@@ -24,6 +24,12 @@ impl Row {
             .position(|c| c == col)
             .and_then(|i| self.values.get(i))
     }
+
+    /// 按位置取列值（列序与 SELECT 列表一致）；预编译语句下 MySQL 元数据
+    /// 列名不可靠（表达式/反引号/别名缺失），按位置取值是唯一稳妥方式
+    pub fn values(&self) -> &[serde_json::Value] {
+        &self.values
+    }
 }
 
 /// Inner transaction trait for cross-backend transaction support.

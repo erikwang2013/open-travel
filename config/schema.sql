@@ -76,3 +76,58 @@ INSERT INTO travel_destinations (name_en, name_zh, name_ja, description, latitud
 ('Paris','巴黎','パリ','{"en":"City of Light","zh":"光之城"}',48.8566,2.3522,'city',2),
 ('London','伦敦','ロンドン','{"en":"Historic capital of UK","zh":"英国首都"}',51.5074,-0.1278,'city',2),
 ('New York','纽约','ニューヨーク','{"en":"The Big Apple","zh":"大苹果城"}',40.7128,-74.0060,'city',3);
+
+-- ===== Phase 2 增量（P2-01）=====
+-- 仅空数据卷首启时执行；已初始化的运行库在 scripts 或手动执行同样 DDL
+ALTER TABLE travel_destinations
+  ADD COLUMN cover_url VARCHAR(500) NOT NULL DEFAULT '' AFTER region_id,
+  ADD COLUMN status     TINYINT     NOT NULL DEFAULT 1 COMMENT '0下架1上架' AFTER cover_url,
+  ADD COLUMN sort_order INT         NOT NULL DEFAULT 0 AFTER status;
+
+-- 景点表（13 语种名称与客户端 ARB 语种一致）
+CREATE TABLE IF NOT EXISTS travel_attractions (
+  id             BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  destination_id BIGINT UNSIGNED NOT NULL,
+  name_en        VARCHAR(255) NOT NULL DEFAULT '',
+  name_zh        VARCHAR(255) NOT NULL DEFAULT '',
+  name_ja        VARCHAR(255) NOT NULL DEFAULT '',
+  name_ko        VARCHAR(255) NOT NULL DEFAULT '',
+  name_ar        VARCHAR(255) NOT NULL DEFAULT '',
+  name_es        VARCHAR(255) NOT NULL DEFAULT '',
+  name_fr        VARCHAR(255) NOT NULL DEFAULT '',
+  name_de        VARCHAR(255) NOT NULL DEFAULT '',
+  name_pt        VARCHAR(255) NOT NULL DEFAULT '',
+  name_hi        VARCHAR(255) NOT NULL DEFAULT '',
+  name_bn        VARCHAR(255) NOT NULL DEFAULT '',
+  name_id        VARCHAR(255) NOT NULL DEFAULT '',
+  name_ru        VARCHAR(255) NOT NULL DEFAULT '',
+  description    JSON NULL,
+  price_cents    INT UNSIGNED NOT NULL DEFAULT 0,
+  status         TINYINT     NOT NULL DEFAULT 1 COMMENT '0下架1上架',
+  open_hours     VARCHAR(255) NOT NULL DEFAULT '',
+  rating_avg     DECIMAL(2,1) NOT NULL DEFAULT 0.0,
+  cover_url      VARCHAR(500) NOT NULL DEFAULT '',
+  created_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY idx_attraction_destination (destination_id),
+  KEY idx_attraction_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ===== Phase 2 增量（P2-06 / P2-14）=====
+-- 管理员表（P2-06 admin-service 登录）
+CREATE TABLE IF NOT EXISTS travel_admins (
+  id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '管理员ID',
+  email         VARCHAR(191) NOT NULL UNIQUE COMMENT '邮箱（登录账号）',
+  password_hash VARCHAR(255) NOT NULL COMMENT '密码哈希（bcrypt）',
+  name          VARCHAR(100) NOT NULL DEFAULT '' COMMENT '姓名',
+  status        TINYINT NOT NULL DEFAULT 1 COMMENT '状态（1启用/0禁用）',
+  created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  updated_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='管理员表';
+
+-- P2-14 用户昵称列
+ALTER TABLE travel_users ADD COLUMN nickname VARCHAR(100) NOT NULL DEFAULT '' COMMENT '昵称' AFTER lang;
+
+-- 种子管理员（开发环境，密码 Admin@123；勿在生产使用）
+INSERT IGNORE INTO travel_admins (email, password_hash, name) VALUES
+('admin@travel.local', '$2b$12$mEe1EEwFS0wOGDsTpdT1HO54VYP8Lr17ci2IEYoOg43MApvlkwWGi', 'Administrator');

@@ -143,6 +143,7 @@ services:
     depends_on:
       - ecat-user
       - ecat-booking
+      - ecat-admin
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
@@ -171,6 +172,27 @@ services:
       JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
     ports:
       - "8002:8002"
+
+  # 管理端服务（P2-06 admin-service：登录 + CRUD）
+  ecat-admin:
+    build:
+      context: ..
+      dockerfile: e-cat/services/Dockerfile
+    command: ["admin-service"]
+    container_name: travel-ecat-admin
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel?charset=utf8mb4
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
+      KAFKA_BROKERS: kafka:9092
+    ports:
+      - "8003:8003"
 
 volumes:
   travel-mysql-data:

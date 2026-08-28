@@ -1,0 +1,11 @@
+{
+  "modelVersion": "5.0.0",
+  "name": "opentravel",
+  "version": "1.0.0",
+  "description": "OpenTravel HarmonyOS project",
+  "dependencies": {},
+  "devDependencies": {
+    "@ohos/hvigor-ohos-plugin": "5.19.2",
+    "@ohos/hvigor": "5.19.2"
+  }
+}

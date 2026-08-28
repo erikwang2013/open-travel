@@ -4,140 +4,384 @@
   "@appTitle": {
     "description": "appTitle"
   },
+  "@appTitle": {"description": "appTitle"},
+  "@@appTitle": {
+    "description": "@appTitle"
+  },
   "tagline": "Исследуйте мир — бронируйте в одно касание",
   "@tagline": {
     "description": "tagline"
+  },
+  "@tagline": {"description": "tagline"},
+  "@@tagline": {
+    "description": "@tagline"
   },
   "nav.home": "Главная",
   "@nav.home": {
     "description": "nav.home"
   },
+  "@nav.home": {"description": "nav.home"},
+  "@@nav.home": {
+    "description": "@nav.home"
+  },
   "nav.search": "Поиск",
   "@nav.search": {
     "description": "nav.search"
+  },
+  "@nav.search": {"description": "nav.search"},
+  "@@nav.search": {
+    "description": "@nav.search"
   },
   "nav.bookings": "Бронирования",
   "@nav.bookings": {
     "description": "nav.bookings"
   },
+  "@nav.bookings": {"description": "nav.bookings"},
+  "@@nav.bookings": {
+    "description": "@nav.bookings"
+  },
   "nav.profile": "Профиль",
   "@nav.profile": {
     "description": "nav.profile"
+  },
+  "@nav.profile": {"description": "nav.profile"},
+  "@@nav.profile": {
+    "description": "@nav.profile"
   },
   "home.heroTitle": "Начните ваше путешествие",
   "@home.heroTitle": {
     "description": "home.heroTitle"
   },
+  "@home.heroTitle": {"description": "home.heroTitle"},
+  "@@home.heroTitle": {
+    "description": "@home.heroTitle"
+  },
   "home.heroSubtitle": "Бронируйте отели, авиабилеты и экскурсии",
   "@home.heroSubtitle": {
     "description": "home.heroSubtitle"
+  },
+  "@home.heroSubtitle": {"description": "home.heroSubtitle"},
+  "@@home.heroSubtitle": {
+    "description": "@home.heroSubtitle"
   },
   "home.popularDestinations": "Популярные направления",
   "@home.popularDestinations": {
     "description": "home.popularDestinations"
   },
+  "@home.popularDestinations": {"description": "home.popularDestinations"},
+  "@@home.popularDestinations": {
+    "description": "@home.popularDestinations"
+  },
   "search.placeholder": "Поиск направлений, отелей или авиабилетов",
   "@search.placeholder": {
     "description": "search.placeholder"
+  },
+  "@search.placeholder": {"description": "search.placeholder"},
+  "@@search.placeholder": {
+    "description": "@search.placeholder"
   },
   "search.button": "Найти",
   "@search.button": {
     "description": "search.button"
   },
+  "@search.button": {"description": "search.button"},
+  "@@search.button": {
+    "description": "@search.button"
+  },
   "search.results": "Результаты поиска",
   "@search.results": {
     "description": "search.results"
+  },
+  "@search.results": {"description": "search.results"},
+  "@@search.results": {
+    "description": "@search.results"
   },
   "destination.price": "Цена",
   "@destination.price": {
     "description": "destination.price"
   },
+  "@destination.price": {"description": "destination.price"},
+  "@@destination.price": {
+    "description": "@destination.price"
+  },
   "destination.perNight": "/ночь",
   "@destination.perNight": {
     "description": "destination.perNight"
+  },
+  "@destination.perNight": {"description": "destination.perNight"},
+  "@@destination.perNight": {
+    "description": "@destination.perNight"
   },
   "destination.rating": "Рейтинг",
   "@destination.rating": {
     "description": "destination.rating"
   },
+  "@destination.rating": {"description": "destination.rating"},
+  "@@destination.rating": {
+    "description": "@destination.rating"
+  },
   "destination.bookNow": "Забронировать",
   "@destination.bookNow": {
     "description": "destination.bookNow"
+  },
+  "@destination.bookNow": {"description": "destination.bookNow"},
+  "@@destination.bookNow": {
+    "description": "@destination.bookNow"
   },
   "booking.title": "Мои бронирования",
   "@booking.title": {
     "description": "booking.title"
   },
+  "@booking.title": {"description": "booking.title"},
+  "@@booking.title": {
+    "description": "@booking.title"
+  },
   "booking.date": "Дата",
   "@booking.date": {
     "description": "booking.date"
+  },
+  "@booking.date": {"description": "booking.date"},
+  "@@booking.date": {
+    "description": "@booking.date"
   },
   "booking.guests": "Гости",
   "@booking.guests": {
     "description": "booking.guests"
   },
+  "@booking.guests": {"description": "booking.guests"},
+  "@@booking.guests": {
+    "description": "@booking.guests"
+  },
   "booking.status.pending": "Ожидает оплаты",
   "@booking.status.pending": {
     "description": "booking.status.pending"
+  },
+  "@booking.status.pending": {"description": "booking.status.pending"},
+  "@@booking.status.pending": {
+    "description": "@booking.status.pending"
   },
   "booking.status.paid": "Оплачено",
   "@booking.status.paid": {
     "description": "booking.status.paid"
   },
+  "@booking.status.paid": {"description": "booking.status.paid"},
+  "@@booking.status.paid": {
+    "description": "@booking.status.paid"
+  },
   "booking.status.cancelled": "Отменено",
   "@booking.status.cancelled": {
     "description": "booking.status.cancelled"
+  },
+  "@booking.status.cancelled": {"description": "booking.status.cancelled"},
+  "@@booking.status.cancelled": {
+    "description": "@booking.status.cancelled"
   },
   "booking.viewAll": "Смотреть все",
   "@booking.viewAll": {
     "description": "booking.viewAll"
   },
+  "@booking.viewAll": {"description": "booking.viewAll"},
+  "@@booking.viewAll": {
+    "description": "@booking.viewAll"
+  },
   "profile.title": "Профиль",
   "@profile.title": {
     "description": "profile.title"
+  },
+  "@profile.title": {"description": "profile.title"},
+  "@@profile.title": {
+    "description": "@profile.title"
   },
   "profile.login": "Войти",
   "@profile.login": {
     "description": "profile.login"
   },
+  "@profile.login": {"description": "profile.login"},
+  "@@profile.login": {
+    "description": "@profile.login"
+  },
   "profile.register": "Регистрация",
   "@profile.register": {
     "description": "profile.register"
+  },
+  "@profile.register": {"description": "profile.register"},
+  "@@profile.register": {
+    "description": "@profile.register"
   },
   "profile.lang": "Язык",
   "@profile.lang": {
     "description": "profile.lang"
   },
+  "@profile.lang": {"description": "profile.lang"},
+  "@@profile.lang": {
+    "description": "@profile.lang"
+  },
   "common.loading": "Загрузка…",
   "@common.loading": {
     "description": "common.loading"
+  },
+  "@common.loading": {"description": "common.loading"},
+  "@@common.loading": {
+    "description": "@common.loading"
   },
   "common.error": "Произошла ошибка",
   "@common.error": {
     "description": "common.error"
   },
+  "@common.error": {"description": "common.error"},
+  "@@common.error": {
+    "description": "@common.error"
+  },
   "common.retry": "Повторить",
   "@common.retry": {
     "description": "common.retry"
+  },
+  "@common.retry": {"description": "common.retry"},
+  "@@common.retry": {
+    "description": "@common.retry"
   },
   "common.cancel": "Отмена",
   "@common.cancel": {
     "description": "common.cancel"
   },
+  "@common.cancel": {"description": "common.cancel"},
+  "@@common.cancel": {
+    "description": "@common.cancel"
+  },
   "common.currency": "₽",
   "@common.currency": {
     "description": "common.currency"
+  },
+  "@common.currency": {"description": "common.currency"},
+  "@@common.currency": {
+    "description": "@common.currency"
   },
   "common.noData": "Нет данных",
   "@common.noData": {
     "description": "common.noData"
   },
+  "@common.noData": {"description": "common.noData"},
+  "@@common.noData": {
+    "description": "@common.noData"
+  },
   "common.welcome": "Добро пожаловать",
   "@common.welcome": {
     "description": "common.welcome"
   },
+  "@common.welcome": {"description": "common.welcome"},
+  "@@common.welcome": {
+    "description": "@common.welcome"
+  },
   "common.success": "Успешно",
   "@common.success": {
     "description": "common.success"
+  },
+  "@common.success": {"description": "common.success"},
+  "@@common.success": {
+    "description": "@common.success"
+  },
+  "detail.attractions": "Достопримечательности",
+  "@detail.attractions": {
+    "description": "detail.attractions"
+  },
+  "@detail.attractions": {"description": "detail.attractions"},
+  "@@detail.attractions": {
+    "description": "@detail.attractions"
+  },
+  "common.loadFailed": "Не удалось загрузить данные",
+  "@common.loadFailed": {
+    "description": "common.loadFailed"
+  },
+  "@common.loadFailed": {"description": "common.loadFailed"},
+  "@@common.loadFailed": {
+    "description": "@common.loadFailed"
+  },
+  "profile.edit": "Редактировать профиль",
+  "@profile.edit": {
+    "description": "profile.edit"
+  },
+  "@profile.edit": {"description": "profile.edit"},
+  "@@profile.edit": {
+    "description": "@profile.edit"
+  },
+  "profile.nickname": "Никнейм",
+  "@profile.nickname": {
+    "description": "profile.nickname"
+  },
+  "@profile.nickname": {"description": "profile.nickname"},
+  "@@profile.nickname": {
+    "description": "@profile.nickname"
+  },
+  "profile.save": "Сохранить",
+  "@profile.save": {
+    "description": "profile.save"
+  },
+  "@profile.save": {"description": "profile.save"},
+  "@@profile.save": {
+    "description": "@profile.save"
+  },
+  "profile.logout": "Выйти",
+  "@profile.logout": {
+    "description": "profile.logout"
+  },
+  "@profile.logout": {"description": "profile.logout"},
+  "@@profile.logout": {
+    "description": "@profile.logout"
+  },
+  "profile.notLoggedIn": "Не авторизован",
+  "@profile.notLoggedIn": {
+    "description": "profile.notLoggedIn"
+  },
+  "@profile.notLoggedIn": {"description": "profile.notLoggedIn"},
+  "@@profile.notLoggedIn": {
+    "description": "@profile.notLoggedIn"
+  },
+  "profile.loginPrompt": "Войдите, чтобы синхронизировать профиль и бронирования",
+  "@profile.loginPrompt": {
+    "description": "profile.loginPrompt"
+  },
+  "@profile.loginPrompt": {"description": "profile.loginPrompt"},
+  "@@profile.loginPrompt": {
+    "description": "@profile.loginPrompt"
+  },
+  "profile.addressBook": "Адресная книга",
+  "@profile.addressBook": {
+    "description": "profile.addressBook"
+  },
+  "@profile.addressBook": {"description": "profile.addressBook"},
+  "@@profile.addressBook": {
+    "description": "@profile.addressBook"
+  },
+  "profile.addAddress": "Добавить адрес",
+  "@profile.addAddress": {
+    "description": "profile.addAddress"
+  },
+  "@profile.addAddress": {"description": "profile.addAddress"},
+  "@@profile.addAddress": {
+    "description": "@profile.addAddress"
+  },
+  "profile.address": "Адрес",
+  "@profile.address": {
+    "description": "profile.address"
+  },
+  "@profile.address": {"description": "profile.address"},
+  "@@profile.address": {
+    "description": "@profile.address"
+  },
+  "profile.delete": "Удалить",
+  "@profile.delete": {
+    "description": "profile.delete"
+  },
+  "@profile.delete": {"description": "profile.delete"},
+  "@@profile.delete": {
+    "description": "@profile.delete"
+  },
+  "profile.contactSupport": "Поддержка клиентов",
+  "@profile.contactSupport": {
+    "description": "profile.contactSupport"
+  },
+  "@profile.contactSupport": {"description": "profile.contactSupport"},
+  "@@profile.contactSupport": {
+    "description": "@profile.contactSupport"
   }
 }

@@ -3,6 +3,8 @@
     "pages/Index",
     "pages/DestinationList",
     "pages/DestinationDetail",
+    "pages/AttractionList",
+    "pages/AttractionDetail",
     "pages/Profile"
   ]
 }

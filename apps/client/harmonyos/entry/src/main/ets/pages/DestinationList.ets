@@ -44,6 +44,11 @@ class DestinationDataSource implements IDataSource {
   }
 }
 
+interface AttractionNavParams {
+  destinationId: number;
+  name: string;
+}
+
 function createDestinations(): Destination[] {
   return [
     new Destination(1, '三亚', '中国', '热带海滨度假胜地，椰风海韵', 128000),
@@ -100,7 +105,11 @@ struct DestinationList {
             .backgroundColor('#FFFFFF')
             .borderRadius(12)
             .onClick(() => {
-              router.pushUrl({ url: 'pages/DestinationDetail' });
+              const navParams: AttractionNavParams = { destinationId: item.id, name: item.name };
+              router.pushUrl({
+                url: 'pages/AttractionList',
+                params: navParams
+              });
             })
           }
         }, (item: Destination) => item.id.toString())

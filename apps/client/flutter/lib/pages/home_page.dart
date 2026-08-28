@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../services/api_client.dart';
+import '../models/travel_models.dart';
+import '../services/content_service.dart';
 import '../services/localization_service.dart';
+import 'destination_detail_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,7 +13,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  static const List<String> _destinations = [
+  static const List<String> _fallbackDestinations = [
     'Paris',
     'Tokyo',
     'Bali',
@@ -20,23 +22,36 @@ class _HomePageState extends State<HomePage> {
     'Lisbon',
   ];
 
-  late final Future<List<String>> _dates;
+  late Future<List<Destination>> _destinations;
+  String _loadedLang = '';
 
   @override
   void initState() {
     super.initState();
-    _dates = _fetchDates();
+    _destinations = _fetchDestinations();
   }
 
-  Future<List<String>> _fetchDates() async {
-    try {
-      final res = await ApiClient.instance.dio
-          .get<List<dynamic>>('/api/v1/booking/dates');
-      return res.data?.whereType<String>().toList() ?? const [];
-    } on Exception {
-      // ponytail: hardcoded fallback, replace once booking API is live
-      return const ['2026-09-01', '2026-09-15', '2026-10-01'];
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final lang = LocalizationService.instance.locale.languageCode;
+    if (lang != _loadedLang) {
+      _loadedLang = lang;
+      setState(() => _destinations = _fetchDestinations());
     }
+  }
+
+  Future<List<Destination>> _fetchDestinations() async {
+    try {
+      final list = await ContentService.instance.fetchDestinations();
+      if (list.isNotEmpty) return list;
+    } on Exception {
+      // ponytail: API 失败兜底硬编码，避免空屏
+    }
+    return [
+      for (var i = 0; i < _fallbackDestinations.length; i++)
+        Destination(id: i + 1, name: _fallbackDestinations[i]),
+    ];
   }
 
   @override
@@ -63,28 +78,8 @@ class _HomePageState extends State<HomePage> {
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const SizedBox(height: 12),
-        GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 1.6,
-          children: [
-            for (final name in _destinations)
-              Card(
-                child: Center(
-                  child: Text(
-                    name,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        FutureBuilder<List<String>>(
-          future: _dates,
+        FutureBuilder<List<Destination>>(
+          future: _destinations,
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return const Padding(
@@ -92,18 +87,85 @@ class _HomePageState extends State<HomePage> {
                 child: Center(child: CircularProgressIndicator()),
               );
             }
-            final dates = snapshot.data!;
-            if (dates.isEmpty) {
-              return Text(loc.getString('common.noData'));
-            }
-            return Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [for (final d in dates) Chip(label: Text(d))],
+            return GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 1.6,
+              children: [
+                for (final d in snapshot.data!)
+                  _DestinationCard(destination: d),
+              ],
             );
           },
         ),
       ],
+    );
+  }
+}
+
+class _DestinationCard extends StatelessWidget {
+  const _DestinationCard({required this.destination});
+
+  final Destination destination;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => DestinationDetailPage(destination: destination),
+          ),
+        ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (destination.coverUrl.isNotEmpty)
+              Image.network(
+                destination.coverUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => const _CardPlaceholder(),
+              )
+            else
+              const _CardPlaceholder(),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(8),
+                color: Colors.black45,
+                child: Text(
+                  destination.name,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CardPlaceholder extends StatelessWidget {
+  const _CardPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      child: Icon(
+        Icons.landscape,
+        size: 40,
+        color: Theme.of(context).colorScheme.outline,
+      ),
     );
   }
 }

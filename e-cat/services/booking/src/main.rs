@@ -13,7 +13,8 @@
 // 不满足 Into<Infallible>），故省略（axum 自带 panic 捕获）；
 // 限流为 shared::RedisRateLimitLayer（Redis 分布式固定窗口，fail-open）；
 // Security/CircuitBreaker 以 map_err 归一为 Infallible。
-use axum::extract::{Query, State};
+use axum::extract::{Path, Query, State};
+use axum::http::StatusCode;
 use axum::routing::get;
 use axum::{Json, Router};
 use ecat::App;
@@ -58,9 +59,48 @@ pub(crate) struct RegionQuery {
 
 #[derive(Serialize, Deserialize)]
 pub(crate) struct DestRow {
+    id: u64,
     region_id: u64,
     name_en: String,
     name_zh: String,
+}
+
+#[derive(Deserialize)]
+pub(crate) struct AttractionsQuery {
+    pub(crate) destination_id: Option<u64>,
+    #[serde(default)]
+    pub(crate) lang: String,
+}
+
+#[derive(Deserialize)]
+pub(crate) struct LangQuery {
+    #[serde(default)]
+    pub(crate) lang: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub(crate) struct AttractionRow {
+    pub(crate) id: u64,
+    pub(crate) destination_id: u64,
+    pub(crate) name: String,
+    pub(crate) price_cents: u64,
+    pub(crate) open_hours: String,
+    pub(crate) rating_avg: f64,
+    pub(crate) cover_url: String,
+}
+
+#[derive(Serialize)]
+pub(crate) struct AttractionDetail {
+    pub(crate) id: u64,
+    pub(crate) destination_id: u64,
+    pub(crate) name: String,
+    pub(crate) description: String,
+    pub(crate) price_cents: u64,
+    pub(crate) open_hours: String,
+    pub(crate) rating_avg: f64,
+    pub(crate) cover_url: String,
+    // P5-01 评价体系落地后填充，当前预留空数组
+    pub(crate) reviews: Vec<serde_json::Value>,
 }
 
 async fn health() -> &'static str {
@@ -78,7 +118,7 @@ pub(crate) async fn ready(State(state): State<AppState>) -> Json<ApiResponse<boo
 async fn fetch_destinations(db: &SqlxClient, region_id: u64) -> Vec<DestRow> {
     match db
         .query_with(
-            "SELECT region_id, name_en, name_zh FROM travel_destinations WHERE region_id = ?",
+            "SELECT id, region_id, name_en, name_zh FROM travel_destinations WHERE region_id = ? AND status = 1 ORDER BY sort_order ASC, id ASC",
             &[json!(region_id)],
         )
         .await
@@ -86,10 +126,11 @@ async fn fetch_destinations(db: &SqlxClient, region_id: u64) -> Vec<DestRow> {
         Ok(result) => {
             let mut rows = Vec::with_capacity(result.len());
             for row in result {
+                let id = row.get("id").and_then(|v| v.as_u64()).unwrap_or(0);
                 let rid = row.get("region_id").and_then(|v| v.as_u64()).unwrap_or(region_id);
                 let name_en = row.get("name_en").and_then(|v| v.as_str()).unwrap_or("").to_string();
                 let name_zh = row.get("name_zh").and_then(|v| v.as_str()).unwrap_or("").to_string();
-                rows.push(DestRow { region_id: rid, name_en, name_zh });
+                rows.push(DestRow { id, region_id: rid, name_en, name_zh });
             }
             rows
         }
@@ -97,6 +138,203 @@ async fn fetch_destinations(db: &SqlxClient, region_id: u64) -> Vec<DestRow> {
             tracing::warn!("db query failed: {e}");
             Vec::new()
         }
+    }
+}
+
+fn err<T: Serialize>(
+    status: StatusCode,
+    code: u32,
+    message: &str,
+) -> (StatusCode, Json<ApiResponse<T>>) {
+    (status, Json(ApiResponse { code, message: message.into(), data: None }))
+}
+
+fn norm_lang(lang: &str) -> String {
+    let l = lang.trim().to_lowercase();
+    if l.is_empty() { "en".into() } else { l }
+}
+
+fn col_str(row: &ecat_data::Row, col: &str) -> String {
+    row.get(col).and_then(|v| v.as_str()).unwrap_or("").to_string()
+}
+
+fn col_u64(row: &ecat_data::Row, col: &str) -> u64 {
+    row.get(col)
+        .and_then(|v| v.as_u64().or_else(|| v.as_str().and_then(|s| s.parse().ok())))
+        .unwrap_or(0)
+}
+
+fn col_f64(row: &ecat_data::Row, col: &str) -> f64 {
+    row.get(col)
+        .and_then(|v| {
+            v.as_f64()
+                .or_else(|| v.as_u64().map(|n| n as f64))
+                .or_else(|| v.as_str().and_then(|s| s.parse().ok()))
+        })
+        .unwrap_or(0.0)
+}
+
+/// name 取 name_{lang} 列，该语种为空/无该列时回退 name_en。
+fn pick_name(row: &ecat_data::Row, lang: &str) -> String {
+    let v = row.get(&format!("name_{lang}")).and_then(|v| v.as_str()).unwrap_or("");
+    if v.is_empty() {
+        col_str(row, "name_en")
+    } else {
+        v.to_string()
+    }
+}
+
+/// description 为 JSON（键为语言代码），按 lang 取键，缺失/为空回退 en。
+/// 注：sqlx Any 将 MySQL JSON 列（BINARY 标志）按 Blob 解码并 base64 编码返回，
+/// 故先尝试 base64 解码再解析 JSON；非 base64 文本直接解析。
+fn pick_desc(row: &ecat_data::Row, lang: &str) -> String {
+    use base64::Engine as _;
+    let raw = match row.get("description") {
+        Some(v) if v.is_string() => v.as_str().unwrap_or("").to_string(),
+        _ => return String::new(),
+    };
+    let take = |map: &serde_json::Map<String, serde_json::Value>| {
+        map.get(lang)
+            .or_else(|| map.get("en"))
+            .and_then(|v| v.as_str())
+            .filter(|s| !s.is_empty())
+            .unwrap_or("")
+            .to_string()
+    };
+    let decoded = base64::engine::general_purpose::STANDARD
+        .decode(raw.trim())
+        .ok()
+        .and_then(|b| String::from_utf8(b).ok())
+        .unwrap_or_else(|| raw.clone());
+    serde_json::from_str::<serde_json::Value>(&decoded)
+        .ok()
+        .and_then(|j| j.as_object().map(take))
+        .unwrap_or_default()
+}
+
+/// 按目的地查上架景区；查询失败返回空（由调用方决定回退）。
+/// 注意：不能用 SELECT * —— sqlx Any 驱动不支持 MySQL JSON/NewDecimal 类型列
+/// （description/rating_avg），故显式列名 + CAST 规避。
+const ATTR_COLS: &str = "id, destination_id, price_cents, open_hours, \
+    CAST(rating_avg AS CHAR) AS rating_avg, cover_url, \
+    name_en, name_zh, name_ja, name_ko, name_ru, name_de, name_fr, name_es, \
+    name_pt, name_hi, name_ar, name_bn, name_id";
+
+async fn fetch_attractions(db: &SqlxClient, destination_id: u64, lang: &str) -> Vec<AttractionRow> {
+    match db
+        .query_with(
+            &format!("SELECT {ATTR_COLS} FROM travel_attractions WHERE destination_id = ? AND status = 1 ORDER BY id"),
+            &[json!(destination_id)],
+        )
+        .await
+    {
+        Ok(result) => result
+            .iter()
+            .map(|row| AttractionRow {
+                id: col_u64(row, "id"),
+                destination_id: col_u64(row, "destination_id"),
+                name: pick_name(row, lang),
+                price_cents: col_u64(row, "price_cents"),
+                open_hours: col_str(row, "open_hours"),
+                rating_avg: col_f64(row, "rating_avg"),
+                cover_url: col_str(row, "cover_url"),
+            })
+            .collect(),
+        Err(e) => {
+            tracing::warn!("attractions query failed: {e}");
+            Vec::new()
+        }
+    }
+}
+
+async fn fetch_attraction(db: &SqlxClient, id: u64, lang: &str) -> Option<AttractionDetail> {
+    let result = match db
+        .query_with(
+            &format!("SELECT {ATTR_COLS}, CAST(description AS CHAR) AS description FROM travel_attractions WHERE id = ? AND status = 1"),
+            &[json!(id)],
+        )
+        .await
+    {
+        Ok(r) => r,
+        Err(e) => {
+            tracing::warn!("attraction query failed: {e}");
+            return None;
+        }
+    };
+    let row = result.first()?;
+    Some(AttractionDetail {
+        id: col_u64(row, "id"),
+        destination_id: col_u64(row, "destination_id"),
+        name: pick_name(row, lang),
+        description: pick_desc(row, lang),
+        price_cents: col_u64(row, "price_cents"),
+        open_hours: col_str(row, "open_hours"),
+        rating_avg: col_f64(row, "rating_avg"),
+        cover_url: col_str(row, "cover_url"),
+        reviews: Vec::new(),
+    })
+}
+
+pub(crate) async fn attractions_list(
+    State(state): State<AppState>,
+    Query(q): Query<AttractionsQuery>,
+) -> (StatusCode, Json<ApiResponse<Vec<AttractionRow>>>) {
+    let Some(destination_id) = q.destination_id else {
+        return err(StatusCode::BAD_REQUEST, 400, "destination_id is required");
+    };
+    let lang = norm_lang(&q.lang);
+    tracing::info!(event = "booking.attractions.listed", destination_id, lang = %lang);
+    let cache_key = format!("travel:attractions:{destination_id}:{lang}");
+
+    // 1. Redis 缓存优先
+    if let Some(cache) = &state.cache {
+        if let Ok(Some(raw)) = cache.get(&cache_key).await {
+            if let Ok(rows) = serde_json::from_str::<Vec<AttractionRow>>(&String::from_utf8_lossy(&raw)) {
+                return (StatusCode::OK, Json(ApiResponse { code: 0, message: "cache hit".into(), data: Some(rows) }));
+            }
+        }
+    }
+
+    // 2. 未命中 → MySQL 回源（从库优先，失败/为空回退主库）
+    let mut rows: Vec<AttractionRow> = Vec::new();
+    for db in [state.replica.as_ref(), state.db.as_ref()].into_iter().flatten() {
+        rows = fetch_attractions(db, destination_id, &lang).await;
+        if !rows.is_empty() {
+            break;
+        }
+    }
+
+    // 3. 回填缓存（失败仅告警，不影响响应），TTL 5 分钟
+    if !rows.is_empty() {
+        if let Some(cache) = &state.cache {
+            let raw = serde_json::to_string(&rows).unwrap_or_default();
+            if let Err(e) = cache.set(&cache_key, raw.as_bytes(), Duration::from_secs(300)).await {
+                tracing::warn!("attractions cache set failed: {e}");
+            }
+        }
+    }
+
+    // 4. 无数据返回空数组
+    (StatusCode::OK, Json(ApiResponse { code: 0, message: "ok".into(), data: Some(rows) }))
+}
+
+pub(crate) async fn attraction_detail(
+    State(state): State<AppState>,
+    Path(id): Path<u64>,
+    Query(q): Query<LangQuery>,
+) -> (StatusCode, Json<ApiResponse<AttractionDetail>>) {
+    let lang = norm_lang(&q.lang);
+    tracing::info!(event = "booking.attraction.viewed", id, lang = %lang);
+    let mut found: Option<AttractionDetail> = None;
+    for db in [state.replica.as_ref(), state.db.as_ref()].into_iter().flatten() {
+        found = fetch_attraction(db, id, &lang).await;
+        if found.is_some() {
+            break;
+        }
+    }
+    match found {
+        Some(a) => (StatusCode::OK, Json(ApiResponse { code: 0, message: "ok".into(), data: Some(a) })),
+        None => err(StatusCode::NOT_FOUND, 404, "attraction not found"),
     }
 }
 
@@ -139,6 +377,7 @@ pub(crate) async fn available_dates(
     // 4. 占位数据兜底，保证接口在无数据源环境可响应
     if rows.is_empty() {
         rows.push(DestRow {
+            id: q.region_id,
             region_id: q.region_id,
             name_en: "placeholder-destination".into(),
             name_zh: "占位目的地".into(),
@@ -179,6 +418,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     // 故 map_err 声明在目标层之前才能包住它的 error。
     let api = Router::new()
         .route("/api/booking/dates", get(available_dates))
+        .route("/api/booking/attractions", get(attractions_list))
+        .route("/api/booking/attractions/{id}", get(attraction_detail))
         .layer(
             ServiceBuilder::new()
                 .layer(shared::ApiVersionLayer)

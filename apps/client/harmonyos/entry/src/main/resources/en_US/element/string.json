@@ -20,6 +20,16 @@
     { "name": "profile_enter", "value": "Open Profile" },
     { "name": "logout", "value": "Sign Out" },
     { "name": "settings_title", "value": "Settings" },
-    { "name": "language_label", "value": "Language" }
+    { "name": "language_label", "value": "Language" },
+    { "name": "attraction_list_title", "value": "Attractions" },
+    { "name": "attraction_detail_title", "value": "Attraction Details" },
+    { "name": "attraction_empty", "value": "No attractions available" },
+    { "name": "attraction_not_found", "value": "Attraction not found or unavailable" },
+    { "name": "load_failed", "value": "Failed to load" },
+    { "name": "retry", "value": "Retry" },
+    { "name": "ticket_price", "value": "Ticket" },
+    { "name": "free_entry", "value": "Free" },
+    { "name": "open_hours", "value": "Opening Hours" },
+    { "name": "rating", "value": "Rating" }
   ]
 }

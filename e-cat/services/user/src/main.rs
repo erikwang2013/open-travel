@@ -38,6 +38,10 @@ use tower::ServiceBuilder;
 const PORT: &str = "0.0.0.0:8001";
 const TOKEN_TTL_SECS: u64 = 24 * 3600;
 
+// 支持的语言列表（与 docs/travel-project-planning-v2.md 的 12 语种一致）
+const SUPPORTED_LANGS: &[&str] =
+    &["en", "zh", "ja", "ko", "ru", "de", "fr", "es", "pt", "hi", "ar", "bn", "id"];
+
 #[derive(Clone)]
 pub(crate) struct AppState {
     pub(crate) db: Option<Arc<SqlxClient>>,
@@ -98,6 +102,20 @@ pub(crate) struct LoginOut {
 struct ProfileOut {
     user_id: u64,
     email: String,
+    lang: String,
+}
+
+#[derive(Deserialize)]
+pub(crate) struct ProfileUpdateReq {
+    pub(crate) nickname: Option<String>,
+    pub(crate) lang: Option<String>,
+}
+
+#[derive(Serialize)]
+struct ProfileUpdateOut {
+    id: u64,
+    email: String,
+    nickname: String,
     lang: String,
 }
 
@@ -287,6 +305,88 @@ pub(crate) async fn profile(State(state): State<AppState>, req: Request) -> Resp
     (StatusCode::OK, ApiResponse::ok(ProfileOut { user_id, email, lang })).into_response()
 }
 
+pub(crate) async fn update_profile(State(state): State<AppState>, req: Request) -> Response {
+    let Some(claims) = claims_from_request(&req) else {
+        return err::<ProfileUpdateOut>(StatusCode::UNAUTHORIZED, 401, "missing claims")
+            .into_response();
+    };
+    let Ok(user_id) = claims.sub.parse::<u64>() else {
+        return err::<ProfileUpdateOut>(StatusCode::BAD_REQUEST, 400, "invalid subject in token")
+            .into_response();
+    };
+    // claims_from_request 需要整 Request，body 手动解析（不再用 Json extractor）
+    let bytes = match axum::body::to_bytes(req.into_body(), 1 << 16).await {
+        Ok(b) => b,
+        Err(_) => {
+            return err::<ProfileUpdateOut>(StatusCode::BAD_REQUEST, 400, "invalid json body")
+                .into_response()
+        }
+    };
+    let body: ProfileUpdateReq = match serde_json::from_slice(&bytes) {
+        Ok(b) => b,
+        Err(_) => {
+            return err::<ProfileUpdateOut>(StatusCode::BAD_REQUEST, 400, "invalid json body")
+                .into_response()
+        }
+    };
+    let nickname = body.nickname.as_deref().unwrap_or("").trim();
+    if nickname.len() > 100 {
+        return err::<ProfileUpdateOut>(StatusCode::BAD_REQUEST, 400, "nickname too long")
+            .into_response();
+    }
+    if let Some(lang) = body.lang.as_deref() {
+        if !SUPPORTED_LANGS.contains(&lang) {
+            return err::<ProfileUpdateOut>(StatusCode::BAD_REQUEST, 400, "unsupported lang")
+                .into_response();
+        }
+    }
+    let Some(db) = state.db.clone() else {
+        return err::<ProfileUpdateOut>(StatusCode::SERVICE_UNAVAILABLE, 503, "database unavailable")
+            .into_response();
+    };
+    let rows = match db
+        .query_with(
+            "SELECT id, email, nickname, lang FROM travel_users WHERE id = ?",
+            &[json!(user_id)],
+        )
+        .await
+    {
+        Ok(rows) => rows,
+        Err(e) => {
+            tracing::warn!(error = %e, "profile update select failed");
+            return err::<ProfileUpdateOut>(StatusCode::SERVICE_UNAVAILABLE, 503, "database unavailable")
+                .into_response();
+        }
+    };
+    let Some(row) = rows.first() else {
+        return err::<ProfileUpdateOut>(StatusCode::NOT_FOUND, 404, "user not found").into_response();
+    };
+    let email = row.get("email").and_then(|v| v.as_str()).unwrap_or("").to_string();
+    let cur_nickname = row.get("nickname").and_then(|v| v.as_str()).unwrap_or("").to_string();
+    let cur_lang = row.get("lang").and_then(|v| v.as_str()).unwrap_or("en").to_string();
+    // 未提供字段保持原值（幂等 UPDATE 两列）
+    let new_nickname = body.nickname.map(|s| s.trim().to_string()).unwrap_or(cur_nickname);
+    let new_lang = body.lang.unwrap_or(cur_lang);
+    if let Err(e) = db
+        .execute_with(
+            "UPDATE travel_users SET nickname = ?, lang = ? WHERE id = ?",
+            &[json!(new_nickname), json!(new_lang), json!(user_id)],
+        )
+        .await
+    {
+        tracing::warn!(error = %e, "profile update failed");
+        return err::<ProfileUpdateOut>(StatusCode::SERVICE_UNAVAILABLE, 503, "database unavailable")
+            .into_response();
+    }
+    (StatusCode::OK, ApiResponse::ok(ProfileUpdateOut {
+        id: user_id,
+        email,
+        nickname: new_nickname,
+        lang: new_lang,
+    }))
+    .into_response()
+}
+
 async fn connect_cache() -> Option<Arc<RedisCache>> {
     let url = std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://localhost:6379".into());
     match RedisCache::connect(&url).await {
@@ -323,7 +423,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         .route("/api/user/login", post(login))
         .merge(
             Router::new()
-                .route("/api/user/profile", get(profile))
+                .route("/api/user/profile", get(profile).put(update_profile))
                 .layer(ServiceBuilder::new().map_err(no_error).layer(jwt)),
         )
         .layer(

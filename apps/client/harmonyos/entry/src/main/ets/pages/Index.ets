@@ -27,9 +27,10 @@ struct Index {
           .fontSize(22)
           .fontWeight(FontWeight.Bold)
         Blank()
-        Button($r('app.string.view_all'), { type: ButtonType.Text })
+        Button($r('app.string.view_all'), { type: ButtonType.Normal })
           .fontSize(14)
           .fontColor('#0A59F7')
+          .backgroundColor(Color.Transparent)
           .onClick(() => {
             this.openDestinationList();
           })
@@ -116,9 +117,10 @@ struct Index {
         .fontSize(13)
         .fontColor('#999999')
         .margin({ top: 4 })
-      Button($r('app.string.profile_enter'), { type: ButtonType.Text })
+      Button($r('app.string.profile_enter'), { type: ButtonType.Normal })
         .fontSize(14)
         .fontColor('#0A59F7')
+        .backgroundColor(Color.Transparent)
         .margin({ top: 16 })
         .onClick(() => {
           router.pushUrl({ url: 'pages/Profile' });

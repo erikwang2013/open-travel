@@ -60,6 +60,7 @@ members = [
     # open-travel 业务服务（在 e-cat 仓库内做业务功能开发）
     "services/user",
     "services/booking",
+    "services/admin",
     "services/shared",
 ]
 resolver = "2"

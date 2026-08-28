@@ -1,4 +1,4 @@
-# open-travel 业务服务镜像（user-service / booking-service）
+# open-travel 业务服务镜像（user-service / booking-service / admin-service）
 # 构建上下文必须为仓库根（e-cat workspace 在 ./e-cat）
 # 用法：docker build -f e-cat/services/Dockerfile -t travel-services .
 #       docker run travel-services user-service   （或 booking-service）
@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     protobuf-compiler cmake g++ make pkg-config libssl-dev libsasl2-dev libzstd-dev \
     && rm -rf /var/lib/apt/lists/*
 COPY e-cat ./e-cat
-RUN cargo build --release --manifest-path e-cat/Cargo.toml -p user-service -p booking-service
+RUN cargo build --release --manifest-path e-cat/Cargo.toml -p user-service -p booking-service -p admin-service
 
 FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -19,5 +19,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=build /build/e-cat/target/release/user-service /usr/local/bin/user-service
 COPY --from=build /build/e-cat/target/release/booking-service /usr/local/bin/booking-service
-EXPOSE 8001 8002
+COPY --from=build /build/e-cat/target/release/admin-service /usr/local/bin/admin-service
+EXPOSE 8001 8002 8003
 CMD ["booking-service"]

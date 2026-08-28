@@ -63,12 +63,12 @@ apps/flutter//android/app/profile
 apps/flutter//android/app/release
 
 # HarmonyOS (hvigor/DevEco) build artifacts
-apps/harmonyos/.hvigor/
-apps/harmonyos/oh_modules/
-apps/harmonyos/entry/oh_modules/
-apps/harmonyos/build/
-apps/harmonyos/entry/build/
-apps/harmonyos/.cxx/
-apps/harmonyos/.idea/
-apps/harmonyos/hvigorw
-apps/harmonyos/hvigorw.bat
+apps/client/harmonyos/.hvigor/
+apps/client/harmonyos/oh_modules/
+apps/client/harmonyos/entry/oh_modules/
+apps/client/harmonyos/build/
+apps/client/harmonyos/entry/build/
+apps/client/harmonyos/.cxx/
+apps/client/harmonyos/.idea/
+apps/client/harmonyos/hvigorw
+apps/client/harmonyos/hvigorw.bat
