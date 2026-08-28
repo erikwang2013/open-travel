@@ -6,6 +6,7 @@ use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 use std::task::{Context, Poll};
+use std::time::{SystemTime, UNIX_EPOCH};
 use tower::{Layer, Service};
 
 /// Errors while constructing or operating the JWT auth layer.
@@ -35,6 +36,8 @@ pub struct JwtAuthLayer {
     required_audience: Option<String>,
     /// 构建一次复用：DecodingKey 持有密钥副本，逐请求重建是纯浪费（P1）。
     decoding_key: Arc<jsonwebtoken::DecodingKey>,
+    /// 签发用 EncodingKey：与 DecodingKey 同源构造，供 sign() 复用。
+    encoding_key: Arc<jsonwebtoken::EncodingKey>,
     /// 基准校验配置：每个请求 clone（Validation: Clone），避免重建。
     validation: jsonwebtoken::Validation,
 }
@@ -53,6 +56,7 @@ impl JwtAuthLayer {
         let secret_bytes = secret.into_bytes();
         Ok(Self {
             decoding_key: Arc::new(jsonwebtoken::DecodingKey::from_secret(&secret_bytes)),
+            encoding_key: Arc::new(jsonwebtoken::EncodingKey::from_secret(&secret_bytes)),
             validation: jsonwebtoken::Validation::new(jsonwebtoken::Algorithm::HS256),
             required_claims: vec!["sub".into()],
             header_name: "Authorization".into(),
@@ -87,6 +91,31 @@ impl JwtAuthLayer {
     pub fn header_name(mut self, name: impl Into<String>) -> Self {
         self.header_name = name.into();
         self
+    }
+
+    /// 签发 HS256 JWT：自动注入 iat 与 exp（now + ttl_secs），
+    /// 其余声明（sub 等）由调用方在 claims 结构中提供。
+    pub fn sign<C: serde::Serialize>(
+        &self,
+        claims: &C,
+        ttl_secs: u64,
+    ) -> Result<String, jsonwebtoken::errors::Error> {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map(|d| d.as_secs())
+            .unwrap_or(0);
+        // to_value 仅对 NaN 浮点等无法序列化的值失败，结构体 claims 不会触发；
+        // 兜底 Null 不可能到达 encode。
+        let mut payload = serde_json::to_value(claims).unwrap_or(serde_json::Value::Null);
+        if let Some(obj) = payload.as_object_mut() {
+            obj.insert("iat".into(), serde_json::json!(now));
+            obj.insert("exp".into(), serde_json::json!(now + ttl_secs));
+        }
+        jsonwebtoken::encode(
+            &jsonwebtoken::Header::new(jsonwebtoken::Algorithm::HS256),
+            &payload,
+            self.encoding_key.as_ref(),
+        )
     }
 }
 
@@ -350,6 +379,30 @@ mod tests {
             .await
             .unwrap();
         assert_eq!(resp.status(), StatusCode::UNAUTHORIZED);
+    }
+
+    #[derive(serde::Serialize)]
+    struct SignClaims {
+        sub: String,
+    }
+
+    #[test]
+    fn sign_then_decode_roundtrip_with_exp() {
+        let layer = JwtAuthLayer::new(SECRET).unwrap();
+        let token = layer
+            .sign(&SignClaims { sub: "42".into() }, 3600)
+            .unwrap();
+        let decoded = jsonwebtoken::decode::<serde_json::Value>(
+            &token,
+            &jsonwebtoken::DecodingKey::from_secret(SECRET.as_bytes()),
+            &jsonwebtoken::Validation::new(jsonwebtoken::Algorithm::HS256),
+        )
+        .unwrap();
+        assert_eq!(decoded.claims["sub"], "42");
+        let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
+        let exp = decoded.claims["exp"].as_u64().unwrap();
+        assert!(exp > now && exp <= now + 3600, "exp in (now, now+3600], got {exp}");
+        assert!(decoded.claims["iat"].as_u64().is_some());
     }
 
     #[tokio::test]
