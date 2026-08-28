@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0] — 2026-08-28
+
+### Changed
+- API 版本从 URL 路径移至请求头 `X-Api-Version: v1` 传递并强制要求：缺失该 header 或值不是 `v1` 时返回 400，当前仅 v1 一个版本
+- 端点 URL 去掉 `/v1` 前缀：`/api/user/profile`、`/api/user/register`、`/api/booking/dates`；Nginx 网关前缀分流同步改为 `/api/user/` 与 `/api/booking/`
+- 文档同步：docs/api.md 新增「API 版本」一节，根 README 与 e-cat README×2 更新端点路径、curl 示例及版本 header 说明
+
 ## [1.0.0] — 2026-08-28
 
 > 项目首个版本（项目版本独立于 e-cat 框架版本，见 [README](README.md)「版本发布流程」）。

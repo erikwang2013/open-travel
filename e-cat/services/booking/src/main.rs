@@ -151,16 +151,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let state = AppState { db: connect_db().await, cache: connect_cache().await };
 
     // 业务路由：完整中间件链，执行顺序（外层 → 内层）：
-    //   CircuitBreaker → Security → RateLimit
+    //   ApiVersion → CircuitBreaker → Security → RateLimit
+    // API 版本经 X-Api-Version header 传递（URL 无版本前缀），缺失/非法直接 400。
     // dates 为公开接口（热门目的地展示，无鉴权），限流保留防止滥用。
     // e-cat 中间件的 Error 非 Infallible，需 map_err 归一以满足 axum Router::layer
     // 约束；RateLimit（Redis 分布式）对所有请求计数。
     // 注：tower 先添加的层在外层，且 map_err 内部也是 layer()（新层在内），
     // 故 map_err 声明在目标层之前才能包住它的 error。
     let api = Router::new()
-        .route("/api/v1/booking/dates", get(available_dates))
+        .route("/api/booking/dates", get(available_dates))
         .layer(
             ServiceBuilder::new()
+                .layer(shared::ApiVersionLayer)
                 .map_err(no_error)
                 .layer(CircuitBreakerLayer::new())
                 .map_err(no_error)

@@ -11,7 +11,7 @@
 | user-service 直连 | `http://localhost:8001` | 用户服务 |
 | booking-service 直连 | `http://localhost:8002` | 目的地服务 |
 
-网关分流规则（`config/nginx.conf`）：`/api/v1/user/*` → user-service，`/api/v1/booking/*` → booking-service；`/health`、`/ready` → user-service。
+网关分流规则（`config/nginx.conf`）：`/api/user/*` → user-service，`/api/booking/*` → booking-service；`/health`、`/ready` → user-service。
 
 ## 通用约定
 
@@ -29,9 +29,21 @@
 | `message` | string | 提示信息 |
 | `data` | object \| array \| null | 业务数据，失败时为 `null` |
 
+### API 版本
+
+API 版本通过请求头 `X-Api-Version` 传递，**强制要求**：
+
+- 当前仅一个版本：`v1`
+- 所有业务请求必须携带 `X-Api-Version: v1`
+- 缺失该 header 或值不是 `v1` 时返回 `400`（如 `{"code":400,"message":"unsupported api version","data":null}`）
+
+```bash
+curl -H "X-Api-Version: v1" http://localhost:8082/api/user/profile
+```
+
 ### 鉴权（JWT）
 
-user-service 的 `/api/v1/user/profile` 需在请求头携带 JWT：
+user-service 的 `/api/user/profile` 需在请求头携带 JWT：
 
 ```
 Authorization: Bearer <JWT>
@@ -52,7 +64,7 @@ Authorization: Bearer <JWT>
 | HTTP 状态码 | 场景 |
 |------|------|
 | 200 | 成功 |
-| 400 | 请求参数错误（`code` 非 0，`message` 描述原因） |
+| 400 | 请求参数错误 / `X-Api-Version` 缺失或不受支持（`code` 非 0，`message` 描述原因） |
 | 401 | 未认证 / JWT 无效 |
 | 403 | 请求被安全中间件拦截（SQL 注入 / XSS / SSRF 等攻击模式） |
 | 429 | 超过限流阈值 |
@@ -88,12 +100,12 @@ curl http://localhost:8082/ready
 
 ### 用户服务
 
-#### `GET /api/v1/user/profile` — 查询用户资料
+#### `GET /api/user/profile` — 查询用户资料
 
 鉴权：**需要 JWT**。当前返回占位数据（Phase 2 接入真实用户表）。
 
 ```bash
-curl -H "Authorization: Bearer <JWT>" http://localhost:8082/api/v1/user/profile
+curl -H "X-Api-Version: v1" -H "Authorization: Bearer <JWT>" http://localhost:8082/api/user/profile
 ```
 
 ```json
@@ -103,19 +115,19 @@ curl -H "Authorization: Bearer <JWT>" http://localhost:8082/api/v1/user/profile
 无 token 时：
 
 ```bash
-curl http://localhost:8082/api/v1/user/profile
+curl -H "X-Api-Version: v1" http://localhost:8082/api/user/profile
 ```
 
 ```json
 { "code": 401001, "message": "unauthorized", "data": null }
 ```
 
-#### `POST /api/v1/user/register` — 用户注册
+#### `POST /api/user/register` — 用户注册
 
 无需 JWT（注册接口）。当前返回占位数据。
 
 ```bash
-curl -X POST http://localhost:8082/api/v1/user/register
+curl -H "X-Api-Version: v1" -X POST http://localhost:8082/api/user/register
 ```
 
 ```json
@@ -124,12 +136,12 @@ curl -X POST http://localhost:8082/api/v1/user/register
 
 ### 目的地服务
 
-#### `GET /api/v1/booking/dates?region_id=N` — 热门目的地日期
+#### `GET /api/booking/dates?region_id=N` — 热门目的地日期
 
 公开接口，无鉴权。查询 `region_id` 对应的热门目的地列表，走 Redis 缓存（`hot_destinations:{region_id}`，TTL 300s）→ MySQL 回源（`travel_destinations` 表）→ 占位数据兜底，保证无数据源环境可响应。
 
 ```bash
-curl "http://localhost:8082/api/v1/booking/dates?region_id=1"
+curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/dates?region_id=1"
 ```
 
 ```json

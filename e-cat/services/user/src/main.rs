@@ -313,21 +313,23 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let state = AppState { db: connect_db().await, cache: connect_cache().await, jwt: jwt.clone() };
 
     // 业务路由：注册/登录公开；profile 挂 JWT（Auth 层内）。
-    // 执行顺序（外层 → 内层）：CircuitBreaker → Security → RateLimit
+    // 执行顺序（外层 → 内层）：ApiVersion → CircuitBreaker → Security → RateLimit
     //   → [profile 仅] Auth(JWT)
+    // API 版本经 X-Api-Version header 传递（URL 无版本前缀），缺失/非法直接 400。
     // e-cat 中间件的 Error 非 Infallible，需 map_err 归一以满足 axum Router::layer
     // 约束；RateLimit（Redis 分布式）覆盖全部业务路由：未认证请求也计入限流，
     // 防止暴力请求耗尽资源。
     let api = Router::new()
-        .route("/api/v1/user/register", post(register))
-        .route("/api/v1/user/login", post(login))
+        .route("/api/user/register", post(register))
+        .route("/api/user/login", post(login))
         .merge(
             Router::new()
-                .route("/api/v1/user/profile", get(profile))
+                .route("/api/user/profile", get(profile))
                 .layer(ServiceBuilder::new().map_err(no_error).layer(jwt)),
         )
         .layer(
             ServiceBuilder::new()
+                .layer(shared::ApiVersionLayer)
                 .map_err(no_error)
                 .layer(CircuitBreakerLayer::new())
                 .map_err(no_error)

@@ -34,7 +34,6 @@ open-travel/
     │   ├── booking/       # booking-service：热门目的地日期，入口 src/main.rs
     │   └── shared/        # 公共代码（JWT 密钥、Redis 限流中间件等）
     ├── config/            # 框架配置示例
-    ├── docs/              # 框架设计文档（API 参考、生态规划、审计报告）
     └── examples/          # 框架示例项目
 ```
 
@@ -42,13 +41,13 @@ open-travel/
 
 | 服务 | 端口 | 说明 |
 |------|------|------|
-| user-service | 8001 | `GET /api/v1/user/profile`（需 JWT）、`POST /api/v1/user/register` |
-| booking-service | 8002 | `GET /api/v1/booking/dates?region_id=N`（公开接口） |
-| Nginx 网关 | 8082→80 | 按 `/api/v1/user/` 与 `/api/v1/booking/` 前缀分流 |
+| user-service | 8001 | `GET /api/user/profile`（需 JWT）、`POST /api/user/register`（公开） |
+| booking-service | 8002 | `GET /api/booking/dates?region_id=N`（公开接口） |
+| Nginx 网关 | 8082→80 | 按 `/api/user/` 与 `/api/booking/` 前缀分流 |
 
 两个服务均提供 `GET /health`（存活）与 `GET /ready`（就绪，报告数据源降级状态）。
 
-> 接口详情（请求/响应示例、鉴权与限流说明）见 [API 参考](docs/api.md)。
+> 接口详情（请求/响应示例、鉴权与限流说明）见 [API 参考](../docs/api.md)。
 
 ## 快速开始
 
@@ -88,27 +87,29 @@ docker compose -f config/docker-compose.yml up -d
 
 ### 验证
 
+所有业务接口需携带 `X-Api-Version: v1` 请求头（版本经 header 传递，缺失或值错误返回 400）。
+
 curl 直连服务：
 
 ```bash
 curl http://localhost:8002/health                 # OK
-curl "http://localhost:8002/api/v1/booking/dates?region_id=1"
+curl -H "X-Api-Version: v1" "http://localhost:8002/api/booking/dates?region_id=1"
 # {"code":0,"message":"ok","data":[{"region_id":1,"name_en":"placeholder-destination"}]}
-curl http://localhost:8001/api/v1/user/register -X POST
+curl -H "X-Api-Version: v1" http://localhost:8001/api/user/register -X POST
 # {"code":0,"message":"ok","data":{"user_id":2,"nickname":"new-user"}}
 ```
 
 经网关（Nginx，host `8082` → 容器 `80`）：
 
 ```bash
-curl http://localhost:8082/api/v1/booking/dates?region_id=1
+curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/dates?region_id=1"
 curl http://localhost:8082/health
 ```
 
-带鉴权的接口（`/api/v1/user/profile`）需在请求头携带 JWT：
+带鉴权的接口（`/api/user/profile`）需在请求头携带 JWT：
 
 ```bash
-curl -H "Authorization: Bearer <JWT>" http://localhost:8082/api/v1/user/profile
+curl -H "X-Api-Version: v1" -H "Authorization: Bearer <JWT>" http://localhost:8082/api/user/profile
 ```
 
 ### 端口映射
@@ -122,7 +123,7 @@ curl -H "Authorization: Bearer <JWT>" http://localhost:8082/api/v1/user/profile
 | Redis | 6381 → 6379 |
 | OpenSearch | 9201 → 9200 |
 
-> 数据源端口映射为本地临时方案（宿主 3306/6379/9200 已被占用），见 `docs/integration-report.md`。
+> 数据源端口映射为本地临时方案（宿主 3306/6379/9200 已被占用），见 `../docs/integration-report.md`。
 
 ### 运行测试
 
@@ -228,8 +229,10 @@ cargo test --workspace                          # 全 workspace
 
 业务路由挂载完整中间件链（执行顺序：外层 → 内层）：
 
-- **user-service**：`Tracing → CircuitBreaker → Security → RateLimit(Redis) → Auth(JWT)`
+- **user-service**：`Tracing → CircuitBreaker → Security → RateLimit(Redis) → [profile 仅] Auth(JWT)`
 - **booking-service**：`Tracing → CircuitBreaker → Security → RateLimit`（dates 为公开接口，无 JWT）
+
+业务路由最外层挂 `ApiVersion` 校验（版本经 `X-Api-Version` header 传递，缺失或非 `v1` 直接 400）。
 
 **限流**：每服务 100 req/60s，Redis 分布式固定窗口；未认证请求也计入限流（防暴力请求耗尽资源），超限返回 429。
 
@@ -278,16 +281,13 @@ Error::new(ErrorCode::InvalidArgument, "bad_request", "user id must be positive"
 
 ### 实现阶段与已知限制
 
-- 框架 Phase 1–16 全部完成（详见 [CHANGELOG](CHANGELOG.md) 与 [生态规划 v3](docs/ecosystem-plan-v3.md)）
+- 框架 Phase 1–16 全部完成（详见 [CHANGELOG](CHANGELOG.md)）
 - 已知限制：GraphQL 不支持别名/fragment/多顶层字段；OAuth2 内省缓存默认白名单过滤 claims；Kafka 默认 `auto_commit=false`（重启从分区末尾重读）
 
 ## 设计文档
 
-- [API 参考](docs/api.md)
-- [项目规划](docs/travel-project-planning.md)（根目录 docs/）
-- [数据库配置教程](docs/database-config-tutorial.md)
-- [TLS 证书认证教程](docs/tls-certificate-tutorial.md)
-- [依赖 CVE 跟踪](docs/dependency-cve-tracking.md)
+- [API 参考](../docs/api.md)
+- [项目规划](../docs/travel-project-planning.md)
 
 ## 支持
 
@@ -295,7 +295,7 @@ Error::new(ErrorCode::InvalidArgument, "bad_request", "user id must be positive"
 
 | 微信支付 | 支付宝 |
 |:---:|:---:|
-| <img src="docs/weixinpay.png" width="130" height="130" alt="微信支付"> | <img src="docs/alipay.png" width="130" height="130" alt="支付宝"> |
+| <img src="../docs/weixinpay.png" width="130" height="130" alt="微信支付"> | <img src="../docs/alipay.png" width="130" height="130" alt="支付宝"> |
 
 ### 全球转账（银行汇款）
 

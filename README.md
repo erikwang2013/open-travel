@@ -43,16 +43,18 @@ docker compose -f config/docker-compose.yml up -d   # 启动数据源 + 服务 +
 |------|------|------|
 | user-service | 8001 | 用户资料 / 注册 |
 | booking-service | 8002 | 热门目的地日期 |
-| Nginx 网关 | 8082→80 | 按 `/api/v1/user/`、`/api/v1/booking/` 前缀分流 |
+| Nginx 网关 | 8082→80 | 按 `/api/user/`、`/api/booking/` 前缀分流 |
 | MySQL | 3308→3306 | 数据源（宿主端口冲突，临时映射） |
 | Redis | 6381→6379 | 缓存 / 限流 |
 | OpenSearch | 9201→9200 | 多语言搜索 |
 
 ### 验证
 
+> 业务接口需携带 `X-Api-Version: v1` 请求头（版本经 header 传递，缺失或值错误返回 400）。
+
 ```bash
 curl http://localhost:8082/health
-curl "http://localhost:8082/api/v1/booking/dates?region_id=1"
+curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/dates?region_id=1"
 # {"code":0,"message":"ok","data":[{"region_id":1,"name_en":"placeholder-destination"}]}
 ```
 

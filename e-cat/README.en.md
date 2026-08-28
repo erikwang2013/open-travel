@@ -34,7 +34,6 @@ open-travel/
     │   ├── booking/       # booking-service: hot destination dates, entry src/main.rs
     │   └── shared/        # Shared code (JWT secret, Redis rate-limit middleware, etc.)
     ├── config/            # Framework config examples
-    ├── docs/              # Framework design docs (API reference, ecosystem plans, audits)
     └── examples/          # Framework examples
 ```
 
@@ -42,13 +41,13 @@ open-travel/
 
 | Service | Port | Description |
 |---------|------|-------------|
-| user-service | 8001 | `GET /api/v1/user/profile` (JWT required), `POST /api/v1/user/register` |
-| booking-service | 8002 | `GET /api/v1/booking/dates?region_id=N` (public) |
-| Nginx gateway | 8082→80 | Prefix routing: `/api/v1/user/` and `/api/v1/booking/` |
+| user-service | 8001 | `GET /api/user/profile` (JWT required), `POST /api/user/register` (public) |
+| booking-service | 8002 | `GET /api/booking/dates?region_id=N` (public) |
+| Nginx gateway | 8082→80 | Prefix routing: `/api/user/` and `/api/booking/` |
 
 Both services expose `GET /health` (liveness) and `GET /ready` (readiness, reports degraded data-source state).
 
-> See the [API Reference](docs/api.md) for request/response examples, auth, and rate-limit details.
+> See the [API Reference](../docs/api.md) for request/response examples, auth, and rate-limit details.
 
 ## Quick Start
 
@@ -88,27 +87,29 @@ docker compose -f config/docker-compose.yml up -d
 
 ### Verify
 
+All business endpoints require the `X-Api-Version: v1` request header (the API version is passed via the header; a missing or invalid value returns 400).
+
 Curl the services directly:
 
 ```bash
 curl http://localhost:8002/health                 # OK
-curl "http://localhost:8002/api/v1/booking/dates?region_id=1"
+curl -H "X-Api-Version: v1" "http://localhost:8002/api/booking/dates?region_id=1"
 # {"code":0,"message":"ok","data":[{"region_id":1,"name_en":"placeholder-destination"}]}
-curl http://localhost:8001/api/v1/user/register -X POST
+curl -H "X-Api-Version: v1" http://localhost:8001/api/user/register -X POST
 # {"code":0,"message":"ok","data":{"user_id":2,"nickname":"new-user"}}
 ```
 
 Through the gateway (Nginx, host `8082` → container `80`):
 
 ```bash
-curl http://localhost:8082/api/v1/booking/dates?region_id=1
+curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/dates?region_id=1"
 curl http://localhost:8082/health
 ```
 
-Authenticated endpoints (`/api/v1/user/profile`) require a JWT in the request header:
+Authenticated endpoints (`/api/user/profile`) require a JWT in the request header:
 
 ```bash
-curl -H "Authorization: Bearer <JWT>" http://localhost:8082/api/v1/user/profile
+curl -H "X-Api-Version: v1" -H "Authorization: Bearer <JWT>" http://localhost:8082/api/user/profile
 ```
 
 ### Port Mappings
@@ -122,7 +123,7 @@ curl -H "Authorization: Bearer <JWT>" http://localhost:8082/api/v1/user/profile
 | Redis | 6381 → 6379 |
 | OpenSearch | 9201 → 9200 |
 
-> The data-source port mappings are a local temporary arrangement (host 3306/6379/9200 are occupied); see `docs/integration-report.md`.
+> The data-source port mappings are a local temporary arrangement (host 3306/6379/9200 are occupied); see `../docs/integration-report.md`.
 
 ### Run Tests
 
@@ -228,8 +229,10 @@ Client Request
 
 Business routes mount the full middleware chain (order: outer → inner):
 
-- **user-service**: `Tracing → CircuitBreaker → Security → RateLimit(Redis) → Auth(JWT)`
+- **user-service**: `Tracing → CircuitBreaker → Security → RateLimit(Redis) → [profile only] Auth(JWT)`
 - **booking-service**: `Tracing → CircuitBreaker → Security → RateLimit` (dates is a public endpoint, no JWT)
+
+Business routes mount an `ApiVersion` check outermost (version passed via the `X-Api-Version` header; missing or non-`v1` returns 400 directly).
 
 **Rate limiting**: 100 req/60s per service, Redis distributed fixed window; unauthenticated requests also count (preventing resource exhaustion by brute force); returns 429 when exceeded.
 
@@ -278,16 +281,13 @@ Error::new(ErrorCode::InvalidArgument, "bad_request", "user id must be positive"
 
 ### Implementation Progress & Known Limitations
 
-- Framework Phases 1–16 all complete (see [CHANGELOG](CHANGELOG.md) and [Ecosystem Plan v3](docs/ecosystem-plan-v3.md))
+- Framework Phases 1–16 all complete (see [CHANGELOG](CHANGELOG.md))
 - Known limitations: GraphQL rejects aliases/fragments/multiple top-level fields; OAuth2 introspection cache whitelists claims by default; Kafka defaults to `auto_commit=false` (re-reads from the partition end on restart)
 
 ## Documentation
 
-- [API Reference](docs/api.md)
-- [Project Planning](docs/travel-project-planning.md) (root docs/)
-- [Database Config Tutorial](docs/database-config-tutorial.md)
-- [TLS Certificate Tutorial](docs/tls-certificate-tutorial.md)
-- [Dependency CVE Tracking](docs/dependency-cve-tracking.md)
+- [API Reference](../docs/api.md)
+- [Project Planning](../docs/travel-project-planning.md)
 
 ## Support
 
@@ -295,7 +295,7 @@ Your support is welcome!
 
 | WeChat Pay | Alipay |
 |:---:|:---:|
-| <img src="docs/weixinpay.png" width="130" height="130" alt="WeChat Pay"> | <img src="docs/alipay.png" width="130" height="130" alt="Alipay"> |
+| <img src="../docs/weixinpay.png" width="130" height="130" alt="WeChat Pay"> | <img src="../docs/alipay.png" width="130" height="130" alt="Alipay"> |
 
 ### Global Transfer (Bank Wire)
 
