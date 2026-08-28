@@ -45,3 +45,4 @@ echo "==> 完成: 耗时=${elapsed}s 请求数=$total QPS=$qps"
 echo "    延迟(s): avg=$avg p50=$p50 p95=$p95"
 echo "    HTTP 状态码: $codes"
 [ -n "$OUT" ] && cp "$TMP/r.txt" "$OUT" && echo "    原始数据已写入: $OUT"
+exit 0
