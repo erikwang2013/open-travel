@@ -57,12 +57,10 @@ open-novel 的容器未做任何改动。调整以注释记录在 `config/docker
 | `opensearch_init.sh` 建索引 + 幂等（第二次 skip） | 通过 |
 | GET /health（网关 → user） | 200 OK |
 | GET /ready（网关 → user） | 200，`data:true`（MySQL + Redis 均连接） |
-| GET /api/v1/booking/dates?region_id=1（无 token） | 见下方备注 |
-| 二次请求 cache hit | 见下方备注 |
-| GET /api/v1/user/profile（无 JWT） | 401 |
-| Redis 限流：100+ 请求后 429 | 见下方备注 |
-
-（修复重建后的最终验证结果待补）
+| GET /api/v1/booking/dates?region_id=1（无 token） | 200，JSON 返回（缓存命中，数据来自 MySQL 测试数据） |
+| 二次请求 cache hit | 200，`message:"cache hit"` |
+| GET /api/v1/user/profile（无 JWT） | 401 `{"error":"missing authorization token"}` |
+| Redis 限流：150 并发请求 profile | 99×401 + 51×429（100 req/60s 窗口，超限即 429） |
 
 ## 4. 遗留问题
 
