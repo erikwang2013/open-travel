@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: e-cat
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo check -p user-service -p booking-service
+      - run: cargo test -p user-service -p booking-service
+
+  flutter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Client analyze
+        working-directory: apps/client/flutter
+        run: flutter analyze
+      - name: Client test
+        working-directory: apps/client/flutter
+        run: flutter test
+      - name: Admin test
+        working-directory: apps/admin
+        run: flutter test

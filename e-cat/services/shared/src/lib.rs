@@ -5,6 +5,10 @@ use axum::http::{Request, StatusCode};
 use axum::response::Response;
 use ecat_data::Cache;
 use ecat_data_redis::RedisCache;
+use ecat_data_sqlx::SqlxClient;
+use ecat_mq::MessageQueue;
+use ecat_mq_kafka::KafkaMq;
+use serde_json::json;
 use std::convert::Infallible;
 use std::fmt;
 use std::pin::Pin;
@@ -12,6 +16,85 @@ use std::sync::Arc;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 const DEV_JWT_SECRET: &str = "dev-only-change-me-32-bytes-minimum-secret";
+
+/// 连接 MySQL 主库（DATABASE_URL，写路径）。失败返回 None 并告警，不阻塞服务启动。
+pub async fn connect_primary() -> Option<Arc<SqlxClient>> {
+    let url = std::env::var("DATABASE_URL")
+        .unwrap_or_else(|_| "mysql://travel:pass@localhost:3306/travel".into());
+    match SqlxClient::connect(&url).await {
+        Ok(db) => {
+            tracing::info!("mysql connected");
+            Some(Arc::new(db))
+        }
+        Err(e) => {
+            tracing::warn!("mysql connect failed, continuing without db: {e}");
+            None
+        }
+    }
+}
+
+/// 连接 MySQL 从库（REPLICA_DATABASE_URL，只读路径）。失败返回 None 并告警，
+/// 不阻塞服务启动；调用方对只读失败回退主库。
+/// 首次 compose 启动时从库需 dump 主库数据，短重试避免启动竞态。
+pub async fn connect_replica() -> Option<Arc<SqlxClient>> {
+    let url = std::env::var("REPLICA_DATABASE_URL")
+        .unwrap_or_else(|_| "mysql://travel:pass@localhost:3306/travel".into());
+    for attempt in 1..=15 {
+        match SqlxClient::connect(&url).await {
+            Ok(db) => {
+                tracing::info!("mysql replica connected");
+                return Some(Arc::new(db));
+            }
+            Err(e) => {
+                tracing::warn!(
+                    "mysql replica connect attempt {attempt}/15 failed: {e}"
+                );
+                tokio::time::sleep(Duration::from_secs(2)).await;
+            }
+        }
+    }
+    None
+}
+
+/// 连接 Kafka（KAFKA_BROKERS，默认 localhost:9092）。rdkafka 生产者为惰性连接，
+/// 此处失败仅告警不阻塞服务启动（审计为旁路，不阻断业务）。
+pub async fn connect_kafka() -> Option<Arc<KafkaMq>> {
+    let brokers = std::env::var("KAFKA_BROKERS").unwrap_or_else(|_| "localhost:9092".into());
+    match KafkaMq::connect(&brokers).await {
+        Ok(mq) => {
+            tracing::info!("kafka connected: {brokers}");
+            Some(Arc::new(mq))
+        }
+        Err(e) => {
+            tracing::warn!("kafka connect failed, continuing without audit: {e}");
+            None
+        }
+    }
+}
+
+/// 发布审计事件到 travel-audit（fail-open：Kafka 不可用时仅告警，不阻断业务）。
+pub async fn publish_audit(mq: &KafkaMq, event: &str, actor_user_id: u64, extra: serde_json::Value) {
+    let ts = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_millis())
+        .unwrap_or(0);
+    let payload = json!({
+        "event": event,
+        "actor_user_id": actor_user_id,
+        "ts": ts,
+        // ponytail: 未接入 Request/ConnectInfo，IP 暂记 "-"，接入后补齐
+        "ip": "-",
+        "extra": extra,
+    });
+    match serde_json::to_vec(&payload) {
+        Ok(bytes) => {
+            if let Err(e) = mq.publish("travel-audit", &bytes).await {
+                tracing::warn!(error = %e, "audit publish failed");
+            }
+        }
+        Err(e) => tracing::warn!(error = %e, "audit serialize failed"),
+    }
+}
 
 /// JWT 密钥：优先读 JWT_SECRET 环境变量；未配置或长度不足时退回开发占位密钥并告警。
 /// 生产部署必须通过环境变量/配置中心下发，切勿使用占位密钥。

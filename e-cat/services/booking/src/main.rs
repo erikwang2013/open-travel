@@ -28,7 +28,7 @@ use ecat_tracing::TracingLayer;
 use ecat_transport_http::HttpServer;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use shared::{no_error, RedisRateLimitLayer};
+use shared::{connect_primary, connect_replica, no_error, RedisRateLimitLayer};
 use std::sync::Arc;
 use std::time::Duration;
 use tower::ServiceBuilder;
@@ -36,26 +36,28 @@ use tower::ServiceBuilder;
 const PORT: &str = "0.0.0.0:8002";
 
 #[derive(Clone)]
-struct AppState {
-    db: Option<Arc<SqlxClient>>,
-    cache: Option<Arc<RedisCache>>,
+pub(crate) struct AppState {
+    pub(crate) db: Option<Arc<SqlxClient>>,
+    // 从库连接池（只读路径优先，失败/为空回退主库）
+    pub(crate) replica: Option<Arc<SqlxClient>>,
+    pub(crate) cache: Option<Arc<RedisCache>>,
 }
 
 #[derive(Serialize)]
-struct ApiResponse<T: Serialize> {
+pub(crate) struct ApiResponse<T: Serialize> {
     code: u32,
     message: String,
     data: Option<T>,
 }
 
 #[derive(Deserialize)]
-struct RegionQuery {
+pub(crate) struct RegionQuery {
     #[serde(default)]
-    region_id: u64,
+    pub(crate) region_id: u64,
 }
 
 #[derive(Serialize, Deserialize)]
-struct DestRow {
+pub(crate) struct DestRow {
     region_id: u64,
     name_en: String,
     name_zh: String,
@@ -65,12 +67,40 @@ async fn health() -> &'static str {
     "OK"
 }
 
-async fn ready(State(state): State<AppState>) -> Json<ApiResponse<bool>> {
-    let ready = state.db.is_some() && state.cache.is_some();
+pub(crate) async fn ready(State(state): State<AppState>) -> Json<ApiResponse<bool>> {
+    // 双源就绪判定：主库 + 从库 + 缓存均连上才 ready；
+    // 任一缺失不阻塞服务启动（仅报告降级状态）
+    let ready = state.db.is_some() && state.replica.is_some() && state.cache.is_some();
     Json(ApiResponse { code: 0, message: "ready".into(), data: Some(ready) })
 }
 
-async fn available_dates(
+/// 从指定连接池查询目的地；失败返回空（由调用方决定回退）。
+async fn fetch_destinations(db: &SqlxClient, region_id: u64) -> Vec<DestRow> {
+    match db
+        .query_with(
+            "SELECT region_id, name_en, name_zh FROM travel_destinations WHERE region_id = ?",
+            &[json!(region_id)],
+        )
+        .await
+    {
+        Ok(result) => {
+            let mut rows = Vec::with_capacity(result.len());
+            for row in result {
+                let rid = row.get("region_id").and_then(|v| v.as_u64()).unwrap_or(region_id);
+                let name_en = row.get("name_en").and_then(|v| v.as_str()).unwrap_or("").to_string();
+                let name_zh = row.get("name_zh").and_then(|v| v.as_str()).unwrap_or("").to_string();
+                rows.push(DestRow { region_id: rid, name_en, name_zh });
+            }
+            rows
+        }
+        Err(e) => {
+            tracing::warn!("db query failed: {e}");
+            Vec::new()
+        }
+    }
+}
+
+pub(crate) async fn available_dates(
     State(state): State<AppState>,
     Query(q): Query<RegionQuery>,
 ) -> Json<ApiResponse<Vec<DestRow>>> {
@@ -87,24 +117,12 @@ async fn available_dates(
     }
 
     // 2. 未命中 → MySQL 回源（travel_destinations 表，参数化查询防注入）
+    //    读写分离：从库优先，查询失败或为空时回退主库
     let mut rows: Vec<DestRow> = Vec::new();
-    if let Some(db) = &state.db {
-        match db
-            .query_with(
-                "SELECT region_id, name_en, name_zh FROM travel_destinations WHERE region_id = ?",
-                &[json!(q.region_id)],
-            )
-            .await
-        {
-            Ok(result) => {
-                for row in result {
-                    let region_id = row.get("region_id").and_then(|v| v.as_u64()).unwrap_or(q.region_id);
-                    let name_en = row.get("name_en").and_then(|v| v.as_str()).unwrap_or("").to_string();
-                    let name_zh = row.get("name_zh").and_then(|v| v.as_str()).unwrap_or("").to_string();
-                    rows.push(DestRow { region_id, name_en, name_zh });
-                }
-            }
-            Err(e) => tracing::warn!("db query failed: {e}"),
+    for db in [state.replica.as_ref(), state.db.as_ref()].into_iter().flatten() {
+        rows = fetch_destinations(db, q.region_id).await;
+        if !rows.is_empty() {
+            break;
         }
     }
 
@@ -129,21 +147,6 @@ async fn available_dates(
     Json(ApiResponse { code: 0, message: "ok".into(), data: Some(rows) })
 }
 
-async fn connect_db() -> Option<Arc<SqlxClient>> {
-    let url = std::env::var("DATABASE_URL")
-        .unwrap_or_else(|_| "mysql://travel:pass@localhost:3306/travel".into());
-    match SqlxClient::connect(&url).await {
-        Ok(db) => {
-            tracing::info!("mysql connected");
-            Some(Arc::new(db))
-        }
-        Err(e) => {
-            tracing::warn!("mysql connect failed, continuing without db: {e}");
-            None
-        }
-    }
-}
-
 async fn connect_cache() -> Option<Arc<RedisCache>> {
     let url = std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://localhost:6379".into());
     match RedisCache::connect(&url).await {
@@ -160,7 +163,11 @@ async fn connect_cache() -> Option<Arc<RedisCache>> {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    let state = AppState { db: connect_db().await, cache: connect_cache().await };
+    let state = AppState {
+        db: connect_primary().await,
+        replica: connect_replica().await,
+        cache: connect_cache().await,
+    };
 
     // 业务路由：完整中间件链，执行顺序（外层 → 内层）：
     //   ApiVersion → CircuitBreaker → Security → RateLimit

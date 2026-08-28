@@ -5,8 +5,9 @@ services:
     image: mysql:8.0
     container_name: travel-mysql
     restart: unless-stopped
+    # 主库：开启 binlog（server-id=1，ROW 格式）供从库复制；
     # 忽略客户端声明的字符集，强制使用服务器 utf8mb4（修复 sqlx 连接中文乱码）
-    command: --skip-character-set-client-handshake
+    command: --server-id=1 --log-bin --binlog-format=ROW --skip-character-set-client-handshake
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-travel_dev}
       MYSQL_DATABASE: travel
@@ -21,6 +22,60 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-travel_dev}"]
       interval: 10s
       timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # MySQL 从库：只读副本（读写分离，应用层按连接池路由）。
+  # 首次启动（空数据卷）由 replica-init.sh dump 主库现有数据并启动复制；
+  # server-id 必须与主库不同。
+  mysql-replica:
+    image: mysql:8.0
+    container_name: travel-mysql-replica
+    restart: unless-stopped
+    command: --server-id=2 --skip-character-set-client-handshake
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-travel_dev}
+    volumes:
+      - ./replica-init.sh:/docker-entrypoint-initdb.d/replica-init.sh:ro
+      - travel-mysql-replica-data:/var/lib/mysql
+    ports:
+      - "3309:3306"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-travel_dev}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # Kafka 单节点（KRaft 模式，无 Zookeeper）：审计日志 topic（travel-audit）
+  # 由首次发布自动创建。ADVERTISED 指向服务名 kafka，容器内服务与
+  # docker exec 内验证均可直连；宿主侧消费请经容器 IP 或 exec 进容器。
+  kafka:
+    image: apache/kafka:3.9.0
+    container_name: travel-kafka
+    restart: unless-stopped
+    environment:
+      CLUSTER_ID: open-travel-dev
+      KAFKA_NODE_ID: "1"
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: "0"
+    ports:
+      - "9092:9092"
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 10s
       retries: 10
       start_period: 30s
 
@@ -76,6 +131,7 @@ services:
       DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel?charset=utf8mb4
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
+      KAFKA_BROKERS: kafka:9092
     ports:
       - "8001:8001"
 
@@ -109,6 +165,8 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel?charset=utf8mb4
+      # 从库连接（读写分离只读路径；缺省时服务降级为仅主库）
+      REPLICA_DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql-replica:3306/travel?charset=utf8mb4
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
     ports:
@@ -116,3 +174,4 @@ services:
 
 volumes:
   travel-mysql-data:
+  travel-mysql-replica-data:

@@ -6,7 +6,12 @@ description = "open-travel services 共享代码（JWT 密钥、Redis 分布式�
 
 [dependencies]
 ecat-data = { path = "../../ecat-data" }
+ecat-data-sqlx = { path = "../../ecat-data-sqlx" }
 ecat-data-redis = { path = "../../ecat-data-redis" }
+ecat-mq = { path = "../../ecat-mq" }
+ecat-mq-kafka = { path = "../../ecat-mq-kafka" }
 axum.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "time"] }
 tower.workspace = true
 tracing.workspace = true
+serde_json.workspace = true

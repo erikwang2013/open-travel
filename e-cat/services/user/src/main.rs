@@ -30,7 +30,8 @@ use ecat_tracing::TracingLayer;
 use ecat_transport_http::HttpServer;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use shared::{jwt_secret, no_error, RedisRateLimitLayer};
+use ecat_mq_kafka::KafkaMq;
+use shared::{connect_kafka, connect_primary, jwt_secret, no_error, publish_audit, RedisRateLimitLayer};
 use std::sync::Arc;
 use tower::ServiceBuilder;
 
@@ -38,14 +39,16 @@ const PORT: &str = "0.0.0.0:8001";
 const TOKEN_TTL_SECS: u64 = 24 * 3600;
 
 #[derive(Clone)]
-struct AppState {
-    db: Option<Arc<SqlxClient>>,
-    cache: Option<Arc<RedisCache>>,
-    jwt: JwtAuthLayer,
+pub(crate) struct AppState {
+    pub(crate) db: Option<Arc<SqlxClient>>,
+    pub(crate) cache: Option<Arc<RedisCache>>,
+    // Kafka 审计生产者（fail-open：不可用时仅告警，不阻断业务）
+    pub(crate) mq: Option<Arc<KafkaMq>>,
+    pub(crate) jwt: JwtAuthLayer,
 }
 
 #[derive(Serialize)]
-struct ApiResponse<T: Serialize> {
+pub(crate) struct ApiResponse<T: Serialize> {
     code: u32,
     message: String,
     data: Option<T>,
@@ -66,26 +69,26 @@ fn err<T: Serialize>(
 }
 
 #[derive(Deserialize)]
-struct RegisterReq {
-    email: String,
-    password: String,
-    lang: Option<String>,
+pub(crate) struct RegisterReq {
+    pub(crate) email: String,
+    pub(crate) password: String,
+    pub(crate) lang: Option<String>,
 }
 
 #[derive(Deserialize)]
-struct LoginReq {
-    email: String,
-    password: String,
+pub(crate) struct LoginReq {
+    pub(crate) email: String,
+    pub(crate) password: String,
 }
 
 #[derive(Serialize)]
-struct UserOut {
+pub(crate) struct UserOut {
     user_id: u64,
     email: String,
 }
 
 #[derive(Serialize)]
-struct LoginOut {
+pub(crate) struct LoginOut {
     token: String,
     user_id: u64,
     email: String,
@@ -100,21 +103,21 @@ struct ProfileOut {
 
 /// 签发用 claims：sub 为 user_id，iat/exp 由 JwtAuthLayer::sign 自动注入。
 #[derive(Serialize)]
-struct LoginClaims {
-    sub: String,
+pub(crate) struct LoginClaims {
+    pub(crate) sub: String,
 }
 
 async fn health() -> &'static str {
     "OK"
 }
 
-async fn ready(State(state): State<AppState>) -> Json<ApiResponse<bool>> {
+pub(crate) async fn ready(State(state): State<AppState>) -> Json<ApiResponse<bool>> {
     // 数据源缺失时 /ready 报告降级状态，但不阻塞服务启动
     let ready = state.db.is_some() && state.cache.is_some();
     Json(ApiResponse { code: 0, message: "ready".into(), data: Some(ready) })
 }
 
-async fn register(
+pub(crate) async fn register(
     State(state): State<AppState>,
     Json(body): Json<RegisterReq>,
 ) -> (StatusCode, Json<ApiResponse<UserOut>>) {
@@ -184,10 +187,13 @@ async fn register(
     let Some(user_id) = rows.first().and_then(|r| r.get("id")).and_then(|v| v.as_u64()) else {
         return err(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error");
     };
+    if let Some(mq) = &state.mq {
+        publish_audit(mq, "user.register", user_id, json!({ "lang": lang })).await;
+    }
     (StatusCode::OK, ApiResponse::ok(UserOut { user_id, email: email.to_string() }))
 }
 
-async fn login(
+pub(crate) async fn login(
     State(state): State<AppState>,
     Json(body): Json<LoginReq>,
 ) -> (StatusCode, Json<ApiResponse<LoginOut>>) {
@@ -241,10 +247,13 @@ async fn login(
             return err(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error");
         }
     };
+    if let Some(mq) = &state.mq {
+        publish_audit(mq, "user.login", user_id, json!({})).await;
+    }
     (StatusCode::OK, ApiResponse::ok(LoginOut { token, user_id, email }))
 }
 
-async fn profile(State(state): State<AppState>, req: Request) -> Response {
+pub(crate) async fn profile(State(state): State<AppState>, req: Request) -> Response {
     let Some(claims) = claims_from_request(&req) else {
         return err::<ProfileOut>(StatusCode::UNAUTHORIZED, 401, "missing claims").into_response();
     };
@@ -278,21 +287,6 @@ async fn profile(State(state): State<AppState>, req: Request) -> Response {
     (StatusCode::OK, ApiResponse::ok(ProfileOut { user_id, email, lang })).into_response()
 }
 
-async fn connect_db() -> Option<Arc<SqlxClient>> {
-    let url = std::env::var("DATABASE_URL")
-        .unwrap_or_else(|_| "mysql://travel:pass@localhost:3306/travel".into());
-    match SqlxClient::connect(&url).await {
-        Ok(db) => {
-            tracing::info!("mysql connected");
-            Some(Arc::new(db))
-        }
-        Err(e) => {
-            tracing::warn!("mysql connect failed, continuing without db: {e}");
-            None
-        }
-    }
-}
-
 async fn connect_cache() -> Option<Arc<RedisCache>> {
     let url = std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://localhost:6379".into());
     match RedisCache::connect(&url).await {
@@ -310,7 +304,12 @@ async fn connect_cache() -> Option<Arc<RedisCache>> {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let jwt = JwtAuthLayer::new(jwt_secret()).expect("valid jwt secret");
-    let state = AppState { db: connect_db().await, cache: connect_cache().await, jwt: jwt.clone() };
+    let state = AppState {
+        db: connect_primary().await,
+        cache: connect_cache().await,
+        mq: connect_kafka().await,
+        jwt: jwt.clone(),
+    };
 
     // 业务路由：注册/登录公开；profile 挂 JWT（Auth 层内）。
     // 执行顺序（外层 → 内层）：ApiVersion → CircuitBreaker → Security → RateLimit

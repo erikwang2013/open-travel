@@ -17,6 +17,7 @@ ecat-tracing = { path = "../../ecat-tracing" }
 ecat-data = { path = "../../ecat-data" }
 ecat-data-sqlx = { path = "../../ecat-data-sqlx" }
 ecat-data-redis = { path = "../../ecat-data-redis" }
+ecat-mq-kafka = { path = "../../ecat-mq-kafka" }
 axum.workspace = true
 tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
 tower.workspace = true
