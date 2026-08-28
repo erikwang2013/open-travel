@@ -186,7 +186,7 @@ Open Travel 是面向全球用户的旅游平台 monorepo，覆盖**景点、景
 
 | 表 | 关键字段 | 阶段 |
 | :--- | :--- | :--- |
-| `travel_destinations`（扩展） | +lat/lng、cover_url、status（上/下架）、sort_order | Phase 2 |
+| `travel_destinations`（扩展） | +cover_url、status（上/下架）、sort_order（lat/lng 已有） | Phase 2 |
 | `travel_attractions` | destination_id、name_*、price_cents、open_hours、rating_avg、cover_url | Phase 2 |
 | `travel_lines` | title_*、destination_id、days、departure_date、price_cents、max_pax、itinerary JSON、status | Phase 3 |
 | `travel_flights` | airline、flight_no、from_code/to_code、depart_at/arrive_at、cabin、price_cents、seats_left | Phase 4 |
