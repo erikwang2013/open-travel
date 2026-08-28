@@ -10,10 +10,11 @@ services:
       MYSQL_DATABASE: travel
     volumes:
       # 首次初始化自动执行 schema.sql（仅空数据卷时生效）
-      - ./config/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
       - travel-mysql-data:/var/lib/mysql
     ports:
-      - "3306:3306"
+      # host 3306 被宿主 mysql 占用，临时映射 3308（见 docs/integration-report.md）
+      - "3308:3306"
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-travel_dev}"]
       interval: 10s
@@ -27,7 +28,8 @@ services:
     restart: unless-stopped
     # 会话存储 TTL 30 分钟、热门内容缓存 TTL 5 分钟（TTL 由应用写入时指定）
     ports:
-      - "6379:6379"
+      # host 6379 被宿主 redis 占用，临时映射 6381
+      - "6381:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -43,9 +45,10 @@ services:
       DISABLE_SECURITY_PLUGIN: "true"
       OPENSEARCH_JAVA_OPTS: "-Xms512m -Xmx512m"
     volumes:
-      - ./config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:ro
+      - ./opensearch.yml:/usr/share/opensearch/config/opensearch.yml:ro
     ports:
-      - "9200:9200"
+      # host 9200 被 open-novel-opensearch 占用，临时映射 9201
+      - "9201:9200"
     healthcheck:
       test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health || exit 1"]
       interval: 15s
@@ -83,9 +86,10 @@ services:
       - ecat-user
       - ecat-booking
     volumes:
-      - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
-      - "8080:80"
+      # host 8080 被宿主 tracking-gateway、8081 被 bag/remus http.server 占用，临时映射 8082
+      - "8082:80"
 
   ecat-booking:
     build:

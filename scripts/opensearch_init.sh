@@ -13,14 +13,15 @@ if curl -sf "$BASE/$INDEX" >/dev/null 2>&1; then
   exit 0
 fi
 
-# 多语言目的地索引：ICU 分析器支持中文/日文分词
+# 多语言目的地索引：cjk 分析器（内置，bigram 中日韩分词；
+# opensearch:latest 镜像不含 analysis-icu 插件，用 cjk 免装插件）
 curl -sf -X PUT "$BASE/$INDEX" -H 'Content-Type: application/json' -d '{
   "settings": {
     "number_of_shards": 1,
     "number_of_replicas": 0,
     "analysis": {
       "analyzer": {
-        "i18n_text": { "type": "icu" }
+        "i18n_text": { "type": "cjk" }
       }
     }
   },
@@ -39,4 +40,4 @@ curl -sf -X PUT "$BASE/$INDEX" -H 'Content-Type: application/json' -d '{
   }
 }' >/dev/null
 
-echo "index $INDEX created (icu analyzer)"
+echo "index $INDEX created (cjk analyzer)"

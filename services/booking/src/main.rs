@@ -12,12 +12,11 @@
 // 注：e-cat 的 RecoveryLayer 与 axum Router::layer 不兼容（Error=Box<dyn Error>
 // 不满足 Into<Infallible>），故省略（axum 自带 panic 捕获）；
 // 限流为 shared::RedisRateLimitLayer（Redis 分布式固定窗口，fail-open）；
-// Auth/Security/CircuitBreaker 以 map_err 归一为 Infallible。
+// Security/CircuitBreaker 以 map_err 归一为 Infallible。
 use axum::extract::{Query, State};
 use axum::routing::get;
 use axum::{Json, Router};
 use ecat::App;
-use ecat_auth::JwtAuthLayer;
 use ecat_circuit_breaker::CircuitBreakerLayer;
 use ecat_data::Cache;
 use ecat_data::RdbmsClient;
@@ -28,7 +27,7 @@ use ecat_security::SecurityLayer;
 use ecat_tracing::TracingLayer;
 use ecat_transport_http::HttpServer;
 use serde::{Deserialize, Serialize};
-use shared::{jwt_secret, no_error, RedisRateLimitLayer};
+use shared::{no_error, RedisRateLimitLayer};
 use std::sync::Arc;
 use std::time::Duration;
 use tower::ServiceBuilder;
@@ -151,12 +150,11 @@ async fn connect_cache() -> Option<Arc<RedisCache>> {
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let state = AppState { db: connect_db().await, cache: connect_cache().await };
 
-    let jwt = JwtAuthLayer::new(jwt_secret()).expect("valid jwt secret");
-
     // 业务路由：完整中间件链，执行顺序（外层 → 内层）：
-    //   CircuitBreaker → Security → Auth(JWT) → RateLimit
+    //   CircuitBreaker → Security → RateLimit
+    // dates 为公开接口（热门目的地展示，无鉴权），限流保留防止滥用。
     // e-cat 中间件的 Error 非 Infallible，需 map_err 归一以满足 axum Router::layer
-    // 约束；RateLimit（Redis 分布式）置于最内层（认证通过后计数）。
+    // 约束；RateLimit（Redis 分布式）对所有请求计数。
     // 注：tower 先添加的层在外层，且 map_err 内部也是 layer()（新层在内），
     // 故 map_err 声明在目标层之前才能包住它的 error。
     let api = Router::new()
@@ -168,7 +166,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                 .map_err(no_error)
                 .layer(SecurityLayer::new())
                 .map_err(no_error)
-                .layer(jwt)
                 .layer(RedisRateLimitLayer::new(
                     state.cache.clone(),
                     "booking-service",

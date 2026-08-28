@@ -3,8 +3,10 @@
 # 用法：docker build -f services/Dockerfile -t travel-services .
 #       docker run travel-services user-service   （或 booking-service）
 
-FROM rust:1.85-slim AS build
+FROM rust:1.88-slim AS build
 WORKDIR /build
+RUN apt-get update && apt-get install -y --no-install-recommends protobuf-compiler \
+    && rm -rf /var/lib/apt/lists/*
 COPY e-cat ./e-cat
 COPY services ./services
 RUN cargo build --release --manifest-path services/Cargo.toml

@@ -3,7 +3,7 @@
 // 端口约定：HTTP 默认 :8000；user 服务用 8001、booking 用 8002，
 // 便于本地同时启动调试，避免端口冲突。
 //
-// 中间件链（外层 → 内层）：Tracing → Auth(JWT) → RateLimit → Security → CircuitBreaker
+// 中间件链（外层 → 内层）：Tracing → CircuitBreaker → Security → RateLimit → Auth(JWT)
 // /health、/ready 不走鉴权；业务路由挂在独立子 Router 上。
 // 注：e-cat 的 RecoveryLayer 与 axum Router::layer 不兼容（Error=Box<dyn Error>
 // 不满足 Into<Infallible>），故省略（axum 自带 panic 捕获）；
@@ -112,9 +112,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let jwt = JwtAuthLayer::new(jwt_secret()).expect("valid jwt secret");
 
     // 业务路由：完整中间件链，执行顺序（外层 → 内层）：
-    //   CircuitBreaker → Security → Auth(JWT) → RateLimit
+    //   CircuitBreaker → Security → RateLimit → Auth(JWT)
     // e-cat 中间件的 Error 非 Infallible，需 map_err 归一以满足 axum Router::layer
-    // 约束；RateLimit（Redis 分布式）置于最内层（认证通过后计数）。
+    // 约束；RateLimit（Redis 分布式）置于 JWT 外层：未认证请求也计入限流，
+    // 防止暴力请求耗尽资源（联调确认：限流在 JWT 内层时无 token 请求不计数）。
     // 注：tower 先添加的层在外层，且 map_err 内部也是 layer()（新层在内），
     // 故 map_err 声明在目标层之前才能包住它的 error。
     let api = Router::new()
@@ -127,13 +128,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                 .map_err(no_error)
                 .layer(SecurityLayer::new())
                 .map_err(no_error)
-                .layer(jwt)
                 .layer(RedisRateLimitLayer::new(
                     state.cache.clone(),
                     "user-service",
                     100,
                     60,
-                )),
+                ))
+                .layer(jwt),
         );
 
     // 全局：Tracing（注入 trace_id）→ Logging
