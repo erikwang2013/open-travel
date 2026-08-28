@@ -1,0 +1,14 @@
+[package]
+name = "ecat-scheduler"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Periodic and one-shot task scheduler for e-cat"
+
+[dependencies]
+tokio = { workspace = true, features = ["rt", "time"] }
+tracing.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util", "macros", "rt"] }
+tracing-subscriber.workspace = true

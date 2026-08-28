@@ -1,0 +1,16 @@
+[package]
+name = "ecat-client"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "HTTP and gRPC service client with load balancing and service discovery"
+
+[dependencies]
+tokio = { workspace = true, features = ["sync"] }
+async-trait.workspace = true
+tracing.workspace = true
+tonic = { workspace = true, features = ["transport"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt"] }

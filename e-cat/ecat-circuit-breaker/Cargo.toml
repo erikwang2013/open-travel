@@ -1,0 +1,13 @@
+[package]
+name = "ecat-circuit-breaker"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Circuit breaker middleware for e-cat services"
+
+[dependencies]
+tower = { workspace = true, features = ["util"] }
+tracing.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt", "time"] }

@@ -1,0 +1,22 @@
+# cargo-audit 忽略规则（与 docs/dependency-cve-tracking.md 同步维护）。
+# 原则：仅忽略已在跟踪文档完成暴露评估的项；新增 ignore 必须先补文档评估。
+[advisories]
+ignore = [
+    # rustls-webpki 0.102.8 —— CRL 吊销校验绕过 / name-constraint 绕过 / CRL 解析可达 panic。
+    # 经 async-nats / rumqttc 传递引入（0.102 线无修复版）；e-cat 客户端证书链校验
+    # 不启用 CRL 路径，实际暴露低。修复版 0.103.13，待上游 rustls 升级后跟进。
+    "RUSTSEC-2026-0049",
+    "RUSTSEC-2026-0098",
+    "RUSTSEC-2026-0099",
+    "RUSTSEC-2026-0104",
+    # rsa 0.9.10 —— Marvin Attack 时序侧信道（无修复版）。
+    # 仅用于 ecat-auth JWT 签名（RSA 私钥运算），不涉及解密/验证时序测量场景，暴露低。
+    "RUSTSEC-2023-0071",
+    # protobuf 2.28.0 —— 未知字段递归解析崩溃（>=3.7.2 修复）。
+    # 经 prometheus 0.13.4 传递引入，仅用于 metrics 编码输出，不解析不可信输入，暴露低。
+    "RUSTSEC-2024-0437",
+    # rustls-pemfile 2.2.0 —— unmaintained 警告，保持随常规依赖更新。
+    "RUSTSEC-2025-0134",
+    # instant 0.1.13 —— unmaintained 警告（wasm 时代计时工具，tiny 依赖），随常规更新。
+    "RUSTSEC-2024-0384",
+]

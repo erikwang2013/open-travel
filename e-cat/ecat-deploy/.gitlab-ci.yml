@@ -1,0 +1,32 @@
+image: rust:1.80
+
+stages:
+  - build
+  - test
+  - lint
+
+variables:
+  CARGO_TERM_COLOR: always
+
+cache:
+  paths:
+    - target/
+    - $CARGO_HOME/
+
+build:
+  stage: build
+  script:
+    - cargo build --workspace
+
+test:
+  stage: test
+  script:
+    - cargo test --workspace
+
+lint:
+  stage: lint
+  before_script:
+    - rustup component add clippy rustfmt
+  script:
+    - cargo fmt --check
+    - cargo clippy --workspace --all-targets -- -D warnings

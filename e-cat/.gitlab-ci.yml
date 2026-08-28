@@ -1,0 +1,19 @@
+# GitLab CI — mirrors .github/workflows/ci.yml
+stages:
+  - check
+
+check:
+  stage: check
+  image: rust:latest
+  before_script:
+    - apt-get update && apt-get install -y protobuf-compiler cmake
+    - rustup component add clippy rustfmt
+  script:
+    - cargo check --workspace
+    - cargo test --workspace
+    - cargo fmt --check
+    - cargo clippy --workspace -- -D warnings
+  cache:
+    paths:
+      - target/
+      - ~/.cargo/registry/

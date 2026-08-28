@@ -1,0 +1,19 @@
+[package]
+name = "ecat-data-opensearch"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "OpenSearch search engine client for e-cat"
+
+[dependencies]
+ecat-data = { path = "../ecat-data" }
+ecat-errors.workspace = true
+async-trait.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
+ecat-tls = { path = "../ecat-tls" }
+
+[dev-dependencies]
+axum.workspace = true
+tokio = { workspace = true, features = ["macros", "rt", "net"] }

@@ -1,0 +1,17 @@
+[package]
+name = "ecat-tracing"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Distributed tracing (OpenTelemetry) for e-cat"
+
+[dependencies]
+tracing.workspace = true
+tracing-subscriber = { workspace = true, features = ["env-filter"] }
+http.workspace = true
+tower.workspace = true
+uuid = { version = "1", features = ["v4"] }
+ecat-metadata = { path = "../ecat-metadata" }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt"] }

@@ -1,0 +1,114 @@
+# e-cat 数据库配置示例 — v2.4.2
+#
+# 每个数据库后端都有 XxxConfig + from_config() 方法。
+# username / password / tls 均为可选字段，省略则跳过。
+#
+# 📖 教程:
+#   docs/database-config-tutorial.md    — 数据库配置
+#   docs/tls-certificate-tutorial.md    — TLS 证书认证
+#
+# TLS 证书可通过 ecat-tls 自动生成:
+#   use ecat_tls::{generate_ca, generate_server_cert, generate_client_cert};
+#   let ca = generate_ca("MyOrg").unwrap();
+#   let srv = generate_server_cert("db.internal").unwrap();
+#   std::fs::write("ca.pem", ca.cert_pem).unwrap();
+
+# ── RDBMS ───────────────────────────────────────────────────
+sql:
+  # SQLite / PostgreSQL / MySQL / TiDB 统一使用 sqlx 连接串
+  url: "postgres://localhost:5432/myapp"
+  # username: "app_user"     # 可选: 嵌入 URL 认证（与 password 配合）
+  # password: "changeme"     # 可选
+
+# ── 缓存 ────────────────────────────────────────────────────
+redis:
+  url: "redis://localhost:6379"
+  # password: "auth_token"   # 可选: Redis AUTH
+
+memcached:
+  # username: "memcache"     # 可选: 保留字段（当前为内存实现）
+  # password: "secret"       # 可选: 保留字段
+  {}
+
+# ── OLAP ────────────────────────────────────────────────────
+clickhouse:
+  base_url: "http://localhost:8123"
+  database: "default"
+  # username: "default"      # 可选: 开启 HTTP Basic Auth
+  # password: "changeme"     # 可选
+
+# ── 搜索 ────────────────────────────────────────────────────
+elasticsearch:
+  base_url: "http://localhost:9200"
+  # username: "elastic"      # 可选: 开启 HTTP Basic Auth
+  # password: "changeme"     # 可选
+
+opensearch:
+  base_url: "http://localhost:9200"
+  # username: "admin"        # 可选: 开启 HTTP Basic Auth
+  # password: "changeme"     # 可选
+
+# ── 图数据库 ────────────────────────────────────────────────
+neo4j:
+  base_url: "http://localhost:7474"
+  # username: "neo4j"         # 可选: 复制本文件后请改成强口令
+  # password: "changeme"      # 可选
+
+nebulagraph:
+  base_url: "http://localhost:19669"
+  space: "my_space"
+  # username: "root"         # 可选: 开启 HTTP Basic Auth
+  # password: "nebula"       # 可选
+
+arangodb:
+  base_url: "http://localhost:8529"
+  db: "mydb"
+  # username: "root"          # 可选: 复制本文件后请改成强口令
+  # password: "changeme"      # 可选
+
+# ── 时序数据库 ──────────────────────────────────────────────
+influxdb:
+  base_url: "http://localhost:8086"
+  org: "myorg"
+  bucket: "mybucket"
+  # token: "my-secret-token"  # 可选: 复制本文件后请换成真实令牌
+
+iotdb:
+  base_url: "http://localhost:18080"
+  # username: "root"          # 可选: 复制本文件后请改成强口令
+  # password: "root"          # 可选
+
+questdb:
+  base_url: "http://localhost:9000"
+  # username: "admin"        # 可选: 开启 HTTP Basic Auth
+  # password: "quest"        # 可选
+  # tls:                     # 可选: TLS 客户端证书配置
+  #   ca_cert: "/etc/ecat/ca.pem"
+  #   client_cert: "/etc/ecat/client.pem"
+  #   client_key: "/etc/ecat/client-key.pem"
+  #   skip_verify: false     # 跳过证书验证 (仅测试环境)
+
+# ── TLS 证书自动生成示例 ──────────────────────────────────────
+# 使用 ecat-tls crate 编程生成:
+#
+#   use ecat_tls::{generate_ca, generate_server_cert, generate_client_cert};
+#
+#   // 1. 生成 CA
+#   let ca = generate_ca("MyOrg").unwrap();
+#   std::fs::write("ca.pem", &ca.cert_pem).unwrap();
+#   std::fs::write("ca-key.pem", &ca.key_pem).unwrap();
+#
+#   // 2. 生成服务端证书
+#   let srv = generate_server_cert("db.example.com").unwrap();
+#   std::fs::write("server.pem", &srv.cert_pem).unwrap();
+#   std::fs::write("server-key.pem", &srv.key_pem).unwrap();
+#
+#   // 3. 生成客户端证书 (mTLS)
+#   let client = generate_client_cert("myapp").unwrap();
+#   std::fs::write("client.pem", &client.cert_pem).unwrap();
+#   std::fs::write("client-key.pem", &client.key_pem).unwrap();
+#
+# 或使用 openssl 手动生成:
+#   openssl req -x509 -newkey rsa:4096 -keyout ca-key.pem -out ca.pem -days 3650 -nodes
+#   openssl req -new -newkey rsa:4096 -keyout client-key.pem -out client.csr -nodes
+#   openssl x509 -req -in client.csr -CA ca.pem -CAkey ca-key.pem -out client.pem -days 365

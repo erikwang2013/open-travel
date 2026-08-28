@@ -1,0 +1,18 @@
+[package]
+name = "ecat-data-sqlx"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "SQLx multi-database client for e-cat"
+
+[dependencies]
+ecat-data = { path = "../ecat-data" }
+sqlx = { version = "0.8", features = ["runtime-tokio", "sqlite", "postgres", "mysql"] }
+base64 = "0.22"
+async-trait.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+ecat-tls = { path = "../ecat-tls" }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt"] }

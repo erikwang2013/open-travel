@@ -1,0 +1,18 @@
+[package]
+name = "ecat-transport-grpc"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "gRPC transport implementation for e-cat"
+
+[dependencies]
+ecat-transport = { path = "../ecat-transport" }
+tonic = { workspace = true, features = ["tls"] }
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "logging", "tls12"] }
+tokio = { workspace = true, features = ["sync"] }
+async-trait.workspace = true
+
+[dev-dependencies]
+ecat-tls = { path = "../ecat-tls" }
+tokio-rustls = { version = "0.26", default-features = false, features = ["ring", "logging", "tls12"] }
+rustls-pemfile = "2"

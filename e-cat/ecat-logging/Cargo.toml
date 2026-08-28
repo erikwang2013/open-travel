@@ -1,0 +1,11 @@
+[package]
+name = "ecat-logging"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Structured logging via tracing for e-cat"
+
+[dependencies]
+tracing.workspace = true
+tracing-subscriber = { workspace = true, features = ["env-filter"] }
+ecat-tracing = { path = "../ecat-tracing" }

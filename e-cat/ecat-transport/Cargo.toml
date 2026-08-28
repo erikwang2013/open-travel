@@ -1,0 +1,18 @@
+[package]
+name = "ecat-transport"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Transport layer abstraction for e-cat"
+
+[dependencies]
+ecat-metadata = { path = "../ecat-metadata" }
+ecat-encoding = { path = "../ecat-encoding" }
+ecat-errors.workspace = true
+tower.workspace = true
+async-trait.workspace = true
+http.workspace = true
+bytes = "1"
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt"] }

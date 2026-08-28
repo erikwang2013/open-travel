@@ -1,0 +1,17 @@
+[package]
+name = "ecat-registry"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Service registry abstraction for e-cat"
+
+[dependencies]
+tokio = { workspace = true, features = ["rt", "sync"] }
+async-trait.workspace = true
+serde.workspace = true
+tracing.workspace = true
+thiserror.workspace = true
+uuid = { version = "1", features = ["v4"] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt"] }

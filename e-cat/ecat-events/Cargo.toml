@@ -1,0 +1,22 @@
+[package]
+name = "ecat-events"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Event bus abstraction for e-cat"
+
+[dependencies]
+ecat-mq = { path = "../ecat-mq" }
+bytes.workspace = true
+tokio = { workspace = true, features = ["sync", "rt"] }
+tracing.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+async-trait.workspace = true
+# 测试用 tokio::time（sleep/timeout）与 #[tokio::test]（macros）；
+# dependencies 仅 sync+rt，单独编译本 crate 测试目标会因缺 feature 失败
+# （workspace 全量构建碰巧由其他 crate 的 feature 并集掩盖）。
+tokio = { workspace = true, features = ["macros", "rt", "time"] }

@@ -1,0 +1,23 @@
+syntax = "proto3";
+package ecat.errors;
+
+enum ErrorCode {
+    OK = 0;
+    UNKNOWN = 1000;
+    INVALID_ARGUMENT = 1001;
+    NOT_FOUND = 1002;
+    ALREADY_EXISTS = 1003;
+    PERMISSION_DENIED = 1004;
+    UNAUTHENTICATED = 1005;
+    RESOURCE_EXHAUSTED = 1006;
+    INTERNAL = 1007;
+    UNAVAILABLE = 1008;
+    DEADLINE_EXCEEDED = 1009;
+}
+
+message Error {
+    int32 code = 1;
+    string reason = 2;
+    string message = 3;
+    map<string, string> metadata = 4;
+}

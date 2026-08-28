@@ -1,0 +1,26 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
+      - run: cargo check --workspace
+      - run: cargo test --workspace
+      - run: cargo fmt --check
+      - run: cargo clippy -- -D warnings
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # 依赖漏洞扫描（RustSec Advisory DB）：--deny warnings 对任何漏洞/告警失败，作为 CI 闸门。
+      # 已评估无害项在 .cargo/audit.toml 中 ignore（与 docs/dependency-cve-tracking.md 同步维护）。
+      # 使用官方预编译静态二进制，避免 cargo install 每次约 10 分钟编译。
+      - name: cargo-audit
+        run: |
+          curl -sSL -o /tmp/cargo-audit.tgz \
+            https://github.com/rustsec/cargo-audit/releases/download/cargo-audit/v0.22.2/cargo-audit-x86_64-unknown-linux-musl-v0.22.2.tgz
+          tar -xzf /tmp/cargo-audit.tgz -C /tmp
+          /tmp/cargo-audit-x86_64-unknown-linux-musl-v0.22.2/cargo-audit audit --deny warnings

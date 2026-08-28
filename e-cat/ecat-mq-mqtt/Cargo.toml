@@ -1,0 +1,17 @@
+[package]
+name = "ecat-mq-mqtt"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "MQTT message queue backend for e-cat"
+
+[dependencies]
+ecat-mq = { path = "../ecat-mq" }
+bytes.workspace = true
+tokio = { workspace = true, features = ["sync", "rt", "time"] }
+async-trait.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+rumqttc = { version = "0.25", default-features = false, features = ["use-rustls-no-provider"] }
+# rumqttc 以 no-provider 编译不安装 CryptoProvider，构造 TLS 前需自行安装 ring
+rustls = { version = "0.23", default-features = false, features = ["ring"] }

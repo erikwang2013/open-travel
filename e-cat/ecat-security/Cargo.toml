@@ -1,0 +1,18 @@
+[package]
+name = "ecat-security"
+version.workspace = true
+edition.workspace = true
+description = "WAF/security scanning middleware for e-cat"
+license = "Apache-2.0"
+
+[dependencies]
+security-rust = "1.0"
+thiserror.workspace = true
+tracing.workspace = true
+tower = { workspace = true, features = ["util"] }
+http.workspace = true
+axum.workspace = true
+http-body-util = "0.1"
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt"] }

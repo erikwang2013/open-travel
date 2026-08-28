@@ -1,0 +1,21 @@
+[package]
+name = "ecat-auth"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "JWT, API key, and OAuth2 authentication layers for e-cat services"
+
+[dependencies]
+tower.workspace = true
+http.workspace = true
+tracing.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+jsonwebtoken = "9"
+axum.workspace = true
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
+tokio = { workspace = true, features = ["sync"] }
+sha2.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt"] }

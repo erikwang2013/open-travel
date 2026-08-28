@@ -1,0 +1,18 @@
+[package]
+name = "helloworld"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Hello World example for the e-cat framework"
+
+[dependencies]
+ecat = { path = "../../ecat" }
+ecat-transport-http = { path = "../../ecat-transport-http" }
+ecat-transport-grpc = { path = "../../ecat-transport-grpc" }
+ecat-logging = { path = "../../ecat-logging" }
+ecat-middleware = { path = "../../ecat-middleware" }
+serde.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
+tower.workspace = true
+tracing.workspace = true
+axum.workspace = true

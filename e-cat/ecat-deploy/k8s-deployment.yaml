@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecat-app
+  labels:
+    app: ecat-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ecat-app
+  template:
+    metadata:
+      labels:
+        app: ecat-app
+    spec:
+      containers:
+        - name: ecat-app
+          image: ecat-app:latest
+          ports:
+            - containerPort: 8000
+              name: http
+            - containerPort: 9000
+              name: grpc
+          env:
+            - name: RUST_LOG
+              value: info
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8000
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ecat-app
+spec:
+  selector:
+    app: ecat-app
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+    - name: grpc
+      port: 9000
+      targetPort: 9000

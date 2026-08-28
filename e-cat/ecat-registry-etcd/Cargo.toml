@@ -1,0 +1,19 @@
+[package]
+name = "ecat-registry-etcd"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "etcd service registry backend for e-cat"
+
+[dependencies]
+ecat-registry = { path = "../ecat-registry" }
+tokio = { workspace = true, features = ["rt", "time"] }
+async-trait.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
+uuid = { version = "1", features = ["v4"] }
+base64 = "0.22"
+
+[dev-dependencies]
+axum.workspace = true

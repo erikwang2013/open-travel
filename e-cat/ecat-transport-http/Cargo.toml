@@ -1,0 +1,23 @@
+[package]
+name = "ecat-transport-http"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "HTTP/Axum transport implementation for e-cat"
+
+[dependencies]
+ecat-transport = { path = "../ecat-transport" }
+ecat-metrics = { path = "../ecat-metrics" }
+axum.workspace = true
+tokio = { workspace = true, features = ["net", "sync", "macros", "rt"] }
+tower.workspace = true
+async-trait.workspace = true
+tracing.workspace = true
+# 显式 ring provider（关闭默认的 aws-lc-rs）：hyper-rustls/reqwest 用 ring，
+# 同时启用两个 provider 会导致 rustls 运行时无法自动选择而 panic。
+tokio-rustls = { version = "0.26", default-features = false, features = ["ring", "logging", "tls12"] }
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "logging", "tls12"] }
+rustls-pemfile = "2"
+
+[dev-dependencies]
+ecat-tls = { path = "../ecat-tls" }

@@ -1,0 +1,22 @@
+[package]
+name = "ecat-data-s3"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "S3/MinIO object storage client for e-cat"
+
+[dependencies]
+ecat-data = { path = "../ecat-data" }
+ecat-errors = { path = "../ecat-errors" }
+ecat-tls = { path = "../ecat-tls" }
+async-trait.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }
+hmac = "0.12"
+sha2.workspace = true
+time = { version = "0.3", features = ["formatting", "macros"] }
+quick-xml = "0.41"
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt"] }

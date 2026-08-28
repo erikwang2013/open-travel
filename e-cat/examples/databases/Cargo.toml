@@ -1,0 +1,14 @@
+[package]
+name = "databases"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Data access example for the e-cat framework (inline JSON config)"
+
+[dependencies]
+ecat-data = { path = "../../ecat-data" }
+ecat-errors.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+async-trait.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }

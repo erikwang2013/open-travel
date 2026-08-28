@@ -1,0 +1,16 @@
+[package]
+name = "ecat-data-memcached"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "⚠️ 内存实现，仅用于开发/测试，禁止生产使用 — Memcached-compatible in-memory (HashMap) cache client for e-cat; does NOT implement the memcached network protocol"
+
+[dependencies]
+ecat-data = { path = "../ecat-data" }
+tokio = { workspace = true, features = ["sync"] }
+async-trait.workspace = true
+serde.workspace = true
+ecat-tls = { path = "../ecat-tls" }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "time"] }

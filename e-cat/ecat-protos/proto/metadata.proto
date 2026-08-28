@@ -1,0 +1,6 @@
+syntax = "proto3";
+package ecat.metadata;
+
+message Metadata {
+    map<string, string> pairs = 1;
+}

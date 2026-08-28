@@ -1,0 +1,15 @@
+[package]
+name = "ecat-versioning"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "API versioning (path prefix and header-based) for e-cat"
+
+[dependencies]
+axum.workspace = true
+http.workspace = true
+tower.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt"] }

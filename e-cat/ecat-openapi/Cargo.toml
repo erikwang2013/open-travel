@@ -1,0 +1,10 @@
+[package]
+name = "ecat-openapi"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "OpenAPI specification generation for e-cat"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true

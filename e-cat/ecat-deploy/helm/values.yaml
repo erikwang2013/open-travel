@@ -1,0 +1,32 @@
+replicaCount: 3
+
+image:
+  repository: ecat-app
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  httpPort: 8000
+  grpcPort: 9000
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+
+env:
+  RUST_LOG: info
+
+health:
+  livenessPath: /health
+  readinessPath: /ready

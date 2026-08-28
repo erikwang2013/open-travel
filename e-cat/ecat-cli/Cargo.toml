@@ -1,0 +1,18 @@
+[package]
+name = "ecat-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Command-line interface for e-cat"
+
+[[bin]]
+name = "ecat"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+notify = "6.1.1"
+serde_json.workspace = true
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"

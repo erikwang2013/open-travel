@@ -1,0 +1,16 @@
+[package]
+name = "ecat-mq"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Message queue abstraction for e-cat"
+
+[dependencies]
+bytes.workspace = true
+tokio = { workspace = true, features = ["sync"] }
+async-trait.workspace = true
+tracing.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt"] }

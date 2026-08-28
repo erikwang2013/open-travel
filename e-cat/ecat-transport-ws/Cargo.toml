@@ -1,0 +1,18 @@
+[package]
+name = "ecat-transport-ws"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "WebSocket transport implementation for e-cat"
+
+[dependencies]
+ecat-transport = { path = "../ecat-transport" }
+tokio = { workspace = true, features = ["net", "sync", "rt", "time", "macros"] }
+async-trait.workspace = true
+axum = { workspace = true, features = ["ws"] }
+tower.workspace = true
+futures-util = "0.3"
+tracing.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt", "io-util"] }

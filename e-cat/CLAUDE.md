@@ -1,3 +1,4 @@
+<!-- Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz -->
 # Ruflo — Claude Code Configuration
 
 ## Rules
@@ -11,7 +12,6 @@
 - NEVER add a `Co-Authored-By` trailer to user commits unless this project's `.claude/settings.json` has `attribution.commit` set (#2078). The Claude Code Bash tool may suggest one in its default commit-message template — ignore it. `Co-Authored-By` is semantic authorship attribution under git/GitHub convention; the tool is the facilitator, not a co-author.
 - Keep files under 500 lines
 - Validate input at system boundaries
-- ALWAYS watermark every image (PNG/JPG/SVG) with `https://erik.xyz` — place at bottom edge or corner, semi-transparent, never obscure QR codes or content
 
 ## Agent Comms (SendMessage-First Coordination)
 
@@ -151,17 +151,6 @@ Any string works as a custom agent type.
 ```bash
 npm run build && npm test
 ```
-
-## 推送与发布
-
-- 提交：改动完成且验证通过后提交（不添加 Co-Authored-By，除非 settings.json 显式配置）
-- 推送：push 到 origin/main，确认远程同步
-- 版本发布流程：
-  1. 版本号是**项目版本**（当前 v1.0.0，按 semver 演进），独立于 e-cat 框架版本
-  2. CHANGELOG.md 顶部新增版本节（格式 `## [x.y.z] — YYYY-MM-DD`），记录变更
-  3. 打 annotated tag：`git tag -a vX.Y.Z -m "vX.Y.Z"`，`git push origin vX.Y.Z`
-  4. 创建 release：`gh release create vX.Y.Z --title vX.Y.Z --notes-file <节>`，body 取自 CHANGELOG 对应节；最新版本自动置为 Latest
-  5. 增量原则：只补缺失的 tag/release，已存在的跳过；e-cat 框架源码随项目统一提交（已并入普通目录），不单独发布版本
 
 ## CLI Quick Reference
 

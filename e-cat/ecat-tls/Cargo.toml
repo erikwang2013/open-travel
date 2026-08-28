@@ -1,0 +1,13 @@
+[package]
+name = "ecat-tls"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "TLS config and certificate generation for e-cat data backends"
+
+[dependencies]
+serde.workspace = true
+rcgen = "0.14"
+rustls = { version = "0.23", default-features = false, features = ["ring"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }
+serde_json.workspace = true

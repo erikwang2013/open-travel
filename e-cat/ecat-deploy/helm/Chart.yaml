@@ -1,0 +1,6 @@
+apiVersion: v2
+name: ecat-app
+description: Helm chart for e-cat microservices
+type: application
+version: 0.1.0
+appVersion: "3.0.1"

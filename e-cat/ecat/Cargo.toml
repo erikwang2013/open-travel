@@ -1,0 +1,44 @@
+[package]
+name = "ecat"
+version.workspace = true
+edition.workspace = true
+description = "Aggregate crate: batteries-included entry point for e-cat"
+license.workspace = true
+
+[features]
+default = ["http", "grpc"]
+http = ["dep:ecat-transport-http"]
+grpc = ["dep:ecat-transport-grpc"]
+middleware = ["dep:ecat-middleware"]
+auth = ["dep:ecat-auth"]
+client = ["dep:ecat-client"]
+events = ["dep:ecat-events"]
+metrics = ["dep:ecat-metrics"]
+tracing = ["dep:ecat-tracing"]
+circuit-breaker = ["dep:ecat-circuit-breaker"]
+consul = ["dep:ecat-registry-consul"]
+remote = ["dep:ecat-config-remote"]
+redis = ["dep:ecat-data-redis"]
+
+[dependencies]
+ecat-transport = { workspace = true }
+ecat-logging = { workspace = true }
+ecat-errors = { workspace = true }
+ecat-transport-http = { workspace = true, optional = true }
+ecat-transport-grpc = { workspace = true, optional = true }
+ecat-middleware = { workspace = true, optional = true }
+ecat-auth = { workspace = true, optional = true }
+ecat-client = { workspace = true, optional = true }
+ecat-events = { workspace = true, optional = true }
+ecat-metrics = { workspace = true, optional = true }
+ecat-tracing = { workspace = true, optional = true }
+ecat-circuit-breaker = { workspace = true, optional = true }
+ecat-registry-consul = { workspace = true, optional = true }
+ecat-config-remote = { workspace = true, optional = true }
+ecat-data-redis = { workspace = true, optional = true }
+tokio = { workspace = true, features = ["rt", "macros", "signal"] }
+tracing.workspace = true
+async-trait.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt"] }

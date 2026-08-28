@@ -1,0 +1,12 @@
+[package]
+name = "websocket"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "WebSocket example for the e-cat framework"
+
+[dependencies]
+ecat = { path = "../../ecat" }
+ecat-transport-ws = { path = "../../ecat-transport-ws" }
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
+tracing.workspace = true

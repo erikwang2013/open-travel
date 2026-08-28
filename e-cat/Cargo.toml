@@ -1,0 +1,107 @@
+[workspace]
+members = [
+    "ecat-protos",
+    "ecat-errors",
+    "ecat-metadata",
+    "ecat-encoding",
+    "ecat-lock",
+    "ecat-logging",
+    "ecat-transport",
+    "ecat-transport-http",
+    "ecat-transport-grpc",
+    "ecat-middleware",
+    "ecat-registry",
+    "ecat-config",
+    "ecat-metrics",
+    "ecat-data",
+    "ecat-data-sqlx",
+    "ecat",
+    "ecat-cli",
+    "ecat-security",
+    "ecat-health",
+    "ecat-circuit-breaker",
+    "ecat-auth",
+    "ecat-client",
+    "ecat-registry-consul",
+    "ecat-data-redis",
+    "ecat-mq",
+    "ecat-events",
+    "ecat-config-remote",
+    "ecat-openapi",
+    "ecat-bench",
+    "ecat-tracing",
+    "ecat-registry-etcd",
+    "ecat-mq-kafka",
+    "ecat-mq-rabbitmq",
+    "ecat-mq-mqtt",
+    "ecat-mq-nats",
+    "ecat-data-opensearch",
+    "ecat-data-influxdb",
+    "ecat-transport-ws",
+    "ecat-versioning",
+    "ecat-graphql",
+    "ecat-data-elasticsearch",
+    "ecat-data-clickhouse",
+    "ecat-data-memcached",
+    "ecat-data-neo4j",
+    "ecat-data-nebulagraph",
+    "ecat-data-arangodb",
+    "ecat-data-iotdb",
+    "ecat-data-questdb",
+    "ecat-data-tdengine",
+    "ecat-data-mongodb",
+    "ecat-data-s3",
+    "ecat-tls",
+    "ecat-scheduler",
+    "examples/helloworld",
+    "examples/databases",
+    "examples/middleware",
+    "examples/websocket",
+]
+resolver = "2"
+
+[workspace.package]
+version = "3.0.3"
+edition = "2024"
+license = "Apache-2.0"
+repository = "https://github.com/erik/e-cat"
+documentation = "https://docs.rs/e-cat"
+
+
+[profile.release]
+lto = "thin"
+
+[workspace.dependencies]
+tokio = "1"
+bytes = "1"
+prost = "0.13"
+prost-types = "0.13"
+tonic = "0.12"
+tonic-build = "0.12"
+tower = "0.5"
+tower-http = "0.6"
+axum = "0.8"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+async-trait = "0.1"
+http = "1"
+thiserror = "2"
+futures-core = "0.3"
+sha2 = "0.10"
+ecat-transport = { version = "3.0.1", path = "ecat-transport" }
+ecat-transport-http = { version = "3.0.1", path = "ecat-transport-http" }
+ecat-transport-grpc = { version = "3.0.1", path = "ecat-transport-grpc" }
+ecat-logging = { version = "3.0.1", path = "ecat-logging" }
+ecat-errors = { version = "3.0.1", path = "ecat-errors" }
+ecat-middleware = { version = "3.0.1", path = "ecat-middleware" }
+ecat-auth = { version = "3.0.1", path = "ecat-auth" }
+ecat-client = { version = "3.0.1", path = "ecat-client" }
+ecat-events = { version = "3.0.1", path = "ecat-events" }
+ecat-metrics = { version = "3.0.1", path = "ecat-metrics" }
+ecat-tracing = { version = "3.0.1", path = "ecat-tracing" }
+ecat-circuit-breaker = { version = "3.0.1", path = "ecat-circuit-breaker" }
+ecat-registry-consul = { version = "3.0.1", path = "ecat-registry-consul" }
+ecat-config-remote = { version = "3.0.1", path = "ecat-config-remote" }
+ecat-data-redis = { version = "3.0.1", path = "ecat-data-redis" }

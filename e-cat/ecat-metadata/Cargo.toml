@@ -1,0 +1,10 @@
+[package]
+name = "ecat-metadata"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Request/response metadata propagation for e-cat"
+
+[dependencies]
+http.workspace = true
+tonic.workspace = true
