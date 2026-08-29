@@ -47,6 +47,7 @@ struct FlightList {
   @State from: string = '';
   @State to: string = '';
   @State date: string = '';
+  @State cabinIndex: number = 0;
   @State flights: FlightItem[] = [];
   @State loading: boolean = false;
   @State failed: boolean = false;
@@ -76,6 +77,14 @@ struct FlightList {
     return ApiClient.lang() === 'zh' ? zh : en;
   }
 
+  cabinOptions(): SelectOption[] {
+    const opts: SelectOption[] = [{ value: $r('app.string.cabin_all') }];
+    for (let c = 0; c < 3; c++) {
+      opts.push({ value: this.cabinText(c) });
+    }
+    return opts;
+  }
+
   async doSearch(): Promise<void> {
     const from = this.from.trim().toUpperCase();
     const to = this.to.trim().toUpperCase();
@@ -89,6 +98,9 @@ struct FlightList {
       let path = `/api/flights/search?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
       if (this.date.length > 0) {
         path += `&depart_date=${encodeURIComponent(this.date)}`;
+      }
+      if (this.cabinIndex > 0) {
+        path += `&cabin=${this.cabinIndex - 1}`;
       }
       path += '&page=1&page_size=20';
       const data = await ApiClient.get<Object>(path);
@@ -216,13 +228,23 @@ struct FlightList {
         }
         .width('100%')
 
-        TextInput({ placeholder: $r('app.string.flight_date_hint'), text: this.date })
-          .width('100%')
-          .height(42)
-          .margin({ top: 10 })
-          .onChange((v: string) => {
-            this.date = v;
-          })
+        Row() {
+          TextInput({ placeholder: $r('app.string.flight_date_hint'), text: this.date })
+            .layoutWeight(1)
+            .height(42)
+            .onChange((v: string) => {
+              this.date = v;
+            })
+          Select(this.cabinOptions())
+            .selected(this.cabinIndex)
+            .font({ size: 14 })
+            .margin({ left: 8 })
+            .onSelect((index: number) => {
+              this.cabinIndex = index;
+            })
+        }
+        .width('100%')
+        .margin({ top: 10 })
 
         Button($r('app.string.flight_search_btn'))
           .width('100%')

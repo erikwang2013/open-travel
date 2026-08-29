@@ -4,445 +4,448 @@
   "@appTitle": {
     "description": "appTitle"
   },
-  "@appTitle": {"description": "appTitle"},
-  "@@appTitle": {
-    "description": "@appTitle"
-  },
   "tagline": "Explora el mundo, reserva con un toque",
   "@tagline": {
     "description": "tagline"
-  },
-  "@tagline": {"description": "tagline"},
-  "@@tagline": {
-    "description": "@tagline"
   },
   "nav.home": "Inicio",
   "@nav.home": {
     "description": "nav.home"
   },
-  "@nav.home": {"description": "nav.home"},
-  "@@nav.home": {
-    "description": "@nav.home"
-  },
   "nav.search": "Buscar",
   "@nav.search": {
     "description": "nav.search"
-  },
-  "@nav.search": {"description": "nav.search"},
-  "@@nav.search": {
-    "description": "@nav.search"
   },
   "nav.bookings": "Reservas",
   "@nav.bookings": {
     "description": "nav.bookings"
   },
-  "@nav.bookings": {"description": "nav.bookings"},
-  "@@nav.bookings": {
-    "description": "@nav.bookings"
-  },
   "nav.profile": "Perfil",
   "@nav.profile": {
     "description": "nav.profile"
-  },
-  "@nav.profile": {"description": "nav.profile"},
-  "@@nav.profile": {
-    "description": "@nav.profile"
   },
   "home.heroTitle": "Comienza tu viaje global",
   "@home.heroTitle": {
     "description": "home.heroTitle"
   },
-  "@home.heroTitle": {"description": "home.heroTitle"},
-  "@@home.heroTitle": {
-    "description": "@home.heroTitle"
-  },
   "home.heroSubtitle": "Reserva hoteles, vuelos y experiencias",
   "@home.heroSubtitle": {
     "description": "home.heroSubtitle"
-  },
-  "@home.heroSubtitle": {"description": "home.heroSubtitle"},
-  "@@home.heroSubtitle": {
-    "description": "@home.heroSubtitle"
   },
   "home.popularDestinations": "Destinos populares",
   "@home.popularDestinations": {
     "description": "home.popularDestinations"
   },
-  "@home.popularDestinations": {"description": "home.popularDestinations"},
-  "@@home.popularDestinations": {
-    "description": "@home.popularDestinations"
-  },
   "search.placeholder": "Buscar destinos, hoteles o vuelos",
   "@search.placeholder": {
     "description": "search.placeholder"
-  },
-  "@search.placeholder": {"description": "search.placeholder"},
-  "@@search.placeholder": {
-    "description": "@search.placeholder"
   },
   "search.button": "Buscar",
   "@search.button": {
     "description": "search.button"
   },
-  "@search.button": {"description": "search.button"},
-  "@@search.button": {
-    "description": "@search.button"
-  },
   "search.results": "Resultados de búsqueda",
   "@search.results": {
     "description": "search.results"
-  },
-  "@search.results": {"description": "search.results"},
-  "@@search.results": {
-    "description": "@search.results"
   },
   "destination.price": "Precio",
   "@destination.price": {
     "description": "destination.price"
   },
-  "@destination.price": {"description": "destination.price"},
-  "@@destination.price": {
-    "description": "@destination.price"
-  },
   "destination.perNight": "/noche",
   "@destination.perNight": {
     "description": "destination.perNight"
-  },
-  "@destination.perNight": {"description": "destination.perNight"},
-  "@@destination.perNight": {
-    "description": "@destination.perNight"
   },
   "destination.rating": "Valoración",
   "@destination.rating": {
     "description": "destination.rating"
   },
-  "@destination.rating": {"description": "destination.rating"},
-  "@@destination.rating": {
-    "description": "@destination.rating"
-  },
   "destination.bookNow": "Reservar ahora",
   "@destination.bookNow": {
     "description": "destination.bookNow"
-  },
-  "@destination.bookNow": {"description": "destination.bookNow"},
-  "@@destination.bookNow": {
-    "description": "@destination.bookNow"
   },
   "booking.title": "Mis reservas",
   "@booking.title": {
     "description": "booking.title"
   },
-  "@booking.title": {"description": "booking.title"},
-  "@@booking.title": {
-    "description": "@booking.title"
-  },
   "booking.date": "Fecha",
   "@booking.date": {
     "description": "booking.date"
-  },
-  "@booking.date": {"description": "booking.date"},
-  "@@booking.date": {
-    "description": "@booking.date"
   },
   "booking.guests": "Huéspedes",
   "@booking.guests": {
     "description": "booking.guests"
   },
-  "@booking.guests": {"description": "booking.guests"},
-  "@@booking.guests": {
-    "description": "@booking.guests"
-  },
   "booking.status.pending": "Pendiente",
   "@booking.status.pending": {
     "description": "booking.status.pending"
-  },
-  "@booking.status.pending": {"description": "booking.status.pending"},
-  "@@booking.status.pending": {
-    "description": "@booking.status.pending"
   },
   "booking.status.paid": "Pagado",
   "@booking.status.paid": {
     "description": "booking.status.paid"
   },
-  "@booking.status.paid": {"description": "booking.status.paid"},
-  "@@booking.status.paid": {
-    "description": "@booking.status.paid"
-  },
   "booking.status.cancelled": "Cancelado",
   "@booking.status.cancelled": {
     "description": "booking.status.cancelled"
-  },
-  "@booking.status.cancelled": {"description": "booking.status.cancelled"},
-  "@@booking.status.cancelled": {
-    "description": "@booking.status.cancelled"
   },
   "booking.viewAll": "Ver todo",
   "@booking.viewAll": {
     "description": "booking.viewAll"
   },
-  "@booking.viewAll": {"description": "booking.viewAll"},
-  "@@booking.viewAll": {
-    "description": "@booking.viewAll"
-  },
   "profile.title": "Perfil",
   "@profile.title": {
     "description": "profile.title"
-  },
-  "@profile.title": {"description": "profile.title"},
-  "@@profile.title": {
-    "description": "@profile.title"
   },
   "profile.login": "Iniciar sesión",
   "@profile.login": {
     "description": "profile.login"
   },
-  "@profile.login": {"description": "profile.login"},
-  "@@profile.login": {
-    "description": "@profile.login"
-  },
   "profile.register": "Registrarse",
   "@profile.register": {
     "description": "profile.register"
-  },
-  "@profile.register": {"description": "profile.register"},
-  "@@profile.register": {
-    "description": "@profile.register"
   },
   "profile.lang": "Idioma",
   "@profile.lang": {
     "description": "profile.lang"
   },
-  "@profile.lang": {"description": "profile.lang"},
-  "@@profile.lang": {
-    "description": "@profile.lang"
-  },
   "common.loading": "Cargando…",
   "@common.loading": {
     "description": "common.loading"
-  },
-  "@common.loading": {"description": "common.loading"},
-  "@@common.loading": {
-    "description": "@common.loading"
   },
   "common.error": "Algo salió mal",
   "@common.error": {
     "description": "common.error"
   },
-  "@common.error": {"description": "common.error"},
-  "@@common.error": {
-    "description": "@common.error"
-  },
   "common.retry": "Reintentar",
   "@common.retry": {
     "description": "common.retry"
-  },
-  "@common.retry": {"description": "common.retry"},
-  "@@common.retry": {
-    "description": "@common.retry"
   },
   "common.cancel": "Cancelar",
   "@common.cancel": {
     "description": "common.cancel"
   },
-  "@common.cancel": {"description": "common.cancel"},
-  "@@common.cancel": {
-    "description": "@common.cancel"
-  },
   "common.currency": "$",
   "@common.currency": {
     "description": "common.currency"
-  },
-  "@common.currency": {"description": "common.currency"},
-  "@@common.currency": {
-    "description": "@common.currency"
   },
   "common.noData": "Sin datos",
   "@common.noData": {
     "description": "common.noData"
   },
-  "@common.noData": {"description": "common.noData"},
-  "@@common.noData": {
-    "description": "@common.noData"
-  },
   "common.welcome": "Bienvenido",
   "@common.welcome": {
     "description": "common.welcome"
-  },
-  "@common.welcome": {"description": "common.welcome"},
-  "@@common.welcome": {
-    "description": "@common.welcome"
   },
   "common.success": "Éxito",
   "@common.success": {
     "description": "common.success"
   },
-  "@common.success": {"description": "common.success"},
-  "@@common.success": {
-    "description": "@common.success"
-  },
   "detail.attractions": "Atracciones",
   "@detail.attractions": {
     "description": "detail.attractions"
-  },
-  "@detail.attractions": {"description": "detail.attractions"},
-  "@@detail.attractions": {
-    "description": "@detail.attractions"
   },
   "common.loadFailed": "Error al cargar los datos",
   "@common.loadFailed": {
     "description": "common.loadFailed"
   },
-  "@common.loadFailed": {"description": "common.loadFailed"},
-  "@@common.loadFailed": {
-    "description": "@common.loadFailed"
-  },
   "profile.edit": "Editar perfil",
   "@profile.edit": {
     "description": "profile.edit"
-  },
-  "@profile.edit": {"description": "profile.edit"},
-  "@@profile.edit": {
-    "description": "@profile.edit"
   },
   "profile.nickname": "Apodo",
   "@profile.nickname": {
     "description": "profile.nickname"
   },
-  "@profile.nickname": {"description": "profile.nickname"},
-  "@@profile.nickname": {
-    "description": "@profile.nickname"
-  },
   "profile.save": "Guardar",
   "@profile.save": {
     "description": "profile.save"
-  },
-  "@profile.save": {"description": "profile.save"},
-  "@@profile.save": {
-    "description": "@profile.save"
   },
   "profile.logout": "Cerrar sesión",
   "@profile.logout": {
     "description": "profile.logout"
   },
-  "@profile.logout": {"description": "profile.logout"},
-  "@@profile.logout": {
-    "description": "@profile.logout"
-  },
   "profile.notLoggedIn": "No has iniciado sesión",
   "@profile.notLoggedIn": {
     "description": "profile.notLoggedIn"
-  },
-  "@profile.notLoggedIn": {"description": "profile.notLoggedIn"},
-  "@@profile.notLoggedIn": {
-    "description": "@profile.notLoggedIn"
   },
   "profile.loginPrompt": "Inicia sesión para sincronizar tu perfil y reservas",
   "@profile.loginPrompt": {
     "description": "profile.loginPrompt"
   },
-  "@profile.loginPrompt": {"description": "profile.loginPrompt"},
-  "@@profile.loginPrompt": {
-    "description": "@profile.loginPrompt"
-  },
   "profile.addressBook": "Libreta de direcciones",
   "@profile.addressBook": {
     "description": "profile.addressBook"
-  },
-  "@profile.addressBook": {"description": "profile.addressBook"},
-  "@@profile.addressBook": {
-    "description": "@profile.addressBook"
   },
   "profile.addAddress": "Añadir dirección",
   "@profile.addAddress": {
     "description": "profile.addAddress"
   },
-  "@profile.addAddress": {"description": "profile.addAddress"},
-  "@@profile.addAddress": {
-    "description": "@profile.addAddress"
-  },
   "profile.address": "Dirección",
   "@profile.address": {
     "description": "profile.address"
-  },
-  "@profile.address": {"description": "profile.address"},
-  "@@profile.address": {
-    "description": "@profile.address"
   },
   "profile.delete": "Eliminar",
   "@profile.delete": {
     "description": "profile.delete"
   },
-  "@profile.delete": {"description": "profile.delete"},
-  "@@profile.delete": {
-    "description": "@profile.delete"
-  },
   "profile.contactSupport": "Atención al cliente",
   "@profile.contactSupport": {
     "description": "profile.contactSupport"
   },
-  "@profile.contactSupport": {"description": "profile.contactSupport"},
-  "@@profile.contactSupport": {
-    "description": "@profile.contactSupport"
-  }
-,
   "search.allDestinations": "Todos los destinos",
-  "@search.allDestinations": {"description": "search.allDestinations"},
+  "@search.allDestinations": {
+    "description": "search.allDestinations"
+  },
   "search.minPrice": "Precio mínimo",
-  "@search.minPrice": {"description": "search.minPrice"},
+  "@search.minPrice": {
+    "description": "search.minPrice"
+  },
   "search.maxPrice": "Precio máximo",
-  "@search.maxPrice": {"description": "search.maxPrice"},
+  "@search.maxPrice": {
+    "description": "search.maxPrice"
+  },
   "search.empty": "No se encontraron resultados",
-  "@search.empty": {"description": "search.empty"},
+  "@search.empty": {
+    "description": "search.empty"
+  },
   "search.hint": "Ingresa una palabra clave o elige un destino",
-  "@search.hint": {"description": "search.hint"},
+  "@search.hint": {
+    "description": "search.hint"
+  },
   "search.resultDestination": "Destino",
-  "@search.resultDestination": {"description": "search.resultDestination"},
+  "@search.resultDestination": {
+    "description": "search.resultDestination"
+  },
   "search.resultAttraction": "Atracción",
-  "@search.resultAttraction": {"description": "search.resultAttraction"},
+  "@search.resultAttraction": {
+    "description": "search.resultAttraction"
+  },
   "lines.title": "Circuitos destacados",
-  "@lines.title": {"description": "lines.title"},
+  "@lines.title": {
+    "description": "lines.title"
+  },
   "lines.dayUnit": " d",
-  "@lines.dayUnit": {"description": "lines.dayUnit"},
+  "@lines.dayUnit": {
+    "description": "lines.dayUnit"
+  },
   "lines.minGroup": " pers. mín.",
-  "@lines.minGroup": {"description": "lines.minGroup"},
+  "@lines.minGroup": {
+    "description": "lines.minGroup"
+  },
   "lines.selectDate": "Elige una fecha de salida",
-  "@lines.selectDate": {"description": "lines.selectDate"},
+  "@lines.selectDate": {
+    "description": "lines.selectDate"
+  },
   "lines.itinerary": "Itinerario",
-  "@lines.itinerary": {"description": "lines.itinerary"},
+  "@lines.itinerary": {
+    "description": "lines.itinerary"
+  },
   "lines.seatsLeft": "Plazas restantes:",
-  "@lines.seatsLeft": {"description": "lines.seatsLeft"},
+  "@lines.seatsLeft": {
+    "description": "lines.seatsLeft"
+  },
   "lines.soldOut": "Agotado",
-  "@lines.soldOut": {"description": "lines.soldOut"},
+  "@lines.soldOut": {
+    "description": "lines.soldOut"
+  },
   "lines.noDates": "No hay fechas de salida disponibles",
-  "@lines.noDates": {"description": "lines.noDates"},
+  "@lines.noDates": {
+    "description": "lines.noDates"
+  },
   "lines.viewLines": "Ver circuitos",
-  "@lines.viewLines": {"description": "lines.viewLines"},
+  "@lines.viewLines": {
+    "description": "lines.viewLines"
+  },
   "order.title": "Mis pedidos",
-  "@order.title": {"description": "order.title"},
+  "@order.title": {
+    "description": "order.title"
+  },
   "order.amount": "Importe",
-  "@order.amount": {"description": "order.amount"},
+  "@order.amount": {
+    "description": "order.amount"
+  },
   "order.createdAt": "Fecha del pedido",
-  "@order.createdAt": {"description": "order.createdAt"},
+  "@order.createdAt": {
+    "description": "order.createdAt"
+  },
   "order.orderNo": "N.º de pedido",
-  "@order.orderNo": {"description": "order.orderNo"},
+  "@order.orderNo": {
+    "description": "order.orderNo"
+  },
   "order.cancel": "Cancelar pedido",
-  "@order.cancel": {"description": "order.cancel"},
+  "@order.cancel": {
+    "description": "order.cancel"
+  },
   "order.cancelConfirm": "¿Cancelar este pedido?",
-  "@order.cancelConfirm": {"description": "order.cancelConfirm"},
+  "@order.cancelConfirm": {
+    "description": "order.cancelConfirm"
+  },
   "order.cancelSuccess": "Pedido cancelado",
-  "@order.cancelSuccess": {"description": "order.cancelSuccess"},
+  "@order.cancelSuccess": {
+    "description": "order.cancelSuccess"
+  },
   "order.createSuccess": "Pedido realizado",
-  "@order.createSuccess": {"description": "order.createSuccess"},
+  "@order.createSuccess": {
+    "description": "order.createSuccess"
+  },
   "order.needLogin": "Inicia sesión para reservar",
-  "@order.needLogin": {"description": "order.needLogin"},
+  "@order.needLogin": {
+    "description": "order.needLogin"
+  },
   "order.stockNotEnough": "Plazas insuficientes. Elige otra fecha",
-  "@order.stockNotEnough": {"description": "order.stockNotEnough"},
+  "@order.stockNotEnough": {
+    "description": "order.stockNotEnough"
+  },
   "order.status.confirmed": "Confirmado",
-  "@order.status.confirmed": {"description": "order.status.confirmed"},
+  "@order.status.confirmed": {
+    "description": "order.status.confirmed"
+  },
   "order.status.completed": "Completado",
-  "@order.status.completed": {"description": "order.status.completed"},
+  "@order.status.completed": {
+    "description": "order.status.completed"
+  },
   "common.submit": "Enviar",
-  "@common.submit": {"description": "common.submit"},
+  "@common.submit": {
+    "description": "common.submit"
+  },
   "common.quantity": "Cantidad",
-  "@common.quantity": {"description": "common.quantity"}
+  "@common.quantity": {
+    "description": "common.quantity"
+  },
+  "order.product": "Producto",
+  "@order.product": {
+    "description": "order.product"
+  },
+  "flight.title": "Vuelos",
+  "@flight.title": {
+    "description": "flight.title"
+  },
+  "flight.from": "Desde",
+  "@flight.from": {
+    "description": "flight.from"
+  },
+  "flight.to": "Hacia",
+  "@flight.to": {
+    "description": "flight.to"
+  },
+  "flight.date": "Fecha de salida",
+  "@flight.date": {
+    "description": "flight.date"
+  },
+  "flight.cabin": "Clase",
+  "@flight.cabin": {
+    "description": "flight.cabin"
+  },
+  "flight.cabin.all": "Todas las clases",
+  "@flight.cabin.all": {
+    "description": "flight.cabin.all"
+  },
+  "flight.cabin.economy": "Económica",
+  "@flight.cabin.economy": {
+    "description": "flight.cabin.economy"
+  },
+  "flight.cabin.business": "Business",
+  "@flight.cabin.business": {
+    "description": "flight.cabin.business"
+  },
+  "flight.cabin.first": "Primera",
+  "@flight.cabin.first": {
+    "description": "flight.cabin.first"
+  },
+  "flight.search": "Buscar vuelos",
+  "@flight.search": {
+    "description": "flight.search"
+  },
+  "flight.seatsLeft": "Asientos disponibles:",
+  "@flight.seatsLeft": {
+    "description": "flight.seatsLeft"
+  },
+  "flight.noFlights": "No hay vuelos en esta ruta",
+  "@flight.noFlights": {
+    "description": "flight.noFlights"
+  },
+  "flight.hint": "Introduce los códigos de ciudad de salida y llegada",
+  "@flight.hint": {
+    "description": "flight.hint"
+  },
+  "hotel.title": "Hoteles",
+  "@hotel.title": {
+    "description": "hotel.title"
+  },
+  "hotel.city": "Código de ciudad",
+  "@hotel.city": {
+    "description": "hotel.city"
+  },
+  "hotel.star": "Estrellas",
+  "@hotel.star": {
+    "description": "hotel.star"
+  },
+  "hotel.allStars": "Todas las estrellas",
+  "@hotel.allStars": {
+    "description": "hotel.allStars"
+  },
+  "hotel.starUnit": "★",
+  "@hotel.starUnit": {
+    "description": "hotel.starUnit"
+  },
+  "hotel.search": "Buscar hoteles",
+  "@hotel.search": {
+    "description": "hotel.search"
+  },
+  "hotel.noHotels": "No hay hoteles en esta ciudad",
+  "@hotel.noHotels": {
+    "description": "hotel.noHotels"
+  },
+  "hotel.hint": "Introduce un código de ciudad",
+  "@hotel.hint": {
+    "description": "hotel.hint"
+  },
+  "hotel.rooms": "Habitaciones",
+  "@hotel.rooms": {
+    "description": "hotel.rooms"
+  },
+  "hotel.breakfast": "Desayuno incluido",
+  "@hotel.breakfast": {
+    "description": "hotel.breakfast"
+  },
+  "hotel.inventory": "Quedan:",
+  "@hotel.inventory": {
+    "description": "hotel.inventory"
+  },
+  "hotel.book": "Reservar",
+  "@hotel.book": {
+    "description": "hotel.book"
+  },
+  "hotel.checkIn": "Entrada",
+  "@hotel.checkIn": {
+    "description": "hotel.checkIn"
+  },
+  "hotel.checkOut": "Salida",
+  "@hotel.checkOut": {
+    "description": "hotel.checkOut"
+  },
+  "payment.title": "Pago",
+  "@payment.title": {
+    "description": "payment.title"
+  },
+  "payment.channels": "Elige un medio de pago",
+  "@payment.channels": {
+    "description": "payment.channels"
+  },
+  "payment.goPay": "Pagar ahora",
+  "@payment.goPay": {
+    "description": "payment.goPay"
+  },
+  "payment.checkoutHint": "Completa el pago en el navegador; esta página se actualizará automáticamente",
+  "@payment.checkoutHint": {
+    "description": "payment.checkoutHint"
+  },
+  "payment.success": "Pago realizado",
+  "@payment.success": {
+    "description": "payment.success"
+  },
+  "payment.timeout": "No se detectó el resultado del pago. Revisa el pedido más tarde",
+  "@payment.timeout": {
+    "description": "payment.timeout"
+  }
 }

@@ -1,3 +1,4 @@
+import promptAction from '@ohos.promptAction';
 import router from '@ohos.router';
 import { ApiClient } from '../services/ApiClient';
 
@@ -17,6 +18,11 @@ class SearchItem {
   }
 }
 
+class DestOption {
+  id: number = 0;
+  name: string = '';
+}
+
 interface SearchNavParams {
   q?: string;
 }
@@ -32,11 +38,45 @@ function parseSearchResult(data: Object): SearchItem[] {
   return (items as Object[]).map((it: Object) => new SearchItem(it as Record<string, Object>));
 }
 
+function destName(raw: Record<string, Object>): string {
+  const zh = raw['name_zh'];
+  if (ApiClient.lang() === 'zh' && typeof zh === 'string' && (zh as string).length > 0) {
+    return zh as string;
+  }
+  const en = raw['name_en'];
+  if (typeof en === 'string' && (en as string).length > 0) {
+    return en as string;
+  }
+  const name = raw['name'];
+  if (typeof name === 'string' && (name as string).length > 0) {
+    return name as string;
+  }
+  return 'ID ' + ((raw['id'] as number) ?? '');
+}
+
+function parseDestinations(data: Object): DestOption[] {
+  if (data === null || data === undefined) {
+    return [];
+  }
+  const list: Object[] = data instanceof Array ? (data as Object[]) : [];
+  return list.map((it: Object) => {
+    const r = it as Record<string, Object>;
+    const d = new DestOption();
+    d.id = (r['id'] as number) ?? 0;
+    d.name = destName(r);
+    return d;
+  });
+}
+
 @Entry
 @Component
 struct SearchPage {
   @State keyword: string = '';
   @State results: SearchItem[] = [];
+  @State destinations: DestOption[] = [];
+  @State destIndex: number = 0;
+  @State priceMin: string = '';
+  @State priceMax: string = '';
   @State loading: boolean = false;
   @State failed: boolean = false;
   @State searched: boolean = false;
@@ -47,17 +87,50 @@ struct SearchPage {
       this.keyword = params.q;
       this.doSearch();
     }
+    this.loadDestinations();
+  }
+
+  destOptions(): SelectOption[] {
+    const opts: SelectOption[] = [{ value: $r('app.string.search_all') }];
+    for (const d of this.destinations) {
+      opts.push({ value: d.name });
+    }
+    return opts;
+  }
+
+  async loadDestinations(): Promise<void> {
+    try {
+      const data = await ApiClient.get<Object>('/api/booking/dates?region_id=1');
+      this.destinations = parseDestinations(data);
+    } catch (e) {
+      // 目的地筛选拿不到时隐藏，搜索仍可用关键词
+    }
   }
 
   async doSearch(): Promise<void> {
-    if (this.keyword.length === 0) {
+    if (this.keyword.length === 0 && this.destIndex === 0) {
+      promptAction.showToast({ message: $r('app.string.search_need_keyword') });
       return;
     }
     this.loading = true;
     this.failed = false;
     try {
-      const url = `/api/search?q=${encodeURIComponent(this.keyword)}&lang=${ApiClient.lang()}&page=1`;
-      const data = await ApiClient.get<Object>(url);
+      let path = `/api/search?q=${encodeURIComponent(this.keyword)}&lang=${ApiClient.lang()}&page=1`;
+      if (this.destIndex > 0) {
+        const d = this.destinations[this.destIndex - 1];
+        if (d !== undefined) {
+          path += `&destination_id=${d.id}`;
+        }
+      }
+      const min = parseInt(this.priceMin);
+      const max = parseInt(this.priceMax);
+      if (!isNaN(min) && min > 0) {
+        path += `&price_min=${min}`;
+      }
+      if (!isNaN(max) && max > 0) {
+        path += `&price_max=${max}`;
+      }
+      const data = await ApiClient.get<Object>(path);
       this.results = parseSearchResult(data);
       this.searched = true;
     } catch (e) {
@@ -157,7 +230,49 @@ struct SearchPage {
           })
       }
       .width('100%')
-      .padding({ left: 16, right: 16, top: 12, bottom: 12 })
+      .padding({ left: 16, right: 16, top: 12, bottom: 8 })
+      .backgroundColor('#FFFFFF')
+
+      if (this.destinations.length > 0) {
+        Row() {
+          Text($r('app.string.search_dest_filter'))
+            .fontSize(14)
+            .fontColor('#666666')
+          Blank()
+          Select(this.destOptions())
+            .selected(this.destIndex)
+            .font({ size: 14 })
+            .onSelect((index: number) => {
+              this.destIndex = index;
+            })
+        }
+        .width('100%')
+        .padding({ left: 16, right: 16, top: 6, bottom: 6 })
+        .backgroundColor('#FFFFFF')
+      }
+
+      Row() {
+        TextInput({ placeholder: $r('app.string.search_min_price'), text: this.priceMin })
+          .type(InputType.Number)
+          .layoutWeight(1)
+          .height(38)
+          .onChange((v: string) => {
+            this.priceMin = v;
+          })
+        Text('—')
+          .fontSize(14)
+          .fontColor('#999999')
+          .margin({ left: 8, right: 8 })
+        TextInput({ placeholder: $r('app.string.search_max_price'), text: this.priceMax })
+          .type(InputType.Number)
+          .layoutWeight(1)
+          .height(38)
+          .onChange((v: string) => {
+            this.priceMax = v;
+          })
+      }
+      .width('100%')
+      .padding({ left: 16, right: 16, top: 8, bottom: 10 })
       .backgroundColor('#FFFFFF')
 
       if (!this.searched && !this.loading && !this.failed) {

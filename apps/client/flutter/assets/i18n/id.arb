@@ -4,445 +4,448 @@
   "@appTitle": {
     "description": "appTitle"
   },
-  "@appTitle": {"description": "appTitle"},
-  "@@appTitle": {
-    "description": "@appTitle"
-  },
   "tagline": "Jelajahi dunia, pesan sekali sentuh",
   "@tagline": {
     "description": "tagline"
-  },
-  "@tagline": {"description": "tagline"},
-  "@@tagline": {
-    "description": "@tagline"
   },
   "nav.home": "Beranda",
   "@nav.home": {
     "description": "nav.home"
   },
-  "@nav.home": {"description": "nav.home"},
-  "@@nav.home": {
-    "description": "@nav.home"
-  },
   "nav.search": "Cari",
   "@nav.search": {
     "description": "nav.search"
-  },
-  "@nav.search": {"description": "nav.search"},
-  "@@nav.search": {
-    "description": "@nav.search"
   },
   "nav.bookings": "Pemesanan",
   "@nav.bookings": {
     "description": "nav.bookings"
   },
-  "@nav.bookings": {"description": "nav.bookings"},
-  "@@nav.bookings": {
-    "description": "@nav.bookings"
-  },
   "nav.profile": "Profil",
   "@nav.profile": {
     "description": "nav.profile"
-  },
-  "@nav.profile": {"description": "nav.profile"},
-  "@@nav.profile": {
-    "description": "@nav.profile"
   },
   "home.heroTitle": "Mulai Perjalanan Global Anda",
   "@home.heroTitle": {
     "description": "home.heroTitle"
   },
-  "@home.heroTitle": {"description": "home.heroTitle"},
-  "@@home.heroTitle": {
-    "description": "@home.heroTitle"
-  },
   "home.heroSubtitle": "Pesan hotel, tiket pesawat, dan pengalaman",
   "@home.heroSubtitle": {
     "description": "home.heroSubtitle"
-  },
-  "@home.heroSubtitle": {"description": "home.heroSubtitle"},
-  "@@home.heroSubtitle": {
-    "description": "@home.heroSubtitle"
   },
   "home.popularDestinations": "Destinasi Populer",
   "@home.popularDestinations": {
     "description": "home.popularDestinations"
   },
-  "@home.popularDestinations": {"description": "home.popularDestinations"},
-  "@@home.popularDestinations": {
-    "description": "@home.popularDestinations"
-  },
   "search.placeholder": "Cari destinasi, hotel, atau tiket pesawat",
   "@search.placeholder": {
     "description": "search.placeholder"
-  },
-  "@search.placeholder": {"description": "search.placeholder"},
-  "@@search.placeholder": {
-    "description": "@search.placeholder"
   },
   "search.button": "Cari",
   "@search.button": {
     "description": "search.button"
   },
-  "@search.button": {"description": "search.button"},
-  "@@search.button": {
-    "description": "@search.button"
-  },
   "search.results": "Hasil Pencarian",
   "@search.results": {
     "description": "search.results"
-  },
-  "@search.results": {"description": "search.results"},
-  "@@search.results": {
-    "description": "@search.results"
   },
   "destination.price": "Harga",
   "@destination.price": {
     "description": "destination.price"
   },
-  "@destination.price": {"description": "destination.price"},
-  "@@destination.price": {
-    "description": "@destination.price"
-  },
   "destination.perNight": "/malam",
   "@destination.perNight": {
     "description": "destination.perNight"
-  },
-  "@destination.perNight": {"description": "destination.perNight"},
-  "@@destination.perNight": {
-    "description": "@destination.perNight"
   },
   "destination.rating": "Rating",
   "@destination.rating": {
     "description": "destination.rating"
   },
-  "@destination.rating": {"description": "destination.rating"},
-  "@@destination.rating": {
-    "description": "@destination.rating"
-  },
   "destination.bookNow": "Pesan Sekarang",
   "@destination.bookNow": {
     "description": "destination.bookNow"
-  },
-  "@destination.bookNow": {"description": "destination.bookNow"},
-  "@@destination.bookNow": {
-    "description": "@destination.bookNow"
   },
   "booking.title": "Pemesanan Saya",
   "@booking.title": {
     "description": "booking.title"
   },
-  "@booking.title": {"description": "booking.title"},
-  "@@booking.title": {
-    "description": "@booking.title"
-  },
   "booking.date": "Tanggal",
   "@booking.date": {
     "description": "booking.date"
-  },
-  "@booking.date": {"description": "booking.date"},
-  "@@booking.date": {
-    "description": "@booking.date"
   },
   "booking.guests": "Tamu",
   "@booking.guests": {
     "description": "booking.guests"
   },
-  "@booking.guests": {"description": "booking.guests"},
-  "@@booking.guests": {
-    "description": "@booking.guests"
-  },
   "booking.status.pending": "Menunggu",
   "@booking.status.pending": {
     "description": "booking.status.pending"
-  },
-  "@booking.status.pending": {"description": "booking.status.pending"},
-  "@@booking.status.pending": {
-    "description": "@booking.status.pending"
   },
   "booking.status.paid": "Dibayar",
   "@booking.status.paid": {
     "description": "booking.status.paid"
   },
-  "@booking.status.paid": {"description": "booking.status.paid"},
-  "@@booking.status.paid": {
-    "description": "@booking.status.paid"
-  },
   "booking.status.cancelled": "Dibatalkan",
   "@booking.status.cancelled": {
     "description": "booking.status.cancelled"
-  },
-  "@booking.status.cancelled": {"description": "booking.status.cancelled"},
-  "@@booking.status.cancelled": {
-    "description": "@booking.status.cancelled"
   },
   "booking.viewAll": "Lihat Semua",
   "@booking.viewAll": {
     "description": "booking.viewAll"
   },
-  "@booking.viewAll": {"description": "booking.viewAll"},
-  "@@booking.viewAll": {
-    "description": "@booking.viewAll"
-  },
   "profile.title": "Profil",
   "@profile.title": {
     "description": "profile.title"
-  },
-  "@profile.title": {"description": "profile.title"},
-  "@@profile.title": {
-    "description": "@profile.title"
   },
   "profile.login": "Masuk",
   "@profile.login": {
     "description": "profile.login"
   },
-  "@profile.login": {"description": "profile.login"},
-  "@@profile.login": {
-    "description": "@profile.login"
-  },
   "profile.register": "Daftar",
   "@profile.register": {
     "description": "profile.register"
-  },
-  "@profile.register": {"description": "profile.register"},
-  "@@profile.register": {
-    "description": "@profile.register"
   },
   "profile.lang": "Bahasa",
   "@profile.lang": {
     "description": "profile.lang"
   },
-  "@profile.lang": {"description": "profile.lang"},
-  "@@profile.lang": {
-    "description": "@profile.lang"
-  },
   "common.loading": "Memuat…",
   "@common.loading": {
     "description": "common.loading"
-  },
-  "@common.loading": {"description": "common.loading"},
-  "@@common.loading": {
-    "description": "@common.loading"
   },
   "common.error": "Terjadi kesalahan",
   "@common.error": {
     "description": "common.error"
   },
-  "@common.error": {"description": "common.error"},
-  "@@common.error": {
-    "description": "@common.error"
-  },
   "common.retry": "Coba Lagi",
   "@common.retry": {
     "description": "common.retry"
-  },
-  "@common.retry": {"description": "common.retry"},
-  "@@common.retry": {
-    "description": "@common.retry"
   },
   "common.cancel": "Batal",
   "@common.cancel": {
     "description": "common.cancel"
   },
-  "@common.cancel": {"description": "common.cancel"},
-  "@@common.cancel": {
-    "description": "@common.cancel"
-  },
   "common.currency": "Rp",
   "@common.currency": {
     "description": "common.currency"
-  },
-  "@common.currency": {"description": "common.currency"},
-  "@@common.currency": {
-    "description": "@common.currency"
   },
   "common.noData": "Tidak ada data",
   "@common.noData": {
     "description": "common.noData"
   },
-  "@common.noData": {"description": "common.noData"},
-  "@@common.noData": {
-    "description": "@common.noData"
-  },
   "common.welcome": "Selamat Datang",
   "@common.welcome": {
     "description": "common.welcome"
-  },
-  "@common.welcome": {"description": "common.welcome"},
-  "@@common.welcome": {
-    "description": "@common.welcome"
   },
   "common.success": "Berhasil",
   "@common.success": {
     "description": "common.success"
   },
-  "@common.success": {"description": "common.success"},
-  "@@common.success": {
-    "description": "@common.success"
-  },
   "detail.attractions": "Atraksi",
   "@detail.attractions": {
     "description": "detail.attractions"
-  },
-  "@detail.attractions": {"description": "detail.attractions"},
-  "@@detail.attractions": {
-    "description": "@detail.attractions"
   },
   "common.loadFailed": "Gagal memuat data",
   "@common.loadFailed": {
     "description": "common.loadFailed"
   },
-  "@common.loadFailed": {"description": "common.loadFailed"},
-  "@@common.loadFailed": {
-    "description": "@common.loadFailed"
-  },
   "profile.edit": "Edit Profil",
   "@profile.edit": {
     "description": "profile.edit"
-  },
-  "@profile.edit": {"description": "profile.edit"},
-  "@@profile.edit": {
-    "description": "@profile.edit"
   },
   "profile.nickname": "Nama panggilan",
   "@profile.nickname": {
     "description": "profile.nickname"
   },
-  "@profile.nickname": {"description": "profile.nickname"},
-  "@@profile.nickname": {
-    "description": "@profile.nickname"
-  },
   "profile.save": "Simpan",
   "@profile.save": {
     "description": "profile.save"
-  },
-  "@profile.save": {"description": "profile.save"},
-  "@@profile.save": {
-    "description": "@profile.save"
   },
   "profile.logout": "Keluar",
   "@profile.logout": {
     "description": "profile.logout"
   },
-  "@profile.logout": {"description": "profile.logout"},
-  "@@profile.logout": {
-    "description": "@profile.logout"
-  },
   "profile.notLoggedIn": "Belum masuk",
   "@profile.notLoggedIn": {
     "description": "profile.notLoggedIn"
-  },
-  "@profile.notLoggedIn": {"description": "profile.notLoggedIn"},
-  "@@profile.notLoggedIn": {
-    "description": "@profile.notLoggedIn"
   },
   "profile.loginPrompt": "Masuk untuk menyinkronkan profil dan pemesanan",
   "@profile.loginPrompt": {
     "description": "profile.loginPrompt"
   },
-  "@profile.loginPrompt": {"description": "profile.loginPrompt"},
-  "@@profile.loginPrompt": {
-    "description": "@profile.loginPrompt"
-  },
   "profile.addressBook": "Buku alamat",
   "@profile.addressBook": {
     "description": "profile.addressBook"
-  },
-  "@profile.addressBook": {"description": "profile.addressBook"},
-  "@@profile.addressBook": {
-    "description": "@profile.addressBook"
   },
   "profile.addAddress": "Tambah alamat",
   "@profile.addAddress": {
     "description": "profile.addAddress"
   },
-  "@profile.addAddress": {"description": "profile.addAddress"},
-  "@@profile.addAddress": {
-    "description": "@profile.addAddress"
-  },
   "profile.address": "Alamat",
   "@profile.address": {
     "description": "profile.address"
-  },
-  "@profile.address": {"description": "profile.address"},
-  "@@profile.address": {
-    "description": "@profile.address"
   },
   "profile.delete": "Hapus",
   "@profile.delete": {
     "description": "profile.delete"
   },
-  "@profile.delete": {"description": "profile.delete"},
-  "@@profile.delete": {
-    "description": "@profile.delete"
-  },
   "profile.contactSupport": "Dukungan pelanggan",
   "@profile.contactSupport": {
     "description": "profile.contactSupport"
   },
-  "@profile.contactSupport": {"description": "profile.contactSupport"},
-  "@@profile.contactSupport": {
-    "description": "@profile.contactSupport"
-  }
-,
   "search.allDestinations": "Semua destinasi",
-  "@search.allDestinations": {"description": "search.allDestinations"},
+  "@search.allDestinations": {
+    "description": "search.allDestinations"
+  },
   "search.minPrice": "Harga min",
-  "@search.minPrice": {"description": "search.minPrice"},
+  "@search.minPrice": {
+    "description": "search.minPrice"
+  },
   "search.maxPrice": "Harga maks",
-  "@search.maxPrice": {"description": "search.maxPrice"},
+  "@search.maxPrice": {
+    "description": "search.maxPrice"
+  },
   "search.empty": "Hasil tidak ditemukan",
-  "@search.empty": {"description": "search.empty"},
+  "@search.empty": {
+    "description": "search.empty"
+  },
   "search.hint": "Masukkan kata kunci atau pilih destinasi",
-  "@search.hint": {"description": "search.hint"},
+  "@search.hint": {
+    "description": "search.hint"
+  },
   "search.resultDestination": "Destinasi",
-  "@search.resultDestination": {"description": "search.resultDestination"},
+  "@search.resultDestination": {
+    "description": "search.resultDestination"
+  },
   "search.resultAttraction": "Objek wisata",
-  "@search.resultAttraction": {"description": "search.resultAttraction"},
+  "@search.resultAttraction": {
+    "description": "search.resultAttraction"
+  },
   "lines.title": "Paket wisata unggulan",
-  "@lines.title": {"description": "lines.title"},
+  "@lines.title": {
+    "description": "lines.title"
+  },
   "lines.dayUnit": " hari",
-  "@lines.dayUnit": {"description": "lines.dayUnit"},
+  "@lines.dayUnit": {
+    "description": "lines.dayUnit"
+  },
   "lines.minGroup": " orang min.",
-  "@lines.minGroup": {"description": "lines.minGroup"},
+  "@lines.minGroup": {
+    "description": "lines.minGroup"
+  },
   "lines.selectDate": "Pilih tanggal keberangkatan",
-  "@lines.selectDate": {"description": "lines.selectDate"},
+  "@lines.selectDate": {
+    "description": "lines.selectDate"
+  },
   "lines.itinerary": "Itinerari",
-  "@lines.itinerary": {"description": "lines.itinerary"},
+  "@lines.itinerary": {
+    "description": "lines.itinerary"
+  },
   "lines.seatsLeft": "Sisa kursi:",
-  "@lines.seatsLeft": {"description": "lines.seatsLeft"},
+  "@lines.seatsLeft": {
+    "description": "lines.seatsLeft"
+  },
   "lines.soldOut": "Habis",
-  "@lines.soldOut": {"description": "lines.soldOut"},
+  "@lines.soldOut": {
+    "description": "lines.soldOut"
+  },
   "lines.noDates": "Tidak ada tanggal keberangkatan tersedia",
-  "@lines.noDates": {"description": "lines.noDates"},
+  "@lines.noDates": {
+    "description": "lines.noDates"
+  },
   "lines.viewLines": "Lihat paket",
-  "@lines.viewLines": {"description": "lines.viewLines"},
+  "@lines.viewLines": {
+    "description": "lines.viewLines"
+  },
   "order.title": "Pesanan saya",
-  "@order.title": {"description": "order.title"},
+  "@order.title": {
+    "description": "order.title"
+  },
   "order.amount": "Jumlah",
-  "@order.amount": {"description": "order.amount"},
+  "@order.amount": {
+    "description": "order.amount"
+  },
   "order.createdAt": "Waktu pesanan",
-  "@order.createdAt": {"description": "order.createdAt"},
+  "@order.createdAt": {
+    "description": "order.createdAt"
+  },
   "order.orderNo": "No. pesanan",
-  "@order.orderNo": {"description": "order.orderNo"},
+  "@order.orderNo": {
+    "description": "order.orderNo"
+  },
   "order.cancel": "Batalkan pesanan",
-  "@order.cancel": {"description": "order.cancel"},
+  "@order.cancel": {
+    "description": "order.cancel"
+  },
   "order.cancelConfirm": "Batalkan pesanan ini?",
-  "@order.cancelConfirm": {"description": "order.cancelConfirm"},
+  "@order.cancelConfirm": {
+    "description": "order.cancelConfirm"
+  },
   "order.cancelSuccess": "Pesanan dibatalkan",
-  "@order.cancelSuccess": {"description": "order.cancelSuccess"},
+  "@order.cancelSuccess": {
+    "description": "order.cancelSuccess"
+  },
   "order.createSuccess": "Pesanan berhasil",
-  "@order.createSuccess": {"description": "order.createSuccess"},
+  "@order.createSuccess": {
+    "description": "order.createSuccess"
+  },
   "order.needLogin": "Silakan masuk untuk memesan",
-  "@order.needLogin": {"description": "order.needLogin"},
+  "@order.needLogin": {
+    "description": "order.needLogin"
+  },
   "order.stockNotEnough": "Kursi tidak cukup. Pilih tanggal lain",
-  "@order.stockNotEnough": {"description": "order.stockNotEnough"},
+  "@order.stockNotEnough": {
+    "description": "order.stockNotEnough"
+  },
   "order.status.confirmed": "Dikonfirmasi",
-  "@order.status.confirmed": {"description": "order.status.confirmed"},
+  "@order.status.confirmed": {
+    "description": "order.status.confirmed"
+  },
   "order.status.completed": "Selesai",
-  "@order.status.completed": {"description": "order.status.completed"},
+  "@order.status.completed": {
+    "description": "order.status.completed"
+  },
   "common.submit": "Kirim",
-  "@common.submit": {"description": "common.submit"},
+  "@common.submit": {
+    "description": "common.submit"
+  },
   "common.quantity": "Jumlah",
-  "@common.quantity": {"description": "common.quantity"}
+  "@common.quantity": {
+    "description": "common.quantity"
+  },
+  "order.product": "Produk",
+  "@order.product": {
+    "description": "order.product"
+  },
+  "flight.title": "Penerbangan",
+  "@flight.title": {
+    "description": "flight.title"
+  },
+  "flight.from": "Dari",
+  "@flight.from": {
+    "description": "flight.from"
+  },
+  "flight.to": "Ke",
+  "@flight.to": {
+    "description": "flight.to"
+  },
+  "flight.date": "Tanggal berangkat",
+  "@flight.date": {
+    "description": "flight.date"
+  },
+  "flight.cabin": "Kelas",
+  "@flight.cabin": {
+    "description": "flight.cabin"
+  },
+  "flight.cabin.all": "Semua kelas",
+  "@flight.cabin.all": {
+    "description": "flight.cabin.all"
+  },
+  "flight.cabin.economy": "Ekonomi",
+  "@flight.cabin.economy": {
+    "description": "flight.cabin.economy"
+  },
+  "flight.cabin.business": "Bisnis",
+  "@flight.cabin.business": {
+    "description": "flight.cabin.business"
+  },
+  "flight.cabin.first": "Kelas satu",
+  "@flight.cabin.first": {
+    "description": "flight.cabin.first"
+  },
+  "flight.search": "Cari penerbangan",
+  "@flight.search": {
+    "description": "flight.search"
+  },
+  "flight.seatsLeft": "Kursi tersisa:",
+  "@flight.seatsLeft": {
+    "description": "flight.seatsLeft"
+  },
+  "flight.noFlights": "Tidak ada penerbangan di rute ini",
+  "@flight.noFlights": {
+    "description": "flight.noFlights"
+  },
+  "flight.hint": "Masukkan kode kota keberangkatan dan kedatangan",
+  "@flight.hint": {
+    "description": "flight.hint"
+  },
+  "hotel.title": "Hotel",
+  "@hotel.title": {
+    "description": "hotel.title"
+  },
+  "hotel.city": "Kode kota",
+  "@hotel.city": {
+    "description": "hotel.city"
+  },
+  "hotel.star": "Bintang",
+  "@hotel.star": {
+    "description": "hotel.star"
+  },
+  "hotel.allStars": "Semua bintang",
+  "@hotel.allStars": {
+    "description": "hotel.allStars"
+  },
+  "hotel.starUnit": "★",
+  "@hotel.starUnit": {
+    "description": "hotel.starUnit"
+  },
+  "hotel.search": "Cari hotel",
+  "@hotel.search": {
+    "description": "hotel.search"
+  },
+  "hotel.noHotels": "Tidak ada hotel di kota ini",
+  "@hotel.noHotels": {
+    "description": "hotel.noHotels"
+  },
+  "hotel.hint": "Masukkan kode kota",
+  "@hotel.hint": {
+    "description": "hotel.hint"
+  },
+  "hotel.rooms": "Kamar",
+  "@hotel.rooms": {
+    "description": "hotel.rooms"
+  },
+  "hotel.breakfast": "Termasuk sarapan",
+  "@hotel.breakfast": {
+    "description": "hotel.breakfast"
+  },
+  "hotel.inventory": "Tersisa:",
+  "@hotel.inventory": {
+    "description": "hotel.inventory"
+  },
+  "hotel.book": "Pesan",
+  "@hotel.book": {
+    "description": "hotel.book"
+  },
+  "hotel.checkIn": "Check-in",
+  "@hotel.checkIn": {
+    "description": "hotel.checkIn"
+  },
+  "hotel.checkOut": "Check-out",
+  "@hotel.checkOut": {
+    "description": "hotel.checkOut"
+  },
+  "payment.title": "Pembayaran",
+  "@payment.title": {
+    "description": "payment.title"
+  },
+  "payment.channels": "Pilih metode pembayaran",
+  "@payment.channels": {
+    "description": "payment.channels"
+  },
+  "payment.goPay": "Bayar sekarang",
+  "@payment.goPay": {
+    "description": "payment.goPay"
+  },
+  "payment.checkoutHint": "Selesaikan pembayaran di browser, halaman ini akan diperbarui otomatis",
+  "@payment.checkoutHint": {
+    "description": "payment.checkoutHint"
+  },
+  "payment.success": "Pembayaran berhasil",
+  "@payment.success": {
+    "description": "payment.success"
+  },
+  "payment.timeout": "Hasil pembayaran tidak terdeteksi. Periksa pesanan nanti",
+  "@payment.timeout": {
+    "description": "payment.timeout"
+  }
 }

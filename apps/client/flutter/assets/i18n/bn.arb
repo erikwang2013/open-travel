@@ -4,445 +4,448 @@
   "@appTitle": {
     "description": "appTitle"
   },
-  "@appTitle": {"description": "appTitle"},
-  "@@appTitle": {
-    "description": "@appTitle"
-  },
   "tagline": "বিশ্ব অন্বেষণ করুন, এক ট্যাপে বুক করুন",
   "@tagline": {
     "description": "tagline"
-  },
-  "@tagline": {"description": "tagline"},
-  "@@tagline": {
-    "description": "@tagline"
   },
   "nav.home": "হোম",
   "@nav.home": {
     "description": "nav.home"
   },
-  "@nav.home": {"description": "nav.home"},
-  "@@nav.home": {
-    "description": "@nav.home"
-  },
   "nav.search": "অনুসন্ধান",
   "@nav.search": {
     "description": "nav.search"
-  },
-  "@nav.search": {"description": "nav.search"},
-  "@@nav.search": {
-    "description": "@nav.search"
   },
   "nav.bookings": "বুকিং",
   "@nav.bookings": {
     "description": "nav.bookings"
   },
-  "@nav.bookings": {"description": "nav.bookings"},
-  "@@nav.bookings": {
-    "description": "@nav.bookings"
-  },
   "nav.profile": "প্রোফাইল",
   "@nav.profile": {
     "description": "nav.profile"
-  },
-  "@nav.profile": {"description": "nav.profile"},
-  "@@nav.profile": {
-    "description": "@nav.profile"
   },
   "home.heroTitle": "আপনার বৈশ্বিক যাত্রা শুরু করুন",
   "@home.heroTitle": {
     "description": "home.heroTitle"
   },
-  "@home.heroTitle": {"description": "home.heroTitle"},
-  "@@home.heroTitle": {
-    "description": "@home.heroTitle"
-  },
   "home.heroSubtitle": "হোটেল, ফ্লাইট ও অভিজ্ঞতা বুক করুন",
   "@home.heroSubtitle": {
     "description": "home.heroSubtitle"
-  },
-  "@home.heroSubtitle": {"description": "home.heroSubtitle"},
-  "@@home.heroSubtitle": {
-    "description": "@home.heroSubtitle"
   },
   "home.popularDestinations": "জনপ্রিয় গন্তব্য",
   "@home.popularDestinations": {
     "description": "home.popularDestinations"
   },
-  "@home.popularDestinations": {"description": "home.popularDestinations"},
-  "@@home.popularDestinations": {
-    "description": "@home.popularDestinations"
-  },
   "search.placeholder": "গন্তব্য, হোটেল বা ফ্লাইট খুঁজুন",
   "@search.placeholder": {
     "description": "search.placeholder"
-  },
-  "@search.placeholder": {"description": "search.placeholder"},
-  "@@search.placeholder": {
-    "description": "@search.placeholder"
   },
   "search.button": "খুঁজুন",
   "@search.button": {
     "description": "search.button"
   },
-  "@search.button": {"description": "search.button"},
-  "@@search.button": {
-    "description": "@search.button"
-  },
   "search.results": "অনুসন্ধানের ফলাফল",
   "@search.results": {
     "description": "search.results"
-  },
-  "@search.results": {"description": "search.results"},
-  "@@search.results": {
-    "description": "@search.results"
   },
   "destination.price": "মূল্য",
   "@destination.price": {
     "description": "destination.price"
   },
-  "@destination.price": {"description": "destination.price"},
-  "@@destination.price": {
-    "description": "@destination.price"
-  },
   "destination.perNight": "/রাত",
   "@destination.perNight": {
     "description": "destination.perNight"
-  },
-  "@destination.perNight": {"description": "destination.perNight"},
-  "@@destination.perNight": {
-    "description": "@destination.perNight"
   },
   "destination.rating": "রেটিং",
   "@destination.rating": {
     "description": "destination.rating"
   },
-  "@destination.rating": {"description": "destination.rating"},
-  "@@destination.rating": {
-    "description": "@destination.rating"
-  },
   "destination.bookNow": "এখনই বুক করুন",
   "@destination.bookNow": {
     "description": "destination.bookNow"
-  },
-  "@destination.bookNow": {"description": "destination.bookNow"},
-  "@@destination.bookNow": {
-    "description": "@destination.bookNow"
   },
   "booking.title": "আমার বুকিং",
   "@booking.title": {
     "description": "booking.title"
   },
-  "@booking.title": {"description": "booking.title"},
-  "@@booking.title": {
-    "description": "@booking.title"
-  },
   "booking.date": "তারিখ",
   "@booking.date": {
     "description": "booking.date"
-  },
-  "@booking.date": {"description": "booking.date"},
-  "@@booking.date": {
-    "description": "@booking.date"
   },
   "booking.guests": "অতিথি",
   "@booking.guests": {
     "description": "booking.guests"
   },
-  "@booking.guests": {"description": "booking.guests"},
-  "@@booking.guests": {
-    "description": "@booking.guests"
-  },
   "booking.status.pending": "বাকি",
   "@booking.status.pending": {
     "description": "booking.status.pending"
-  },
-  "@booking.status.pending": {"description": "booking.status.pending"},
-  "@@booking.status.pending": {
-    "description": "@booking.status.pending"
   },
   "booking.status.paid": "পরিশোধিত",
   "@booking.status.paid": {
     "description": "booking.status.paid"
   },
-  "@booking.status.paid": {"description": "booking.status.paid"},
-  "@@booking.status.paid": {
-    "description": "@booking.status.paid"
-  },
   "booking.status.cancelled": "বাতিল",
   "@booking.status.cancelled": {
     "description": "booking.status.cancelled"
-  },
-  "@booking.status.cancelled": {"description": "booking.status.cancelled"},
-  "@@booking.status.cancelled": {
-    "description": "@booking.status.cancelled"
   },
   "booking.viewAll": "সব দেখুন",
   "@booking.viewAll": {
     "description": "booking.viewAll"
   },
-  "@booking.viewAll": {"description": "booking.viewAll"},
-  "@@booking.viewAll": {
-    "description": "@booking.viewAll"
-  },
   "profile.title": "প্রোফাইল",
   "@profile.title": {
     "description": "profile.title"
-  },
-  "@profile.title": {"description": "profile.title"},
-  "@@profile.title": {
-    "description": "@profile.title"
   },
   "profile.login": "লগ ইন",
   "@profile.login": {
     "description": "profile.login"
   },
-  "@profile.login": {"description": "profile.login"},
-  "@@profile.login": {
-    "description": "@profile.login"
-  },
   "profile.register": "নিবন্ধন",
   "@profile.register": {
     "description": "profile.register"
-  },
-  "@profile.register": {"description": "profile.register"},
-  "@@profile.register": {
-    "description": "@profile.register"
   },
   "profile.lang": "ভাষা",
   "@profile.lang": {
     "description": "profile.lang"
   },
-  "@profile.lang": {"description": "profile.lang"},
-  "@@profile.lang": {
-    "description": "@profile.lang"
-  },
   "common.loading": "লোড হচ্ছে…",
   "@common.loading": {
     "description": "common.loading"
-  },
-  "@common.loading": {"description": "common.loading"},
-  "@@common.loading": {
-    "description": "@common.loading"
   },
   "common.error": "কিছু ভুল হয়েছে",
   "@common.error": {
     "description": "common.error"
   },
-  "@common.error": {"description": "common.error"},
-  "@@common.error": {
-    "description": "@common.error"
-  },
   "common.retry": "আবার চেষ্টা করুন",
   "@common.retry": {
     "description": "common.retry"
-  },
-  "@common.retry": {"description": "common.retry"},
-  "@@common.retry": {
-    "description": "@common.retry"
   },
   "common.cancel": "বাতিল",
   "@common.cancel": {
     "description": "common.cancel"
   },
-  "@common.cancel": {"description": "common.cancel"},
-  "@@common.cancel": {
-    "description": "@common.cancel"
-  },
   "common.currency": "৳",
   "@common.currency": {
     "description": "common.currency"
-  },
-  "@common.currency": {"description": "common.currency"},
-  "@@common.currency": {
-    "description": "@common.currency"
   },
   "common.noData": "কোনো তথ্য নেই",
   "@common.noData": {
     "description": "common.noData"
   },
-  "@common.noData": {"description": "common.noData"},
-  "@@common.noData": {
-    "description": "@common.noData"
-  },
   "common.welcome": "স্বাগতম",
   "@common.welcome": {
     "description": "common.welcome"
-  },
-  "@common.welcome": {"description": "common.welcome"},
-  "@@common.welcome": {
-    "description": "@common.welcome"
   },
   "common.success": "সফল",
   "@common.success": {
     "description": "common.success"
   },
-  "@common.success": {"description": "common.success"},
-  "@@common.success": {
-    "description": "@common.success"
-  },
   "detail.attractions": "আকর্ষণ",
   "@detail.attractions": {
     "description": "detail.attractions"
-  },
-  "@detail.attractions": {"description": "detail.attractions"},
-  "@@detail.attractions": {
-    "description": "@detail.attractions"
   },
   "common.loadFailed": "ডেটা লোড ব্যর্থ",
   "@common.loadFailed": {
     "description": "common.loadFailed"
   },
-  "@common.loadFailed": {"description": "common.loadFailed"},
-  "@@common.loadFailed": {
-    "description": "@common.loadFailed"
-  },
   "profile.edit": "প্রোফাইল সম্পাদনা",
   "@profile.edit": {
     "description": "profile.edit"
-  },
-  "@profile.edit": {"description": "profile.edit"},
-  "@@profile.edit": {
-    "description": "@profile.edit"
   },
   "profile.nickname": "ডাকনাম",
   "@profile.nickname": {
     "description": "profile.nickname"
   },
-  "@profile.nickname": {"description": "profile.nickname"},
-  "@@profile.nickname": {
-    "description": "@profile.nickname"
-  },
   "profile.save": "সংরক্ষণ",
   "@profile.save": {
     "description": "profile.save"
-  },
-  "@profile.save": {"description": "profile.save"},
-  "@@profile.save": {
-    "description": "@profile.save"
   },
   "profile.logout": "লগ আউট",
   "@profile.logout": {
     "description": "profile.logout"
   },
-  "@profile.logout": {"description": "profile.logout"},
-  "@@profile.logout": {
-    "description": "@profile.logout"
-  },
   "profile.notLoggedIn": "লগ ইন নেই",
   "@profile.notLoggedIn": {
     "description": "profile.notLoggedIn"
-  },
-  "@profile.notLoggedIn": {"description": "profile.notLoggedIn"},
-  "@@profile.notLoggedIn": {
-    "description": "@profile.notLoggedIn"
   },
   "profile.loginPrompt": "প্রোফাইল ও বুকিং সিঙ্ক করতে লগ ইন করুন",
   "@profile.loginPrompt": {
     "description": "profile.loginPrompt"
   },
-  "@profile.loginPrompt": {"description": "profile.loginPrompt"},
-  "@@profile.loginPrompt": {
-    "description": "@profile.loginPrompt"
-  },
   "profile.addressBook": "ঠিকানা বই",
   "@profile.addressBook": {
     "description": "profile.addressBook"
-  },
-  "@profile.addressBook": {"description": "profile.addressBook"},
-  "@@profile.addressBook": {
-    "description": "@profile.addressBook"
   },
   "profile.addAddress": "ঠিকানা যোগ করুন",
   "@profile.addAddress": {
     "description": "profile.addAddress"
   },
-  "@profile.addAddress": {"description": "profile.addAddress"},
-  "@@profile.addAddress": {
-    "description": "@profile.addAddress"
-  },
   "profile.address": "ঠিকানা",
   "@profile.address": {
     "description": "profile.address"
-  },
-  "@profile.address": {"description": "profile.address"},
-  "@@profile.address": {
-    "description": "@profile.address"
   },
   "profile.delete": "মুছুন",
   "@profile.delete": {
     "description": "profile.delete"
   },
-  "@profile.delete": {"description": "profile.delete"},
-  "@@profile.delete": {
-    "description": "@profile.delete"
-  },
   "profile.contactSupport": "গ্রাহক সহায়তা",
   "@profile.contactSupport": {
     "description": "profile.contactSupport"
   },
-  "@profile.contactSupport": {"description": "profile.contactSupport"},
-  "@@profile.contactSupport": {
-    "description": "@profile.contactSupport"
-  }
-,
   "search.allDestinations": "সব গন্তব্য",
-  "@search.allDestinations": {"description": "search.allDestinations"},
+  "@search.allDestinations": {
+    "description": "search.allDestinations"
+  },
   "search.minPrice": "সর্বনিম্ন মূল্য",
-  "@search.minPrice": {"description": "search.minPrice"},
+  "@search.minPrice": {
+    "description": "search.minPrice"
+  },
   "search.maxPrice": "সর্বোচ্চ মূল্য",
-  "@search.maxPrice": {"description": "search.maxPrice"},
+  "@search.maxPrice": {
+    "description": "search.maxPrice"
+  },
   "search.empty": "কোনো ফলাফল পাওয়া যায়নি",
-  "@search.empty": {"description": "search.empty"},
+  "@search.empty": {
+    "description": "search.empty"
+  },
   "search.hint": "কীওয়ার্ড লিখুন বা গন্তব্য বেছে নিন",
-  "@search.hint": {"description": "search.hint"},
+  "@search.hint": {
+    "description": "search.hint"
+  },
   "search.resultDestination": "গন্তব্য",
-  "@search.resultDestination": {"description": "search.resultDestination"},
+  "@search.resultDestination": {
+    "description": "search.resultDestination"
+  },
   "search.resultAttraction": "আকর্ষণ",
-  "@search.resultAttraction": {"description": "search.resultAttraction"},
+  "@search.resultAttraction": {
+    "description": "search.resultAttraction"
+  },
   "lines.title": "বিশেষ ট্যুর",
-  "@lines.title": {"description": "lines.title"},
+  "@lines.title": {
+    "description": "lines.title"
+  },
   "lines.dayUnit": " দিন",
-  "@lines.dayUnit": {"description": "lines.dayUnit"},
+  "@lines.dayUnit": {
+    "description": "lines.dayUnit"
+  },
   "lines.minGroup": " জনের ন্যূনতম",
-  "@lines.minGroup": {"description": "lines.minGroup"},
+  "@lines.minGroup": {
+    "description": "lines.minGroup"
+  },
   "lines.selectDate": "যাত্রার তারিখ বেছে নিন",
-  "@lines.selectDate": {"description": "lines.selectDate"},
+  "@lines.selectDate": {
+    "description": "lines.selectDate"
+  },
   "lines.itinerary": "ভ্রমণসূচী",
-  "@lines.itinerary": {"description": "lines.itinerary"},
+  "@lines.itinerary": {
+    "description": "lines.itinerary"
+  },
   "lines.seatsLeft": "অবশিষ্ট আসন:",
-  "@lines.seatsLeft": {"description": "lines.seatsLeft"},
+  "@lines.seatsLeft": {
+    "description": "lines.seatsLeft"
+  },
   "lines.soldOut": "নিঃশেষিত",
-  "@lines.soldOut": {"description": "lines.soldOut"},
+  "@lines.soldOut": {
+    "description": "lines.soldOut"
+  },
   "lines.noDates": "কোনো যাত্রার তারিখ নেই",
-  "@lines.noDates": {"description": "lines.noDates"},
+  "@lines.noDates": {
+    "description": "lines.noDates"
+  },
   "lines.viewLines": "ট্যুর দেখুন",
-  "@lines.viewLines": {"description": "lines.viewLines"},
+  "@lines.viewLines": {
+    "description": "lines.viewLines"
+  },
   "order.title": "আমার অর্ডার",
-  "@order.title": {"description": "order.title"},
+  "@order.title": {
+    "description": "order.title"
+  },
   "order.amount": "পরিমাণ",
-  "@order.amount": {"description": "order.amount"},
+  "@order.amount": {
+    "description": "order.amount"
+  },
   "order.createdAt": "অর্ডারের সময়",
-  "@order.createdAt": {"description": "order.createdAt"},
+  "@order.createdAt": {
+    "description": "order.createdAt"
+  },
   "order.orderNo": "অর্ডার নং",
-  "@order.orderNo": {"description": "order.orderNo"},
+  "@order.orderNo": {
+    "description": "order.orderNo"
+  },
   "order.cancel": "অর্ডার বাতিল",
-  "@order.cancel": {"description": "order.cancel"},
+  "@order.cancel": {
+    "description": "order.cancel"
+  },
   "order.cancelConfirm": "এই অর্ডারটি বাতিল করবেন?",
-  "@order.cancelConfirm": {"description": "order.cancelConfirm"},
+  "@order.cancelConfirm": {
+    "description": "order.cancelConfirm"
+  },
   "order.cancelSuccess": "অর্ডার বাতিল হয়েছে",
-  "@order.cancelSuccess": {"description": "order.cancelSuccess"},
+  "@order.cancelSuccess": {
+    "description": "order.cancelSuccess"
+  },
   "order.createSuccess": "অর্ডার সম্পন্ন হয়েছে",
-  "@order.createSuccess": {"description": "order.createSuccess"},
+  "@order.createSuccess": {
+    "description": "order.createSuccess"
+  },
   "order.needLogin": "বুক করতে লগ ইন করুন",
-  "@order.needLogin": {"description": "order.needLogin"},
+  "@order.needLogin": {
+    "description": "order.needLogin"
+  },
   "order.stockNotEnough": "আসন পর্যাপ্ত নয়। অন্য তারিখ বেছে নিন",
-  "@order.stockNotEnough": {"description": "order.stockNotEnough"},
+  "@order.stockNotEnough": {
+    "description": "order.stockNotEnough"
+  },
   "order.status.confirmed": "নিশ্চিত",
-  "@order.status.confirmed": {"description": "order.status.confirmed"},
+  "@order.status.confirmed": {
+    "description": "order.status.confirmed"
+  },
   "order.status.completed": "সম্পন্ন",
-  "@order.status.completed": {"description": "order.status.completed"},
+  "@order.status.completed": {
+    "description": "order.status.completed"
+  },
   "common.submit": "জমা দিন",
-  "@common.submit": {"description": "common.submit"},
+  "@common.submit": {
+    "description": "common.submit"
+  },
   "common.quantity": "পরিমাণ",
-  "@common.quantity": {"description": "common.quantity"}
+  "@common.quantity": {
+    "description": "common.quantity"
+  },
+  "order.product": "পণ্য",
+  "@order.product": {
+    "description": "order.product"
+  },
+  "flight.title": "ফ্লাইট",
+  "@flight.title": {
+    "description": "flight.title"
+  },
+  "flight.from": "থেকে",
+  "@flight.from": {
+    "description": "flight.from"
+  },
+  "flight.to": "পর্যন্ত",
+  "@flight.to": {
+    "description": "flight.to"
+  },
+  "flight.date": "প্রস্থানের তারিখ",
+  "@flight.date": {
+    "description": "flight.date"
+  },
+  "flight.cabin": "ক্লাস",
+  "@flight.cabin": {
+    "description": "flight.cabin"
+  },
+  "flight.cabin.all": "সব ক্লাস",
+  "@flight.cabin.all": {
+    "description": "flight.cabin.all"
+  },
+  "flight.cabin.economy": "ইকোনমি",
+  "@flight.cabin.economy": {
+    "description": "flight.cabin.economy"
+  },
+  "flight.cabin.business": "বিজনেস",
+  "@flight.cabin.business": {
+    "description": "flight.cabin.business"
+  },
+  "flight.cabin.first": "ফার্স্ট",
+  "@flight.cabin.first": {
+    "description": "flight.cabin.first"
+  },
+  "flight.search": "ফ্লাইট খুঁজুন",
+  "@flight.search": {
+    "description": "flight.search"
+  },
+  "flight.seatsLeft": "বাকি আসন:",
+  "@flight.seatsLeft": {
+    "description": "flight.seatsLeft"
+  },
+  "flight.noFlights": "এই রুটে কোনো ফ্লাইট নেই",
+  "@flight.noFlights": {
+    "description": "flight.noFlights"
+  },
+  "flight.hint": "যাত্রা ও গন্তব্য শহরের কোড লিখুন",
+  "@flight.hint": {
+    "description": "flight.hint"
+  },
+  "hotel.title": "হোটেল",
+  "@hotel.title": {
+    "description": "hotel.title"
+  },
+  "hotel.city": "শহরের কোড",
+  "@hotel.city": {
+    "description": "hotel.city"
+  },
+  "hotel.star": "স্টার রেটিং",
+  "@hotel.star": {
+    "description": "hotel.star"
+  },
+  "hotel.allStars": "সব স্টার",
+  "@hotel.allStars": {
+    "description": "hotel.allStars"
+  },
+  "hotel.starUnit": "★",
+  "@hotel.starUnit": {
+    "description": "hotel.starUnit"
+  },
+  "hotel.search": "হোটেল খুঁজুন",
+  "@hotel.search": {
+    "description": "hotel.search"
+  },
+  "hotel.noHotels": "এই শহরে কোনো হোটেল নেই",
+  "@hotel.noHotels": {
+    "description": "hotel.noHotels"
+  },
+  "hotel.hint": "শহরের কোড লিখুন",
+  "@hotel.hint": {
+    "description": "hotel.hint"
+  },
+  "hotel.rooms": "কক্ষ",
+  "@hotel.rooms": {
+    "description": "hotel.rooms"
+  },
+  "hotel.breakfast": "নাস্তা অন্তর্ভুক্ত",
+  "@hotel.breakfast": {
+    "description": "hotel.breakfast"
+  },
+  "hotel.inventory": "বাকি:",
+  "@hotel.inventory": {
+    "description": "hotel.inventory"
+  },
+  "hotel.book": "বুক করুন",
+  "@hotel.book": {
+    "description": "hotel.book"
+  },
+  "hotel.checkIn": "চেক-ইন",
+  "@hotel.checkIn": {
+    "description": "hotel.checkIn"
+  },
+  "hotel.checkOut": "চেক-আউট",
+  "@hotel.checkOut": {
+    "description": "hotel.checkOut"
+  },
+  "payment.title": "পেমেন্ট",
+  "@payment.title": {
+    "description": "payment.title"
+  },
+  "payment.channels": "পেমেন্ট মাধ্যম বেছে নিন",
+  "@payment.channels": {
+    "description": "payment.channels"
+  },
+  "payment.goPay": "এখনই পেমেন্ট করুন",
+  "@payment.goPay": {
+    "description": "payment.goPay"
+  },
+  "payment.checkoutHint": "ব্রাউজারে পেমেন্ট সম্পন্ন করুন, এই পৃষ্ঠাটি স্বয়ংক্রিয়ভাবে রিফ্রেশ হবে",
+  "@payment.checkoutHint": {
+    "description": "payment.checkoutHint"
+  },
+  "payment.success": "পেমেন্ট সফল",
+  "@payment.success": {
+    "description": "payment.success"
+  },
+  "payment.timeout": "পেমেন্টের ফলাফল শনাক্ত করা যায়নি। পরে অর্ডার দেখুন",
+  "@payment.timeout": {
+    "description": "payment.timeout"
+  }
 }

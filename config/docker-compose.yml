@@ -152,9 +152,13 @@ services:
       - ecat-payment
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      # TLS 证书占位（config/certs/，见该目录 README；生产替换为真实证书）
+      - ./certs:/etc/nginx/certs:ro
     ports:
       # host 8080 被宿主 tracking-gateway、8081 被 bag/remus http.server 占用，临时映射 8082
       - "8082:80"
+      # TLS 本地验证端口（生产可改 443:443 或交由前置 LB）
+      - "8443:443"
 
   ecat-booking:
     build:

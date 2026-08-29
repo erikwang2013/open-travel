@@ -47,10 +47,23 @@ function parseHotels(data: Object): HotelItem[] {
 @Component
 struct HotelList {
   @State city: string = '';
+  @State starIndex: number = 0;
   @State hotels: HotelItem[] = [];
   @State loading: boolean = false;
   @State failed: boolean = false;
   @State searched: boolean = false;
+
+  starOptions(): SelectOption[] {
+    const opts: SelectOption[] = [{ value: $r('app.string.star_all') }];
+    for (let s = 1; s <= 5; s++) {
+      let str = '';
+      for (let i = 0; i < s; i++) {
+        str += '★';
+      }
+      opts.push({ value: str });
+    }
+    return opts;
+  }
 
   async doSearch(): Promise<void> {
     const city = this.city.trim().toUpperCase();
@@ -61,7 +74,11 @@ struct HotelList {
     this.failed = false;
     this.searched = true;
     try {
-      const path = `/api/hotels/search?city=${encodeURIComponent(city)}&page=1&page_size=20`;
+      let path = `/api/hotels/search?city=${encodeURIComponent(city)}`;
+      if (this.starIndex > 0) {
+        path += `&star=${this.starIndex}`;
+      }
+      path += '&page=1&page_size=20';
       const data = await ApiClient.get<Object>(path);
       this.hotels = parseHotels(data);
     } catch (e) {
@@ -159,12 +176,23 @@ struct HotelList {
         .padding(16)
 
       Column() {
-        TextInput({ placeholder: $r('app.string.hotel_city_hint'), text: this.city })
-          .width('100%')
-          .height(42)
-          .onChange((v: string) => {
-            this.city = v;
-          })
+        Row() {
+          TextInput({ placeholder: $r('app.string.hotel_city_hint'), text: this.city })
+            .layoutWeight(1)
+            .height(42)
+            .onChange((v: string) => {
+              this.city = v;
+            })
+          Select(this.starOptions())
+            .selected(this.starIndex)
+            .font({ size: 14 })
+            .margin({ left: 8 })
+            .onSelect((index: number) => {
+              this.starIndex = index;
+            })
+        }
+        .width('100%')
+
         Button($r('app.string.hotel_search_btn'))
           .width('100%')
           .height(42)

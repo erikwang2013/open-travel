@@ -72,3 +72,7 @@ apps/client/harmonyos/.cxx/
 apps/client/harmonyos/.idea/
 apps/client/harmonyos/hvigorw
 apps/client/harmonyos/hvigorw.bat
+
+# TLS 私钥（含开发占位证书）不入库
+config/certs/*.key
+config/certs/privkey.pem

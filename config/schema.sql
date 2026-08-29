@@ -53,7 +53,8 @@ CREATE TABLE IF NOT EXISTS travel_orders (
   status         TINYINT NOT NULL DEFAULT 0 COMMENT '状态（0待支付/1已支付/2已取消）',
   amount_cents   BIGINT NOT NULL COMMENT '金额（分）',
   created_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  INDEX idx_user (user_id),
+  -- P5-06：idx_user_created 复合索引（用户列表按创建时间倒序分页，消除 filesort），左前缀覆盖原 idx_user
+  INDEX idx_user_created (user_id, created_at),
   INDEX idx_status_created (status, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='支付订单表';
 

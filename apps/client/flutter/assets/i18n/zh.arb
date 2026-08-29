@@ -4,513 +4,448 @@
   "@appTitle": {
     "description": "appTitle"
   },
-  "@appTitle": {"description": "appTitle"},
-  "@@appTitle": {
-    "description": "@appTitle"
-  },
   "tagline": "探索世界，一键预订",
   "@tagline": {
     "description": "tagline"
-  },
-  "@tagline": {"description": "tagline"},
-  "@@tagline": {
-    "description": "@tagline"
   },
   "nav.home": "首页",
   "@nav.home": {
     "description": "nav.home"
   },
-  "@nav.home": {"description": "nav.home"},
-  "@@nav.home": {
-    "description": "@nav.home"
-  },
   "nav.search": "搜索",
   "@nav.search": {
     "description": "nav.search"
-  },
-  "@nav.search": {"description": "nav.search"},
-  "@@nav.search": {
-    "description": "@nav.search"
   },
   "nav.bookings": "预订",
   "@nav.bookings": {
     "description": "nav.bookings"
   },
-  "@nav.bookings": {"description": "nav.bookings"},
-  "@@nav.bookings": {
-    "description": "@nav.bookings"
-  },
   "nav.profile": "我的",
   "@nav.profile": {
     "description": "nav.profile"
-  },
-  "@nav.profile": {"description": "nav.profile"},
-  "@@nav.profile": {
-    "description": "@nav.profile"
   },
   "home.heroTitle": "开启你的全球之旅",
   "@home.heroTitle": {
     "description": "home.heroTitle"
   },
-  "@home.heroTitle": {"description": "home.heroTitle"},
-  "@@home.heroTitle": {
-    "description": "@home.heroTitle"
-  },
   "home.heroSubtitle": "预订酒店、机票与目的地体验",
   "@home.heroSubtitle": {
     "description": "home.heroSubtitle"
-  },
-  "@home.heroSubtitle": {"description": "home.heroSubtitle"},
-  "@@home.heroSubtitle": {
-    "description": "@home.heroSubtitle"
   },
   "home.popularDestinations": "热门目的地",
   "@home.popularDestinations": {
     "description": "home.popularDestinations"
   },
-  "@home.popularDestinations": {"description": "home.popularDestinations"},
-  "@@home.popularDestinations": {
-    "description": "@home.popularDestinations"
-  },
   "search.placeholder": "搜索目的地、酒店或机票",
   "@search.placeholder": {
     "description": "search.placeholder"
-  },
-  "@search.placeholder": {"description": "search.placeholder"},
-  "@@search.placeholder": {
-    "description": "@search.placeholder"
   },
   "search.button": "搜索",
   "@search.button": {
     "description": "search.button"
   },
-  "@search.button": {"description": "search.button"},
-  "@@search.button": {
-    "description": "@search.button"
-  },
   "search.results": "搜索结果",
   "@search.results": {
     "description": "search.results"
-  },
-  "@search.results": {"description": "search.results"},
-  "@@search.results": {
-    "description": "@search.results"
   },
   "destination.price": "价格",
   "@destination.price": {
     "description": "destination.price"
   },
-  "@destination.price": {"description": "destination.price"},
-  "@@destination.price": {
-    "description": "@destination.price"
-  },
   "destination.perNight": "/晚",
   "@destination.perNight": {
     "description": "destination.perNight"
-  },
-  "@destination.perNight": {"description": "destination.perNight"},
-  "@@destination.perNight": {
-    "description": "@destination.perNight"
   },
   "destination.rating": "评分",
   "@destination.rating": {
     "description": "destination.rating"
   },
-  "@destination.rating": {"description": "destination.rating"},
-  "@@destination.rating": {
-    "description": "@destination.rating"
-  },
   "destination.bookNow": "立即预订",
   "@destination.bookNow": {
     "description": "destination.bookNow"
-  },
-  "@destination.bookNow": {"description": "destination.bookNow"},
-  "@@destination.bookNow": {
-    "description": "@destination.bookNow"
   },
   "booking.title": "我的预订",
   "@booking.title": {
     "description": "booking.title"
   },
-  "@booking.title": {"description": "booking.title"},
-  "@@booking.title": {
-    "description": "@booking.title"
-  },
   "booking.date": "日期",
   "@booking.date": {
     "description": "booking.date"
-  },
-  "@booking.date": {"description": "booking.date"},
-  "@@booking.date": {
-    "description": "@booking.date"
   },
   "booking.guests": "人数",
   "@booking.guests": {
     "description": "booking.guests"
   },
-  "@booking.guests": {"description": "booking.guests"},
-  "@@booking.guests": {
-    "description": "@booking.guests"
-  },
   "booking.status.pending": "待支付",
   "@booking.status.pending": {
     "description": "booking.status.pending"
-  },
-  "@booking.status.pending": {"description": "booking.status.pending"},
-  "@@booking.status.pending": {
-    "description": "@booking.status.pending"
   },
   "booking.status.paid": "已支付",
   "@booking.status.paid": {
     "description": "booking.status.paid"
   },
-  "@booking.status.paid": {"description": "booking.status.paid"},
-  "@@booking.status.paid": {
-    "description": "@booking.status.paid"
-  },
   "booking.status.cancelled": "已取消",
   "@booking.status.cancelled": {
     "description": "booking.status.cancelled"
-  },
-  "@booking.status.cancelled": {"description": "booking.status.cancelled"},
-  "@@booking.status.cancelled": {
-    "description": "@booking.status.cancelled"
   },
   "booking.viewAll": "查看全部",
   "@booking.viewAll": {
     "description": "booking.viewAll"
   },
-  "@booking.viewAll": {"description": "booking.viewAll"},
-  "@@booking.viewAll": {
-    "description": "@booking.viewAll"
-  },
   "profile.title": "个人中心",
   "@profile.title": {
     "description": "profile.title"
-  },
-  "@profile.title": {"description": "profile.title"},
-  "@@profile.title": {
-    "description": "@profile.title"
   },
   "profile.login": "登录",
   "@profile.login": {
     "description": "profile.login"
   },
-  "@profile.login": {"description": "profile.login"},
-  "@@profile.login": {
-    "description": "@profile.login"
-  },
   "profile.register": "注册",
   "@profile.register": {
     "description": "profile.register"
-  },
-  "@profile.register": {"description": "profile.register"},
-  "@@profile.register": {
-    "description": "@profile.register"
   },
   "profile.lang": "语言",
   "@profile.lang": {
     "description": "profile.lang"
   },
-  "@profile.lang": {"description": "profile.lang"},
-  "@@profile.lang": {
-    "description": "@profile.lang"
-  },
   "common.loading": "加载中…",
   "@common.loading": {
     "description": "common.loading"
-  },
-  "@common.loading": {"description": "common.loading"},
-  "@@common.loading": {
-    "description": "@common.loading"
   },
   "common.error": "出错了",
   "@common.error": {
     "description": "common.error"
   },
-  "@common.error": {"description": "common.error"},
-  "@@common.error": {
-    "description": "@common.error"
-  },
   "common.retry": "重试",
   "@common.retry": {
     "description": "common.retry"
-  },
-  "@common.retry": {"description": "common.retry"},
-  "@@common.retry": {
-    "description": "@common.retry"
   },
   "common.cancel": "取消",
   "@common.cancel": {
     "description": "common.cancel"
   },
-  "@common.cancel": {"description": "common.cancel"},
-  "@@common.cancel": {
-    "description": "@common.cancel"
-  },
   "common.currency": "¥",
   "@common.currency": {
     "description": "common.currency"
-  },
-  "@common.currency": {"description": "common.currency"},
-  "@@common.currency": {
-    "description": "@common.currency"
   },
   "common.noData": "暂无数据",
   "@common.noData": {
     "description": "common.noData"
   },
-  "@common.noData": {"description": "common.noData"},
-  "@@common.noData": {
-    "description": "@common.noData"
-  },
   "common.welcome": "欢迎",
   "@common.welcome": {
     "description": "common.welcome"
-  },
-  "@common.welcome": {"description": "common.welcome"},
-  "@@common.welcome": {
-    "description": "@common.welcome"
   },
   "common.success": "操作成功",
   "@common.success": {
     "description": "common.success"
   },
-  "@common.success": {"description": "common.success"},
-  "@@common.success": {
-    "description": "@common.success"
-  },
   "detail.attractions": "景点",
   "@detail.attractions": {
     "description": "detail.attractions"
-  },
-  "@detail.attractions": {"description": "detail.attractions"},
-  "@@detail.attractions": {
-    "description": "@detail.attractions"
   },
   "common.loadFailed": "加载失败",
   "@common.loadFailed": {
     "description": "common.loadFailed"
   },
-  "@common.loadFailed": {"description": "common.loadFailed"},
-  "@@common.loadFailed": {
-    "description": "@common.loadFailed"
-  },
   "profile.edit": "编辑资料",
   "@profile.edit": {
     "description": "profile.edit"
-  },
-  "@profile.edit": {"description": "profile.edit"},
-  "@@profile.edit": {
-    "description": "@profile.edit"
   },
   "profile.nickname": "昵称",
   "@profile.nickname": {
     "description": "profile.nickname"
   },
-  "@profile.nickname": {"description": "profile.nickname"},
-  "@@profile.nickname": {
-    "description": "@profile.nickname"
-  },
   "profile.save": "保存",
   "@profile.save": {
     "description": "profile.save"
-  },
-  "@profile.save": {"description": "profile.save"},
-  "@@profile.save": {
-    "description": "@profile.save"
   },
   "profile.logout": "退出登录",
   "@profile.logout": {
     "description": "profile.logout"
   },
-  "@profile.logout": {"description": "profile.logout"},
-  "@@profile.logout": {
-    "description": "@profile.logout"
-  },
   "profile.notLoggedIn": "未登录",
   "@profile.notLoggedIn": {
     "description": "profile.notLoggedIn"
-  },
-  "@profile.notLoggedIn": {"description": "profile.notLoggedIn"},
-  "@@profile.notLoggedIn": {
-    "description": "@profile.notLoggedIn"
   },
   "profile.loginPrompt": "登录后同步资料与预订",
   "@profile.loginPrompt": {
     "description": "profile.loginPrompt"
   },
-  "@profile.loginPrompt": {"description": "profile.loginPrompt"},
-  "@@profile.loginPrompt": {
-    "description": "@profile.loginPrompt"
-  },
   "profile.addressBook": "地址簿",
   "@profile.addressBook": {
     "description": "profile.addressBook"
-  },
-  "@profile.addressBook": {"description": "profile.addressBook"},
-  "@@profile.addressBook": {
-    "description": "@profile.addressBook"
   },
   "profile.addAddress": "添加地址",
   "@profile.addAddress": {
     "description": "profile.addAddress"
   },
-  "@profile.addAddress": {"description": "profile.addAddress"},
-  "@@profile.addAddress": {
-    "description": "@profile.addAddress"
-  },
   "profile.address": "地址",
   "@profile.address": {
     "description": "profile.address"
-  },
-  "@profile.address": {"description": "profile.address"},
-  "@@profile.address": {
-    "description": "@profile.address"
   },
   "profile.delete": "删除",
   "@profile.delete": {
     "description": "profile.delete"
   },
-  "@profile.delete": {"description": "profile.delete"},
-  "@@profile.delete": {
-    "description": "@profile.delete"
-  },
   "profile.contactSupport": "联系客服",
   "@profile.contactSupport": {
     "description": "profile.contactSupport"
   },
-  "@profile.contactSupport": {"description": "profile.contactSupport"},
-  "@@profile.contactSupport": {
-    "description": "@profile.contactSupport"
-  }
-,
   "search.allDestinations": "全部目的地",
-  "@search.allDestinations": {"description": "search.allDestinations"},
+  "@search.allDestinations": {
+    "description": "search.allDestinations"
+  },
   "search.minPrice": "最低价",
-  "@search.minPrice": {"description": "search.minPrice"},
+  "@search.minPrice": {
+    "description": "search.minPrice"
+  },
   "search.maxPrice": "最高价",
-  "@search.maxPrice": {"description": "search.maxPrice"},
+  "@search.maxPrice": {
+    "description": "search.maxPrice"
+  },
   "search.empty": "未找到匹配结果",
-  "@search.empty": {"description": "search.empty"},
+  "@search.empty": {
+    "description": "search.empty"
+  },
   "search.hint": "输入关键词或选择目的地",
-  "@search.hint": {"description": "search.hint"},
+  "@search.hint": {
+    "description": "search.hint"
+  },
   "search.resultDestination": "目的地",
-  "@search.resultDestination": {"description": "search.resultDestination"},
+  "@search.resultDestination": {
+    "description": "search.resultDestination"
+  },
   "search.resultAttraction": "景点",
-  "@search.resultAttraction": {"description": "search.resultAttraction"},
+  "@search.resultAttraction": {
+    "description": "search.resultAttraction"
+  },
   "lines.title": "精选线路",
-  "@lines.title": {"description": "lines.title"},
+  "@lines.title": {
+    "description": "lines.title"
+  },
   "lines.dayUnit": "天",
-  "@lines.dayUnit": {"description": "lines.dayUnit"},
+  "@lines.dayUnit": {
+    "description": "lines.dayUnit"
+  },
   "lines.minGroup": "人成团",
-  "@lines.minGroup": {"description": "lines.minGroup"},
+  "@lines.minGroup": {
+    "description": "lines.minGroup"
+  },
   "lines.selectDate": "选择出发日期",
-  "@lines.selectDate": {"description": "lines.selectDate"},
+  "@lines.selectDate": {
+    "description": "lines.selectDate"
+  },
   "lines.itinerary": "行程安排",
-  "@lines.itinerary": {"description": "lines.itinerary"},
+  "@lines.itinerary": {
+    "description": "lines.itinerary"
+  },
   "lines.seatsLeft": "余位",
-  "@lines.seatsLeft": {"description": "lines.seatsLeft"},
+  "@lines.seatsLeft": {
+    "description": "lines.seatsLeft"
+  },
   "lines.soldOut": "已售罄",
-  "@lines.soldOut": {"description": "lines.soldOut"},
+  "@lines.soldOut": {
+    "description": "lines.soldOut"
+  },
   "lines.noDates": "暂无可选出发日期",
-  "@lines.noDates": {"description": "lines.noDates"},
+  "@lines.noDates": {
+    "description": "lines.noDates"
+  },
   "lines.viewLines": "查看线路",
-  "@lines.viewLines": {"description": "lines.viewLines"},
+  "@lines.viewLines": {
+    "description": "lines.viewLines"
+  },
   "order.title": "我的订单",
-  "@order.title": {"description": "order.title"},
+  "@order.title": {
+    "description": "order.title"
+  },
   "order.amount": "金额",
-  "@order.amount": {"description": "order.amount"},
+  "@order.amount": {
+    "description": "order.amount"
+  },
   "order.createdAt": "下单时间",
-  "@order.createdAt": {"description": "order.createdAt"},
+  "@order.createdAt": {
+    "description": "order.createdAt"
+  },
   "order.orderNo": "订单号",
-  "@order.orderNo": {"description": "order.orderNo"},
+  "@order.orderNo": {
+    "description": "order.orderNo"
+  },
   "order.cancel": "取消订单",
-  "@order.cancel": {"description": "order.cancel"},
+  "@order.cancel": {
+    "description": "order.cancel"
+  },
   "order.cancelConfirm": "确定取消该订单吗？",
-  "@order.cancelConfirm": {"description": "order.cancelConfirm"},
+  "@order.cancelConfirm": {
+    "description": "order.cancelConfirm"
+  },
   "order.cancelSuccess": "订单已取消",
-  "@order.cancelSuccess": {"description": "order.cancelSuccess"},
+  "@order.cancelSuccess": {
+    "description": "order.cancelSuccess"
+  },
   "order.createSuccess": "下单成功",
-  "@order.createSuccess": {"description": "order.createSuccess"},
+  "@order.createSuccess": {
+    "description": "order.createSuccess"
+  },
   "order.needLogin": "请先登录后预订",
-  "@order.needLogin": {"description": "order.needLogin"},
+  "@order.needLogin": {
+    "description": "order.needLogin"
+  },
   "order.stockNotEnough": "库存不足，请更换出发日期",
-  "@order.stockNotEnough": {"description": "order.stockNotEnough"},
+  "@order.stockNotEnough": {
+    "description": "order.stockNotEnough"
+  },
   "order.status.confirmed": "已确认",
-  "@order.status.confirmed": {"description": "order.status.confirmed"},
+  "@order.status.confirmed": {
+    "description": "order.status.confirmed"
+  },
   "order.status.completed": "已完成",
-  "@order.status.completed": {"description": "order.status.completed"},
+  "@order.status.completed": {
+    "description": "order.status.completed"
+  },
   "common.submit": "提交",
-  "@common.submit": {"description": "common.submit"},
+  "@common.submit": {
+    "description": "common.submit"
+  },
   "common.quantity": "数量",
-  "@common.quantity": {"description": "common.quantity"},
+  "@common.quantity": {
+    "description": "common.quantity"
+  },
   "order.product": "商品",
-  "@order.product": {"description": "order.product"},
+  "@order.product": {
+    "description": "order.product"
+  },
   "flight.title": "机票",
-  "@flight.title": {"description": "flight.title"},
+  "@flight.title": {
+    "description": "flight.title"
+  },
   "flight.from": "出发地",
-  "@flight.from": {"description": "flight.from"},
+  "@flight.from": {
+    "description": "flight.from"
+  },
   "flight.to": "目的地",
-  "@flight.to": {"description": "flight.to"},
+  "@flight.to": {
+    "description": "flight.to"
+  },
   "flight.date": "出发日期",
-  "@flight.date": {"description": "flight.date"},
+  "@flight.date": {
+    "description": "flight.date"
+  },
   "flight.cabin": "舱位",
-  "@flight.cabin": {"description": "flight.cabin"},
+  "@flight.cabin": {
+    "description": "flight.cabin"
+  },
   "flight.cabin.all": "全部舱位",
-  "@flight.cabin.all": {"description": "flight.cabin.all"},
+  "@flight.cabin.all": {
+    "description": "flight.cabin.all"
+  },
   "flight.cabin.economy": "经济舱",
-  "@flight.cabin.economy": {"description": "flight.cabin.economy"},
+  "@flight.cabin.economy": {
+    "description": "flight.cabin.economy"
+  },
   "flight.cabin.business": "商务舱",
-  "@flight.cabin.business": {"description": "flight.cabin.business"},
+  "@flight.cabin.business": {
+    "description": "flight.cabin.business"
+  },
   "flight.cabin.first": "头等舱",
-  "@flight.cabin.first": {"description": "flight.cabin.first"},
+  "@flight.cabin.first": {
+    "description": "flight.cabin.first"
+  },
   "flight.search": "搜索航班",
-  "@flight.search": {"description": "flight.search"},
+  "@flight.search": {
+    "description": "flight.search"
+  },
   "flight.seatsLeft": "余票:",
-  "@flight.seatsLeft": {"description": "flight.seatsLeft"},
+  "@flight.seatsLeft": {
+    "description": "flight.seatsLeft"
+  },
   "flight.noFlights": "该航线暂无航班",
-  "@flight.noFlights": {"description": "flight.noFlights"},
+  "@flight.noFlights": {
+    "description": "flight.noFlights"
+  },
   "flight.hint": "请输入起降城市三字码",
-  "@flight.hint": {"description": "flight.hint"},
+  "@flight.hint": {
+    "description": "flight.hint"
+  },
   "hotel.title": "酒店",
-  "@hotel.title": {"description": "hotel.title"},
+  "@hotel.title": {
+    "description": "hotel.title"
+  },
   "hotel.city": "城市代码",
-  "@hotel.city": {"description": "hotel.city"},
+  "@hotel.city": {
+    "description": "hotel.city"
+  },
   "hotel.star": "星级",
-  "@hotel.star": {"description": "hotel.star"},
+  "@hotel.star": {
+    "description": "hotel.star"
+  },
   "hotel.allStars": "不限星级",
-  "@hotel.allStars": {"description": "hotel.allStars"},
+  "@hotel.allStars": {
+    "description": "hotel.allStars"
+  },
   "hotel.starUnit": "星",
-  "@hotel.starUnit": {"description": "hotel.starUnit"},
+  "@hotel.starUnit": {
+    "description": "hotel.starUnit"
+  },
   "hotel.search": "搜索酒店",
-  "@hotel.search": {"description": "hotel.search"},
+  "@hotel.search": {
+    "description": "hotel.search"
+  },
   "hotel.noHotels": "该城市暂无酒店",
-  "@hotel.noHotels": {"description": "hotel.noHotels"},
+  "@hotel.noHotels": {
+    "description": "hotel.noHotels"
+  },
   "hotel.hint": "请输入城市三字码",
-  "@hotel.hint": {"description": "hotel.hint"},
+  "@hotel.hint": {
+    "description": "hotel.hint"
+  },
   "hotel.rooms": "房型",
-  "@hotel.rooms": {"description": "hotel.rooms"},
+  "@hotel.rooms": {
+    "description": "hotel.rooms"
+  },
   "hotel.breakfast": "含早",
-  "@hotel.breakfast": {"description": "hotel.breakfast"},
+  "@hotel.breakfast": {
+    "description": "hotel.breakfast"
+  },
   "hotel.inventory": "剩余:",
-  "@hotel.inventory": {"description": "hotel.inventory"},
+  "@hotel.inventory": {
+    "description": "hotel.inventory"
+  },
   "hotel.book": "预订",
-  "@hotel.book": {"description": "hotel.book"},
+  "@hotel.book": {
+    "description": "hotel.book"
+  },
   "hotel.checkIn": "入住",
-  "@hotel.checkIn": {"description": "hotel.checkIn"},
+  "@hotel.checkIn": {
+    "description": "hotel.checkIn"
+  },
   "hotel.checkOut": "退房",
-  "@hotel.checkOut": {"description": "hotel.checkOut"},
+  "@hotel.checkOut": {
+    "description": "hotel.checkOut"
+  },
   "payment.title": "支付",
-  "@payment.title": {"description": "payment.title"},
+  "@payment.title": {
+    "description": "payment.title"
+  },
   "payment.channels": "选择支付方式",
-  "@payment.channels": {"description": "payment.channels"},
+  "@payment.channels": {
+    "description": "payment.channels"
+  },
   "payment.goPay": "去支付",
-  "@payment.goPay": {"description": "payment.goPay"},
+  "@payment.goPay": {
+    "description": "payment.goPay"
+  },
   "payment.checkoutHint": "请在浏览器中完成支付，本页将自动刷新结果",
-  "@payment.checkoutHint": {"description": "payment.checkoutHint"},
+  "@payment.checkoutHint": {
+    "description": "payment.checkoutHint"
+  },
   "payment.success": "支付成功",
-  "@payment.success": {"description": "payment.success"},
+  "@payment.success": {
+    "description": "payment.success"
+  },
   "payment.timeout": "未检测到支付结果，请稍后在订单中查看",
-  "@payment.timeout": {"description": "payment.timeout"}
+  "@payment.timeout": {
+    "description": "payment.timeout"
+  }
 }

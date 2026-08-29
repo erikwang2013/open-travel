@@ -1,86 +1,568 @@
 {
   "string": [
-    { "name": "app_name", "value": "Open Travel" },
-    { "name": "module_desc", "value": "Open Travel entry module" },
-    { "name": "EntryAbility_desc", "value": "Open Travel main page" },
-    { "name": "EntryAbility_label", "value": "Open Travel" },
-    { "name": "tab_home", "value": "Home" },
-    { "name": "tab_search", "value": "Search" },
-    { "name": "tab_booking", "value": "Bookings" },
-    { "name": "tab_profile", "value": "Profile" },
-    { "name": "hot_destinations", "value": "Popular Destinations" },
-    { "name": "view_all", "value": "View All" },
-    { "name": "destination_list_title", "value": "Destinations" },
-    { "name": "destination_detail_title", "value": "Destination Details" },
-    { "name": "detail_placeholder", "value": "Detail page coming soon" },
-    { "name": "search_hint", "value": "Search destinations, hotels..." },
-    { "name": "search_placeholder", "value": "Search coming soon" },
-    { "name": "booking_placeholder", "value": "No bookings yet" },
-    { "name": "profile_subtitle", "value": "One account, travel the world" },
-    { "name": "profile_enter", "value": "Open Profile" },
-    { "name": "logout", "value": "Sign Out" },
-    { "name": "settings_title", "value": "Settings" },
-    { "name": "language_label", "value": "Language" },
-    { "name": "attraction_list_title", "value": "Attractions" },
-    { "name": "attraction_detail_title", "value": "Attraction Details" },
-    { "name": "attraction_empty", "value": "No attractions available" },
-    { "name": "attraction_not_found", "value": "Attraction not found or unavailable" },
-    { "name": "load_failed", "value": "Failed to load" },
-    { "name": "retry", "value": "Retry" },
-    { "name": "ticket_price", "value": "Ticket" },
-    { "name": "free_entry", "value": "Free" },
-    { "name": "open_hours", "value": "Opening Hours" },
-    { "name": "rating", "value": "Rating" },
-    { "name": "search_button", "value": "Search" },
-    { "name": "search_empty", "value": "No results found" },
-    { "name": "tag_destination", "value": "Destination" },
-    { "name": "tag_attraction", "value": "Attraction" },
-    { "name": "tag_line", "value": "Tour" },
-    { "name": "tag_hotel", "value": "Hotel" },
-    { "name": "line_list_title", "value": "Tours" },
-    { "name": "line_empty", "value": "No tours available" },
-    { "name": "line_detail_title", "value": "Tour Details" },
-    { "name": "price", "value": "Price " },
-    { "name": "group_size", "value": "Group " },
-    { "name": "itinerary_title", "value": "Itinerary" },
-    { "name": "dates_title", "value": "Departure Dates" },
-    { "name": "seats_left", "value": "Left " },
-    { "name": "sold_out", "value": "Sold Out" },
-    { "name": "book_now", "value": "Book Now" },
-    { "name": "booking", "value": "Booking..." },
-    { "name": "book_failed", "value": "Booking failed, please retry" },
-    { "name": "select_date_hint", "value": "Please select a departure date" },
-    { "name": "order_placed", "value": "Order Placed" },
-    { "name": "view_orders", "value": "View Orders" },
-    { "name": "order_no", "value": "Order No. " },
-    { "name": "order_amount", "value": "Amount " },
-    { "name": "order_list_title", "value": "My Orders" },
-    { "name": "order_detail_title", "value": "Order Details" },
-    { "name": "order_empty", "value": "No orders yet" },
-    { "name": "order_snapshot", "value": "Product Info" },
-    { "name": "order_status_0", "value": "Pending Payment" },
-    { "name": "order_status_1", "value": "Paid" },
-    { "name": "order_status_2", "value": "Confirmed" },
-    { "name": "order_status_3", "value": "Completed" },
-    { "name": "order_status_4", "value": "Cancelled" },
-    { "name": "order_created", "value": "Placed At" },
-    { "name": "expire_at", "value": "Pay By" },
-    { "name": "depart_date", "value": "Departure Date" },
-    { "name": "quantity", "value": "Quantity" },
-    { "name": "cancel_order", "value": "Cancel Order" },
-    { "name": "cancel_confirm", "value": "Cancel this order?" },
-    { "name": "cancelling", "value": "Cancelling..." },
-    { "name": "cancel_btn", "value": "Keep It" },
-    { "name": "confirm_btn", "value": "Confirm" },
-    { "name": "login_title", "value": "Sign In" },
-    { "name": "login_email_hint", "value": "Email" },
-    { "name": "login_password_hint", "value": "Password" },
-    { "name": "login_button", "value": "Sign In" },
-    { "name": "logging_in", "value": "Signing in..." },
-    { "name": "login_failed", "value": "Sign in failed, check email and password" },
-    { "name": "login_required", "value": "Please sign in first" },
-    { "name": "go_login", "value": "Sign In" },
-    { "name": "line_go", "value": "Tours" },
-    { "name": "order_go", "value": "My Orders" }
+    {
+      "name": "app_name",
+      "value": "Open Travel"
+    },
+    {
+      "name": "module_desc",
+      "value": "Open Travel entry module"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "Open Travel main page"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "Open Travel"
+    },
+    {
+      "name": "tab_home",
+      "value": "Home"
+    },
+    {
+      "name": "tab_search",
+      "value": "Search"
+    },
+    {
+      "name": "tab_booking",
+      "value": "Bookings"
+    },
+    {
+      "name": "tab_profile",
+      "value": "Profile"
+    },
+    {
+      "name": "hot_destinations",
+      "value": "Popular Destinations"
+    },
+    {
+      "name": "view_all",
+      "value": "View All"
+    },
+    {
+      "name": "destination_list_title",
+      "value": "Destinations"
+    },
+    {
+      "name": "destination_detail_title",
+      "value": "Destination Details"
+    },
+    {
+      "name": "detail_placeholder",
+      "value": "Detail page coming soon"
+    },
+    {
+      "name": "search_hint",
+      "value": "Search destinations, hotels..."
+    },
+    {
+      "name": "search_placeholder",
+      "value": "Search coming soon"
+    },
+    {
+      "name": "booking_placeholder",
+      "value": "No bookings yet"
+    },
+    {
+      "name": "profile_subtitle",
+      "value": "One account, travel the world"
+    },
+    {
+      "name": "profile_enter",
+      "value": "Open Profile"
+    },
+    {
+      "name": "logout",
+      "value": "Sign Out"
+    },
+    {
+      "name": "settings_title",
+      "value": "Settings"
+    },
+    {
+      "name": "language_label",
+      "value": "Language"
+    },
+    {
+      "name": "attraction_list_title",
+      "value": "Attractions"
+    },
+    {
+      "name": "attraction_detail_title",
+      "value": "Attraction Details"
+    },
+    {
+      "name": "attraction_empty",
+      "value": "No attractions available"
+    },
+    {
+      "name": "attraction_not_found",
+      "value": "Attraction not found or unavailable"
+    },
+    {
+      "name": "load_failed",
+      "value": "Failed to load"
+    },
+    {
+      "name": "retry",
+      "value": "Retry"
+    },
+    {
+      "name": "ticket_price",
+      "value": "Ticket"
+    },
+    {
+      "name": "free_entry",
+      "value": "Free"
+    },
+    {
+      "name": "open_hours",
+      "value": "Opening Hours"
+    },
+    {
+      "name": "rating",
+      "value": "Rating"
+    },
+    {
+      "name": "search_button",
+      "value": "Search"
+    },
+    {
+      "name": "search_empty",
+      "value": "No results found"
+    },
+    {
+      "name": "tag_destination",
+      "value": "Destination"
+    },
+    {
+      "name": "tag_attraction",
+      "value": "Attraction"
+    },
+    {
+      "name": "tag_line",
+      "value": "Tour"
+    },
+    {
+      "name": "tag_hotel",
+      "value": "Hotel"
+    },
+    {
+      "name": "line_list_title",
+      "value": "Tours"
+    },
+    {
+      "name": "line_empty",
+      "value": "No tours available"
+    },
+    {
+      "name": "line_detail_title",
+      "value": "Tour Details"
+    },
+    {
+      "name": "price",
+      "value": "Price "
+    },
+    {
+      "name": "group_size",
+      "value": "Group "
+    },
+    {
+      "name": "itinerary_title",
+      "value": "Itinerary"
+    },
+    {
+      "name": "dates_title",
+      "value": "Departure Dates"
+    },
+    {
+      "name": "seats_left",
+      "value": "Left "
+    },
+    {
+      "name": "sold_out",
+      "value": "Sold Out"
+    },
+    {
+      "name": "book_now",
+      "value": "Book Now"
+    },
+    {
+      "name": "booking",
+      "value": "Booking..."
+    },
+    {
+      "name": "book_failed",
+      "value": "Booking failed, please retry"
+    },
+    {
+      "name": "select_date_hint",
+      "value": "Please select a departure date"
+    },
+    {
+      "name": "order_placed",
+      "value": "Order Placed"
+    },
+    {
+      "name": "view_orders",
+      "value": "View Orders"
+    },
+    {
+      "name": "order_no",
+      "value": "Order No. "
+    },
+    {
+      "name": "order_amount",
+      "value": "Amount "
+    },
+    {
+      "name": "order_list_title",
+      "value": "My Orders"
+    },
+    {
+      "name": "order_detail_title",
+      "value": "Order Details"
+    },
+    {
+      "name": "order_empty",
+      "value": "No orders yet"
+    },
+    {
+      "name": "order_snapshot",
+      "value": "Product Info"
+    },
+    {
+      "name": "order_status_0",
+      "value": "Pending Payment"
+    },
+    {
+      "name": "order_status_1",
+      "value": "Paid"
+    },
+    {
+      "name": "order_status_2",
+      "value": "Confirmed"
+    },
+    {
+      "name": "order_status_3",
+      "value": "Completed"
+    },
+    {
+      "name": "order_status_4",
+      "value": "Cancelled"
+    },
+    {
+      "name": "order_created",
+      "value": "Placed At"
+    },
+    {
+      "name": "expire_at",
+      "value": "Pay By"
+    },
+    {
+      "name": "depart_date",
+      "value": "Departure Date"
+    },
+    {
+      "name": "quantity",
+      "value": "Quantity"
+    },
+    {
+      "name": "cancel_order",
+      "value": "Cancel Order"
+    },
+    {
+      "name": "cancel_confirm",
+      "value": "Cancel this order?"
+    },
+    {
+      "name": "cancelling",
+      "value": "Cancelling..."
+    },
+    {
+      "name": "cancel_btn",
+      "value": "Keep It"
+    },
+    {
+      "name": "confirm_btn",
+      "value": "Confirm"
+    },
+    {
+      "name": "login_title",
+      "value": "Sign In"
+    },
+    {
+      "name": "login_email_hint",
+      "value": "Email"
+    },
+    {
+      "name": "login_password_hint",
+      "value": "Password"
+    },
+    {
+      "name": "login_button",
+      "value": "Sign In"
+    },
+    {
+      "name": "logging_in",
+      "value": "Signing in..."
+    },
+    {
+      "name": "login_failed",
+      "value": "Sign in failed, check email and password"
+    },
+    {
+      "name": "login_required",
+      "value": "Please sign in first"
+    },
+    {
+      "name": "go_login",
+      "value": "Sign In"
+    },
+    {
+      "name": "line_go",
+      "value": "Tours"
+    },
+    {
+      "name": "order_go",
+      "value": "My Orders"
+    },
+    {
+      "name": "flight_go",
+      "value": "Flights"
+    },
+    {
+      "name": "hotel_go",
+      "value": "Hotels"
+    },
+    {
+      "name": "flight_search_title",
+      "value": "Flight Search"
+    },
+    {
+      "name": "flight_from_hint",
+      "value": "From (IATA code)"
+    },
+    {
+      "name": "flight_to_hint",
+      "value": "To (IATA code)"
+    },
+    {
+      "name": "flight_date_hint",
+      "value": "Date YYYY-MM-DD"
+    },
+    {
+      "name": "flight_search_btn",
+      "value": "Search Flights"
+    },
+    {
+      "name": "flight_empty",
+      "value": "No flights found"
+    },
+    {
+      "name": "flight_detail_title",
+      "value": "Flight Details"
+    },
+    {
+      "name": "cabin_label",
+      "value": "Cabin"
+    },
+    {
+      "name": "hotel_search_title",
+      "value": "Hotel Search"
+    },
+    {
+      "name": "hotel_city_hint",
+      "value": "City code (IATA)"
+    },
+    {
+      "name": "hotel_search_btn",
+      "value": "Search Hotels"
+    },
+    {
+      "name": "hotel_empty",
+      "value": "No hotels found"
+    },
+    {
+      "name": "hotel_detail_title",
+      "value": "Hotel Details"
+    },
+    {
+      "name": "rooms_title",
+      "value": "Rooms"
+    },
+    {
+      "name": "rooms_empty",
+      "value": "No rooms available"
+    },
+    {
+      "name": "breakfast_yes",
+      "value": "Breakfast included"
+    },
+    {
+      "name": "breakfast_no",
+      "value": "No breakfast"
+    },
+    {
+      "name": "book_room",
+      "value": "Book"
+    },
+    {
+      "name": "pay_title",
+      "value": "Checkout"
+    },
+    {
+      "name": "pay_channel_hint",
+      "value": "Select payment method"
+    },
+    {
+      "name": "pay_confirm",
+      "value": "Pay Now"
+    },
+    {
+      "name": "paying",
+      "value": "Paying..."
+    },
+    {
+      "name": "open_checkout",
+      "value": "Open Checkout"
+    },
+    {
+      "name": "pay_done",
+      "value": "I have paid"
+    },
+    {
+      "name": "pay_success",
+      "value": "Payment Successful"
+    },
+    {
+      "name": "pay_failed",
+      "value": "Payment Failed"
+    },
+    {
+      "name": "pay_pending",
+      "value": "Waiting for payment result..."
+    },
+    {
+      "name": "checkout_hint",
+      "value": "Checkout URL"
+    },
+    {
+      "name": "go_pay",
+      "value": "Go Pay"
+    },
+    {
+      "name": "order_type",
+      "value": "Order Type"
+    },
+    {
+      "name": "check_in",
+      "value": "Check-in"
+    },
+    {
+      "name": "check_out",
+      "value": "Check-out"
+    },
+    {
+      "name": "profile_title",
+      "value": "Profile"
+    },
+    {
+      "name": "profile_edit",
+      "value": "Edit Profile"
+    },
+    {
+      "name": "profile_save",
+      "value": "Save"
+    },
+    {
+      "name": "profile_nickname",
+      "value": "Nickname"
+    },
+    {
+      "name": "profile_lang",
+      "value": "Language"
+    },
+    {
+      "name": "profile_add_address",
+      "value": "Add Address"
+    },
+    {
+      "name": "profile_address",
+      "value": "Address"
+    },
+    {
+      "name": "profile_delete",
+      "value": "Delete"
+    },
+    {
+      "name": "profile_support",
+      "value": "Contact Support"
+    },
+    {
+      "name": "profile_not_logged_in",
+      "value": "Not signed in. Sign in to manage your profile"
+    },
+    {
+      "name": "profile_login",
+      "value": "Sign In"
+    },
+    {
+      "name": "save_failed",
+      "value": "Failed to save"
+    },
+    {
+      "name": "logout_confirm",
+      "value": "Sign out?"
+    },
+    {
+      "name": "close_btn",
+      "value": "Close"
+    },
+    {
+      "name": "support_call",
+      "value": "Call"
+    },
+    {
+      "name": "support_contacts",
+      "value": "Hotline: +86 400-000-0000\nEmail: support@erik.xyz"
+    },
+    {
+      "name": "address_empty",
+      "value": "No addresses yet"
+    },
+    {
+      "name": "search_need_keyword",
+      "value": "Enter a keyword or select a destination"
+    },
+    {
+      "name": "search_dest_filter",
+      "value": "Destination"
+    },
+    {
+      "name": "search_all",
+      "value": "All"
+    },
+    {
+      "name": "search_min_price",
+      "value": "Min Price"
+    },
+    {
+      "name": "search_max_price",
+      "value": "Max Price"
+    },
+    {
+      "name": "cabin_all",
+      "value": "All Cabins"
+    },
+    {
+      "name": "star_all",
+      "value": "All Stars"
+    },
+    {
+      "name": "profile_address_book",
+      "value": "Address Book"
+    }
   ]
 }

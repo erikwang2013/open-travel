@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../api.dart';
+import 'dashboard_page.dart';
 import 'attractions_page.dart';
 import 'destinations_page.dart';
 import 'flights_page.dart';
@@ -21,6 +22,7 @@ class _HomePageState extends State<HomePage> {
   int _index = 0;
 
   static const _pages = [
+    DashboardPage(),
     DestinationsPage(),
     AttractionsPage(),
     LinesPage(),
@@ -41,6 +43,10 @@ class _HomePageState extends State<HomePage> {
             selectedIndex: _index,
             onDestinationSelected: (i) => setState(() => _index = i),
             destinations: const [
+              NavigationRailDestination(
+                  icon: Icon(Icons.dashboard_outlined),
+                  selectedIcon: Icon(Icons.dashboard),
+                  label: Text('数据看板')),
               NavigationRailDestination(
                   icon: Icon(Icons.place_outlined),
                   selectedIcon: Icon(Icons.place),

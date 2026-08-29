@@ -53,6 +53,9 @@ pub(crate) mod flight_handlers;
 #[path = "hotel_handlers.rs"]
 pub(crate) mod hotel_handlers;
 
+#[path = "stats_handlers.rs"]
+pub(crate) mod stats_handlers;
+
 const PORT: &str = "0.0.0.0:8003";
 const TOKEN_TTL_SECS: u64 = 24 * 3600;
 // 防枚举：未知邮箱对固定 hash 执行一次 bcrypt verify，与真实校验耗时一致
@@ -281,6 +284,9 @@ pub(crate) fn api_router(state: AppState) -> Router {
             "/api/admin/lines/{id}/dates/{date_id}",
             delete(line_date_handlers::delete_line_date),
         )
+        .route("/api/admin/stats/overview", get(stats_handlers::overview))
+        .route("/api/admin/stats/top", get(stats_handlers::top))
+        .route("/api/admin/stats/trend", get(stats_handlers::trend))
         .route("/api/admin/orders", get(orders_handlers::list_orders))
         .route("/api/admin/orders/{id}", get(orders_handlers::order_detail))
         .route("/api/admin/orders/{id}/refund", post(orders_handlers::refund_order))
