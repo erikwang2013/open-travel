@@ -4733,8 +4733,8 @@ dependencies = [
 
 [[package]]
 name = "security-rust"
-version = "1.0.7"
-source = "git+https://github.com/erikwang2013/security-rust?tag=v1.0.7#80f3750f21b5a6a8d9604380b076a3fcb4aa0c9e"
+version = "1.0.8"
+source = "git+https://github.com/erikwang2013/security-rust?tag=v1.0.8#9d9a6961edee01717f7854c6a0d159d832b3a397"
 dependencies = [
  "regex",
 ]
