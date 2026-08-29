@@ -76,7 +76,7 @@ curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/attractions?desti
 |------|------|
 | `scripts/opensearch_init.sh` | 幂等创建 OpenSearch 索引（cjk 分析器） |
 | `scripts/loadtest.sh` | 压测 |
-| `scripts/cdn_setup.sh` / `cdn_upload.sh` | CDN 配置与上传（`--dry-run` 默认） |
+| `scripts/cdn_setup.sh` / `cdn_upload.sh` | CDN 配置与上传（`--provider cloudfront|aliyun|gcp|azure` 四云插件，`--dry-run` 默认） |
 | `scripts/release.sh` | 发布流程辅助 |
 
 ### 后端文档

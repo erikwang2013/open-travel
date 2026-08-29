@@ -2,34 +2,36 @@
 
 CDN 仅加速**静态资源**：docs 图片（`docs/svg/*`、`docs/*.png`）、Flutter web 构建产物（`apps/client/flutter/build/web`）、App 图标。API 走 nginx 网关（动态接口）不经过 CDN；CDN 配置中的 `/api/*` 不缓存规则是兜底保护。
 
-默认方案 **CloudFront + S3**（免费额度内 ≈ $0/月）；也可用 **阿里云 OSS + CDN**。两种方案脚本均支持，`--provider cloudfront|oss` 二选一。
+默认方案 **CloudFront + S3**（免费额度内 ≈ $0/月）。脚本为插件式，**AWS / 阿里云 / Google Cloud / Azure** 四云可切换：`--provider cloudfront|aliyun|gcp|azure`（旧名 `oss` 兼容映射到 `aliyun`）。无云凭据时自动进入 dry-run 预览全部命令，配置凭据后重跑即真实执行。
 
 ## 一、前置条件
 
-| 项 | 要求 |
-| :--- | :--- |
-| aws CLI | `aws configure` 已配置凭证，权限含 s3、s3api、cloudfront |
-| aliyun CLI | 仅 OSS 方案需要，`aliyun configure` 已配置凭证 |
-| 自定义域名（可选） | 需 ACM 证书（CloudFront 要求 **us-east-1** 区域签发） |
+| 云 | CLI | 凭据 |
+| :--- | :--- | :--- |
+| AWS | aws CLI | `aws configure` 或 `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY`/`AWS_DEFAULT_REGION`，权限含 s3、s3api、cloudfront |
+| 阿里云 | ossutil | `ALIBABA_CLOUD_ACCESS_KEY_ID` + `ALIBABA_CLOUD_ACCESS_KEY_SECRET`；CDN 控制台配置（无完整 CLI 流程） |
+| Google Cloud | gcloud + gsutil | `GOOGLE_APPLICATION_CREDENTIALS`（服务账号 JSON）或 `gcloud auth login` |
+| Azure | az CLI | `az login`（可选 `AZURE_SUBSCRIPTION_ID`） |
+| 自定义域名（可选） | — | AWS 需 ACM 证书（**us-east-1** 签发）；其余云按控制台指引绑定 |
 
 ## 二、部署步骤
 
 ```bash
 cd /home/wwwroot/open-travel
 
-# 1. 创建源站 bucket（aws s3 mb 在脚本内自动执行）
-# 2. 一键配置 CDN（默认 cloudfront，幂等可重复执行）
+# 1. 创建源站 bucket（脚本内自动执行）
+# 2. 一键配置 CDN（默认 cloudfront，幂等可重复执行；无凭据自动 dry-run 预览）
 scripts/cdn_setup.sh --bucket open-travel-cdn --region ap-southeast-1
-#   可选自定义域名（先到 ACM 申请证书，证书必须在 us-east-1）：
+#   可选自定义域名（AWS：先到 ACM 申请证书，证书必须在 us-east-1）：
 #   scripts/cdn_setup.sh --bucket open-travel-cdn --domain cdn.erik.xyz --cert arn:aws:acm:us-east-1:...:certificate/...
-#   阿里云方案：
-#   scripts/cdn_setup.sh --provider oss --bucket open-travel-cdn --endpoint oss-cn-hangzhou.aliyuncs.com
+#   其他云：--provider aliyun|gcp|azure，region 含义各云不同（如 azure 为资源组区域）
+#   scripts/cdn_setup.sh --provider aliyun --bucket open-travel-cdn --endpoint oss-cn-hangzhou.aliyuncs.com
 
 # 3. 上传静态资源（默认 dry-run 预览，确认后真正执行）
 scripts/cdn_upload.sh --bucket open-travel-cdn --no-dry-run
 ```
 
-脚本输出：Distribution ID、CDN 域名（形如 `d1234567890.cloudfront.net`）。状态存于 `scripts/.cdn-state`，重复执行自动复用 OAI/Distribution，不会重复创建。
+脚本输出：Distribution ID、CDN 域名（形如 `d1234567890.cloudfront.net`）。状态存于 `scripts/.cdn-state-<provider>`（已 gitignore），重复执行自动复用已建资源，不会重复创建。
 
 CloudFront Distribution 部署生效需 **5-10 分钟**。
 
@@ -70,7 +72,7 @@ scripts/cdn_upload.sh --bucket open-travel-cdn --no-dry-run
 | 操作 | 命令 |
 | :--- | :--- |
 | 停用 CDN（保留资源） | 控制台禁用 Distribution / 删除 CDN 域名 |
-| 彻底删除 | `aws cloudfront delete-distribution --id <ID>`（先 disable）→ 删除 OAI → `aws s3 rb s3://bucket --force`；并删除 `scripts/.cdn-state` |
+| 彻底删除 | 按 provider 控制台删除 CDN/分发 → 删除源站 bucket；并删除 `scripts/.cdn-state-<provider>` |
 | 回滚 | 直接改用源站地址（S3 或 nginx），业务代码无 CDN 依赖，无回滚成本 |
 
 ## 七、成本

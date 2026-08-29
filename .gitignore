@@ -77,3 +77,6 @@ apps/client/harmonyos/hvigorw.bat
 config/certs/*.key
 config/certs/privkey.pem
 target-docker
+
+# CDN 运行时状态（resource ID，机器生成）
+scripts/.cdn-state-*
