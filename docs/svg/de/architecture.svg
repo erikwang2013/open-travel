@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="680" viewBox="0 0 1000 680">
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="744" viewBox="0 0 1000 744">
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M 0 0 L 10 5 L 0 10 z" fill="#8b949e"/>
@@ -46,15 +46,16 @@
   <text x="480" y="256" text-anchor="middle" class="t-s">TLS · Ratenlimit · Routing · Authentifizierung</text>
 
   <!-- e-cat 核心服务层 -->
-  <rect x="30" y="304" width="720" height="224" class="panel"/>
+  <rect x="30" y="304" width="720" height="288" class="panel"/>
   <text x="48" y="334" class="t-h">Kernservice-Ebene e-cat</text>
   <text x="48" y="354" class="t-s">e-cat Core Services · Rust-Mikroservices</text>
   <rect x="216" y="372" width="168" height="64" class="box"/>
   <text x="300" y="396" text-anchor="middle" class="t-m">User — Nutzer</text>
   <text x="300" y="418" text-anchor="middle" class="t-s">Registrierung · Login · Profil</text>
-  <rect x="396" y="372" width="168" height="64" class="box"/>
+  <rect x="396" y="372" width="168" height="66" class="box"/>
   <text x="480" y="396" text-anchor="middle" class="t-m">Booking — Buchung</text>
   <text x="480" y="418" text-anchor="middle" class="t-s">Beliebte Ziele · Sehenswürdigkeiten</text>
+  <text x="480" y="433" text-anchor="middle" class="t-s">Bewertungen</text>
   <rect x="576" y="372" width="168" height="64" class="box"/>
   <text x="660" y="396" text-anchor="middle" class="t-m">Admin</text>
   <text x="660" y="418" text-anchor="middle" class="t-s">Admin-Login · Content-CRUD</text>
@@ -69,28 +70,37 @@
   <text x="660" y="494" text-anchor="middle" class="t-s">Zahlungskanäle · Callbacks</text>
 
   <!-- 数据层 -->
-  <rect x="30" y="544" width="720" height="96" class="panel"/>
+  <rect x="216" y="524" width="168" height="64" class="box"/>
+  <text x="300" y="548" text-anchor="middle" class="t-m">Search — Suche</text>
+  <text x="300" y="570" text-anchor="middle" class="t-s">Mehrsprachige Suche</text>
+  <rect x="396" y="524" width="168" height="64" class="box"/>
+  <text x="480" y="548" text-anchor="middle" class="t-m">Line — Linie</text>
+  <text x="480" y="570" text-anchor="middle" class="t-s">Linienprodukte</text>
+  <rect x="576" y="524" width="168" height="64" class="box"/>
+  <text x="660" y="548" text-anchor="middle" class="t-m">Order — Bestellung</text>
+  <text x="660" y="570" text-anchor="middle" class="t-s">Bestellzentrum</text>
+  <rect x="30" y="608" width="720" height="96" class="panel"/>
   <text x="48" y="574" class="t-h">Datenebene</text>
   <text x="48" y="594" class="t-s">Data Layer</text>
-  <rect x="216" y="564" width="168" height="56" class="box"/>
+  <rect x="216" y="628" width="168" height="56" class="box"/>
   <text x="300" y="588" text-anchor="middle" class="t-m">MySQL</text>
   <text x="300" y="608" text-anchor="middle" class="t-s">DB travel · Tabellen travel_*</text>
-  <rect x="396" y="564" width="168" height="56" class="box"/>
+  <rect x="396" y="628" width="168" height="56" class="box"/>
   <text x="480" y="588" text-anchor="middle" class="t-m">Redis</text>
   <text x="480" y="608" text-anchor="middle" class="t-s">Cache · Sitzungen</text>
-  <rect x="576" y="564" width="168" height="56" class="box"/>
+  <rect x="576" y="628" width="168" height="56" class="box"/>
   <text x="660" y="588" text-anchor="middle" class="t-m">OpenSearch</text>
   <text x="660" y="608" text-anchor="middle" class="t-s">Suche · Aggregation</text>
-  <rect x="216" y="564" width="126" height="56" class="box"/>
+  <rect x="216" y="628" width="126" height="56" class="box"/>
   <text x="279" y="588" text-anchor="middle" class="t-m">MySQL</text>
   <text x="279" y="608" text-anchor="middle" class="t-s">Master-Replica</text>
-  <rect x="350" y="564" width="126" height="56" class="box"/>
+  <rect x="350" y="628" width="126" height="56" class="box"/>
   <text x="413" y="588" text-anchor="middle" class="t-m">Redis</text>
   <text x="413" y="608" text-anchor="middle" class="t-s">Cache · Sitzungen</text>
-  <rect x="484" y="564" width="126" height="56" class="box"/>
+  <rect x="484" y="628" width="126" height="56" class="box"/>
   <text x="547" y="588" text-anchor="middle" class="t-m">Kafka</text>
   <text x="547" y="608" text-anchor="middle" class="t-s">Audit-Logs</text>
-  <rect x="618" y="564" width="126" height="56" class="box"/>
+  <rect x="618" y="628" width="126" height="56" class="box"/>
   <text x="681" y="588" text-anchor="middle" class="t-m">OpenSearch</text>
   <text x="681" y="608" text-anchor="middle" class="t-s">Suche · Aggregation</text>
   <rect x="786" y="290" width="168" height="130" class="box"/>
@@ -105,10 +115,17 @@
   <!-- 箭头 -->
   <line x1="390" y1="179" x2="390" y2="189" class="arrow"/>
   <line x1="390" y1="291" x2="390" y2="301" class="arrow"/>
-  <line x1="390" y1="528" x2="390" y2="540" class="arrow"/>
+  <line x1="390" y1="592" x2="390" y2="604" class="arrow"/>
   <line x1="748" y1="240" x2="768" y2="240" class="arrow"/>
   <line x1="748" y1="452" x2="768" y2="452" class="arrow"/>
 
-  <text x="500" y="664" text-anchor="middle" class="t-s">MySQL: Datenbank travel, Tabellen mit travel_-Präfix (travel_users · travel_orders)</text>
-  <text x="988" y="668" text-anchor="end" font-size="12" fill="#8b949e" fill-opacity="0.5" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">https://erik.xyz</text>
+  <text x="500" y="728" text-anchor="middle" class="t-s">MySQL: Datenbank travel, Tabellen mit travel_-Präfix (travel_users · travel_orders)</text>
+  <text x="988" y="732" text-anchor="end" font-size="12" fill="#8b949e" fill-opacity="0.5" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">https://erik.xyz</text>
+  <line x1="744" y1="260" x2="770" y2="260" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <line x1="770" y1="260" x2="770" y2="645" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <line x1="770" y1="645" x2="786" y2="645" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <rect x="786" y="590" width="168" height="110" class="box" stroke-dasharray="6 4"/>
+  <text x="870" y="618" text-anchor="middle" class="t-m">CDN-Beschleunigung statischer Inhalte</text>
+  <text x="870" y="640" text-anchor="middle" class="t-s">8 Anbieter-Plugins · nur statisch</text>
+  <text x="870" y="660" text-anchor="middle" class="t-s">docs-Bilder · Flutter-Web-Artefakte</text>
 </svg>

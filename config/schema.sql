@@ -304,3 +304,16 @@ INSERT IGNORE INTO travel_cdn_providers (provider_code, name) VALUES
 ('tencent', '腾讯云 CDN'),
 ('huawei', '华为云 CDN'),
 ('bunny', 'Bunny.net');
+
+-- ===== Phase 6 增量（P5-01 评价体系）=====
+-- 评论表补景区维度列（travel_reviews 原为目的地评论，P5-01 落景区评价）；
+-- 已初始化的运行库需手动执行同样 DDL
+ALTER TABLE travel_reviews
+  ADD COLUMN attraction_id BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '景区ID' AFTER user_id,
+  ADD INDEX idx_attraction (attraction_id);
+
+-- 种子评价（幂等：固定 ID，重复执行被 INSERT IGNORE 忽略）
+INSERT IGNORE INTO travel_reviews (id, user_id, attraction_id, destination_id, rating, content, lang) VALUES
+(1, 1, 100000, 2, 5, 'Amazing views from the top!', 'en'),
+(2, 1, 100000, 2, 4, 'Great experience, a bit crowded.', 'en'),
+(3, 1, 100000, 2, 5, 'Beautiful at sunset.', 'en');

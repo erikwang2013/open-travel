@@ -11,7 +11,7 @@
 
 ## Introducción del proyecto
 
-Open Travel es un monorepo de una plataforma global de viajes que utiliza **e-cat (un gato)** — un **framework de microservicios en Rust** (v3.0.2 · 51 crates) inspirado en [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 — para construir un backend de alto rendimiento, junto con clientes multiplataforma en Flutter y clientes nativos HarmonyOS, ofreciendo una experiencia unificada de reservas de viajes para usuarios globales.
+Open Travel es un monorepo de una plataforma global de viajes que utiliza **e-cat (un gato)** — un **framework de microservicios en Rust** (v3.0.3 · 51 crates) inspirado en [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 — para construir un backend de alto rendimiento, junto con clientes multiplataforma en Flutter y clientes nativos HarmonyOS, ofreciendo una experiencia unificada de reservas de viajes para usuarios globales.
 
 | Dimensión | Descripción |
 | :--- | :--- |
@@ -93,6 +93,15 @@ cargo check -p user-service -p booking-service -p admin-service   # verificació
 | OpenSearch | 9201→9200 | Búsqueda multilingüe |
 
 La consola de administración Flutter Web está en `apps/admin/`; la cuenta de administrador predeterminada de desarrollo es `admin@travel.local` / `Admin@123` (solo uso local).
+
+### Scripts
+
+| Script | Descripción |
+|---|---|
+| `scripts/opensearch_init.sh` | Crea el índice de OpenSearch de forma idempotente (analizador cjk) |
+| `scripts/loadtest.sh` | Pruebas de carga |
+| `scripts/cdn_setup.sh` / `cdn_upload.sh` | Configuración y carga de CDN (plugin `--provider` de ocho nubes: cloudfront/aliyun/gcp/azure/cloudflare/tencent/huawei/bunny, `--dry-run` por defecto) |
+| `scripts/release.sh` | Asistente del proceso de publicación |
 
 ---
 

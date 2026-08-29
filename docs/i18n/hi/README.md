@@ -11,7 +11,7 @@
 
 ## परियोजना परिचय
 
-Open Travel एक वैश्विक यात्रा प्लेटफ़ॉर्म monorepo है, जो **e-cat (एक बिल्ली)** — [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 से प्रेरित एक **Rust माइक्रोसर्विस फ्रेमवर्क** (v3.0.2 · 51 crates) — का उपयोग करके उच्च-प्रदर्शन बैकएंड बनाता है, साथ ही Flutter मल्टी-प्लेटफ़ॉर्म और HarmonyOS नेटिव क्लाइंट के साथ, वैश्विक उपयोगकर्ताओं के लिए एकीकृत यात्रा बुकिंग अनुभव प्रदान करता है।
+Open Travel एक वैश्विक यात्रा प्लेटफ़ॉर्म monorepo है, जो **e-cat (एक बिल्ली)** — [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 से प्रेरित एक **Rust माइक्रोसर्विस फ्रेमवर्क** (v3.0.3 · 51 crates) — का उपयोग करके उच्च-प्रदर्शन बैकएंड बनाता है, साथ ही Flutter मल्टी-प्लेटफ़ॉर्म और HarmonyOS नेटिव क्लाइंट के साथ, वैश्विक उपयोगकर्ताओं के लिए एकीकृत यात्रा बुकिंग अनुभव प्रदान करता है।
 
 | आयाम | विवरण |
 | :--- | :--- |
@@ -93,6 +93,15 @@ cargo check -p user-service -p booking-service -p admin-service   # व्या
 | OpenSearch | 9201→9200 | बहुभाषी खोज |
 
 व्यवस्थापन Flutter Web ऐप `apps/admin/` में है; विकास के लिए डिफ़ॉल्ट व्यवस्थापक खाता `admin@travel.local` / `Admin@123` है (केवल स्थानीय उपयोग)।
+
+### स्क्रिप्ट्स
+
+| स्क्रिप्ट | विवरण |
+|---|---|
+| `scripts/opensearch_init.sh` | OpenSearch इंडेक्स को इडेम्पोटेंट रूप से बनाता है (cjk विश्लेषक) |
+| `scripts/loadtest.sh` | लोड परीक्षण |
+| `scripts/cdn_setup.sh` / `cdn_upload.sh` | CDN कॉन्फ़िगरेशन और अपलोड (`--provider` आठ-क्लाउड प्लगइन: cloudfront/aliyun/gcp/azure/cloudflare/tencent/huawei/bunny, डिफ़ॉल्ट रूप से `--dry-run`) |
+| `scripts/release.sh` | रिलीज़ प्रक्रिया सहायक |
 
 ---
 

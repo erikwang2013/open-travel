@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="760" viewBox="0 0 1000 760">
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="880" viewBox="0 0 1000 880">
   <defs>
     <style>
       text { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }
@@ -20,7 +20,7 @@
   <text x="500" y="36" text-anchor="middle" class="t-title">项目目录结构</text>
   <text x="500" y="56" text-anchor="middle" class="t-sub">Open-Travel Project Structure · Monorepo</text>
 
-  <rect x="40" y="90" width="920" height="560" class="panel"/>
+  <rect x="40" y="90" width="920" height="690" class="panel"/>
   <text x="64" y="122" class="t-h">目录树</text>
 
   <!-- 根 -->
@@ -60,14 +60,22 @@
   <!-- docs / config / README -->
   <text x="120" y="576" class="t-mono-branch">├─ </text><text x="144" y="576" class="t-mono">docs/</text>
   <text x="430" y="576" class="t-cmt"># 技术文档</text>
-  <text x="120" y="606" class="t-mono-branch">├─ </text><text x="144" y="606" class="t-mono">config/</text>
-  <text x="430" y="606" class="t-cmt"># 配置文件</text>
-  <text x="120" y="636" class="t-mono-branch">└─ </text><text x="144" y="636" class="t-mono">README.md</text>
-  <text x="430" y="636" class="t-cmt"># 项目说明</text>
+  <text x="190" y="606" class="t-mono-branch">│  ├─ </text><text x="230" y="606" class="t-mono">i18n/</text>
+  <text x="480" y="606" class="t-cmt"># 12 语种文档</text>
+  <text x="190" y="636" class="t-mono-branch">│  └─ </text><text x="230" y="636" class="t-mono">svg/</text>
+  <text x="480" y="636" class="t-cmt"># 架构图 · 12 语种变体</text>
+  <text x="120" y="666" class="t-mono-branch">├─ </text><text x="144" y="666" class="t-mono">config/</text>
+  <text x="430" y="666" class="t-cmt"># 配置文件</text>
+  <text x="120" y="696" class="t-mono-branch">├─ </text><text x="144" y="696" class="t-mono">scripts/</text>
+  <text x="430" y="696" class="t-cmt"># 部署与运维脚本</text>
+  <text x="190" y="726" class="t-mono-branch">│  └─ </text><text x="230" y="726" class="t-mono">cdn/</text>
+  <text x="480" y="726" class="t-cmt"># 八云 CDN 插件（AWS/阿里云/GCP/Azure/Cloudflare/腾讯云/华为云/Bunny）</text>
+  <text x="120" y="756" class="t-mono-branch">└─ </text><text x="144" y="756" class="t-mono">README.md</text>
+  <text x="430" y="756" class="t-cmt"># 项目说明</text>
 
   <!-- 数据库标注 -->
-  <rect x="40" y="668" width="920" height="68" class="panel"/>
+  <rect x="40" y="796" width="920" height="68" class="panel"/>
   <text x="64" y="696" class="t-h">数据库 Database — travel</text>
   <text x="64" y="720" class="t-db">表前缀 travel_：travel_users · travel_orders · travel_reviews · travel_destinations · travel_attractions</text>
-  <text x="988" y="748" text-anchor="end" font-size="12" fill="#8b949e" fill-opacity="0.5" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">https://erik.xyz</text>
+  <text x="988" y="872" text-anchor="end" font-size="12" fill="#8b949e" fill-opacity="0.5" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">https://erik.xyz</text>
 </svg>

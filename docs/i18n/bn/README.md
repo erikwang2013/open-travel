@@ -9,7 +9,7 @@
 
 ## প্রকল্প পরিচিতি
 
-Open Travel একটি বৈশ্বিক ভ্রমণ প্ল্যাটফর্ম মনোরেপো, যা **e-cat (একটি বিড়াল)** — [go-kratos/kratos](https://github.com/go-kratos/kratos) v3-এর সমতুল্য **Rust মাইক্রোসার্ভিস ফ্রেমওয়ার্ক** (v3.0.2 · 51 crates) — দিয়ে উচ্চ-পারফরম্যান্স ব্যাকএন্ড তৈরি করে, সাথে Flutter মাল্টি-প্ল্যাটফর্ম এবং HarmonyOS নেটিভ ক্লায়েন্ট, বিশ্বব্যাপী ব্যবহারকারীদের জন্য একীভূত ভ্রমণ বুকিং অভিজ্ঞতা প্রদান করে।
+Open Travel একটি বৈশ্বিক ভ্রমণ প্ল্যাটফর্ম মনোরেপো, যা **e-cat (একটি বিড়াল)** — [go-kratos/kratos](https://github.com/go-kratos/kratos) v3-এর সমতুল্য **Rust মাইক্রোসার্ভিস ফ্রেমওয়ার্ক** (v3.0.3 · 51 crates) — দিয়ে উচ্চ-পারফরম্যান্স ব্যাকএন্ড তৈরি করে, সাথে Flutter মাল্টি-প্ল্যাটফর্ম এবং HarmonyOS নেটিভ ক্লায়েন্ট, বিশ্বব্যাপী ব্যবহারকারীদের জন্য একীভূত ভ্রমণ বুকিং অভিজ্ঞতা প্রদান করে।
 
 | মাত্রা | বিবরণ |
 | :--- | :--- |
@@ -91,6 +91,15 @@ cargo check -p user-service -p booking-service -p admin-service   # বিজন
 | OpenSearch | 9201→9200 | বহুভাষিক অনুসন্ধান |
 
 অ্যাডমিন Flutter Web অ্যাপ `apps/admin/`-এ রয়েছে; ডেভেলপমেন্টের ডিফল্ট অ্যাডমিন অ্যাকাউন্ট `admin@travel.local` / `Admin@123` (শুধুমাত্র লোকাল ব্যবহার)।
+
+### স্ক্রিপ্ট
+
+| স্ক্রিপ্ট | বিবরণ |
+|---|---|
+| `scripts/opensearch_init.sh` | OpenSearch ইনডেক্স ইডেম্পোটেন্টভাবে তৈরি (cjk অ্যানালাইজার) |
+| `scripts/loadtest.sh` | লোড টেস্টিং |
+| `scripts/cdn_setup.sh` / `cdn_upload.sh` | CDN কনফিগারেশন ও আপলোড (`--provider` আট-ক্লাউড প্লাগইন: cloudfront/aliyun/gcp/azure/cloudflare/tencent/huawei/bunny, ডিফল্ট `--dry-run`) |
+| `scripts/release.sh` | রিলিজ প্রক্রিয়া সহায়ক |
 
 ---
 

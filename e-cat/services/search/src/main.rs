@@ -549,6 +549,84 @@ pub(crate) async fn search(
     (StatusCode::OK, Json(ApiResponse { code: 0, message: "ok".into(), data: Some(result) }))
 }
 
+// ===== P5-03：热词推荐 =====
+
+#[derive(Deserialize)]
+pub(crate) struct HotwordsQuery {
+    #[serde(default = "default_period")]
+    pub(crate) period: String,
+    #[serde(default = "default_limit")]
+    pub(crate) limit: u32,
+}
+
+fn default_period() -> String {
+    "day".into()
+}
+
+fn default_limit() -> u32 {
+    10
+}
+
+#[derive(Serialize, Deserialize)]
+pub(crate) struct Hotword {
+    pub(crate) keyword: String,
+    pub(crate) count: u64,
+}
+
+const HOTWORDS_CACHE_TTL: Duration = Duration::from_secs(300);
+
+/// 按周期对 keyword 分组计数，倒序取前 N。period 白名单拼 SQL，无注入。
+async fn agg_hotwords(db: &SqlxClient, period: &str, limit: u32) -> Vec<Hotword> {
+    let since = match period {
+        "day" => "AND created_at >= NOW() - INTERVAL 1 DAY",
+        "week" => "AND created_at >= NOW() - INTERVAL 1 WEEK",
+        _ => "",
+    };
+    let sql = format!(
+        "SELECT keyword, COUNT(*) AS n FROM travel_searches WHERE 1 = 1 {since} \
+         GROUP BY keyword ORDER BY n DESC, keyword ASC LIMIT {limit}"
+    );
+    match db.query_with(&sql, &[]).await {
+        Ok(rows) => rows.iter().map(|r| Hotword {
+            keyword: col_str(r, "keyword"),
+            count: r.get("n").and_then(|v| v.as_u64()).unwrap_or(0),
+        }).collect(),
+        Err(e) => {
+            tracing::warn!("hotwords query failed: {e}");
+            Vec::new()
+        }
+    }
+}
+
+pub(crate) async fn hotwords(
+    State(state): State<AppState>,
+    Query(q): Query<HotwordsQuery>,
+) -> (StatusCode, Json<ApiResponse<Vec<Hotword>>>) {
+    if !matches!(q.period.as_str(), "day" | "week" | "all") || q.limit == 0 || q.limit > 50 {
+        return (StatusCode::BAD_REQUEST, Json(ApiResponse { code: 400, message: "invalid period or limit".into(), data: None }));
+    }
+    let cache_key = format!("hotwords:{}:{}", q.period, q.limit);
+    if let Some(cache) = &state.cache {
+        if let Ok(Some(raw)) = cache.get(&cache_key).await {
+            if let Ok(list) = serde_json::from_str::<Vec<Hotword>>(&String::from_utf8_lossy(&raw)) {
+                return (StatusCode::OK, Json(ApiResponse { code: 0, message: "cache hit".into(), data: Some(list) }));
+            }
+        }
+    }
+    let list = match read_db(&state) {
+        Some(db) => agg_hotwords(db, &q.period, q.limit).await,
+        None => Vec::new(),
+    };
+    if let Some(cache) = &state.cache {
+        if let Ok(raw) = serde_json::to_string(&list) {
+            if let Err(e) = cache.set(&cache_key, raw.as_bytes(), HOTWORDS_CACHE_TTL).await {
+                tracing::warn!("hotwords cache set failed: {e}");
+            }
+        }
+    }
+    (StatusCode::OK, Json(ApiResponse { code: 0, message: "ok".into(), data: Some(list) }))
+}
+
 // ===== 启动 =====
 
 async fn connect_cache() -> Option<Arc<RedisCache>> {
@@ -595,6 +673,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     // 中间件链（外层 → 内层）：ApiVersion → CircuitBreaker → Security → RateLimit
     let api = Router::new()
         .route("/api/search", get(search))
+        .route("/api/search/hotwords", get(hotwords))
         .layer(
             ServiceBuilder::new()
                 .layer(shared::ApiVersionLayer)
@@ -622,7 +701,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                 .layer(LoggingLayer),
         );
 
-    let http_srv = HttpServer::new(PORT).router(router);
+    // PORT 支持裸端口（如 18099）或完整地址（如 0.0.0.0:8004）
+    let port = std::env::var("PORT").unwrap_or_else(|_| PORT.to_string());
+    let addr = if port.contains(':') { port } else { format!("0.0.0.0:{port}") };
+    let http_srv = HttpServer::new(&addr).router(router);
 
     let mut app = App::builder()
         .name("search-service")

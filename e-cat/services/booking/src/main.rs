@@ -15,9 +15,10 @@
 // Security/CircuitBreaker 以 map_err 归一为 Infallible。
 use axum::extract::{Path, Query, State};
 use axum::http::StatusCode;
-use axum::routing::get;
+use axum::routing::{get, post};
 use axum::{Json, Router};
 use ecat::App;
+use ecat_auth::JwtAuthLayer;
 use ecat_circuit_breaker::CircuitBreakerLayer;
 use ecat_data::Cache;
 use ecat_data::RdbmsClient;
@@ -29,10 +30,12 @@ use ecat_tracing::TracingLayer;
 use ecat_transport_http::HttpServer;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use shared::{connect_primary, connect_replica, no_error, RedisRateLimitLayer};
+use shared::{connect_primary, connect_replica, jwt_secret, no_error, RedisRateLimitLayer};
 use std::sync::Arc;
 use std::time::Duration;
 use tower::ServiceBuilder;
+
+mod reviews;
 
 const PORT: &str = "0.0.0.0:8002";
 
@@ -46,9 +49,9 @@ pub(crate) struct AppState {
 
 #[derive(Serialize)]
 pub(crate) struct ApiResponse<T: Serialize> {
-    code: u32,
-    message: String,
-    data: Option<T>,
+    pub(crate) code: u32,
+    pub(crate) message: String,
+    pub(crate) data: Option<T>,
 }
 
 #[derive(Deserialize)]
@@ -99,7 +102,6 @@ pub(crate) struct AttractionDetail {
     pub(crate) open_hours: String,
     pub(crate) rating_avg: f64,
     pub(crate) cover_url: String,
-    // P5-01 评价体系落地后填充，当前预留空数组
     pub(crate) reviews: Vec<serde_json::Value>,
 }
 
@@ -141,7 +143,7 @@ async fn fetch_destinations(db: &SqlxClient, region_id: u64) -> Vec<DestRow> {
     }
 }
 
-fn err<T: Serialize>(
+pub(crate) fn err<T: Serialize>(
     status: StatusCode,
     code: u32,
     message: &str,
@@ -154,17 +156,17 @@ fn norm_lang(lang: &str) -> String {
     if l.is_empty() { "en".into() } else { l }
 }
 
-fn col_str(row: &ecat_data::Row, col: &str) -> String {
+pub(crate) fn col_str(row: &ecat_data::Row, col: &str) -> String {
     row.get(col).and_then(|v| v.as_str()).unwrap_or("").to_string()
 }
 
-fn col_u64(row: &ecat_data::Row, col: &str) -> u64 {
+pub(crate) fn col_u64(row: &ecat_data::Row, col: &str) -> u64 {
     row.get(col)
         .and_then(|v| v.as_u64().or_else(|| v.as_str().and_then(|s| s.parse().ok())))
         .unwrap_or(0)
 }
 
-fn col_f64(row: &ecat_data::Row, col: &str) -> f64 {
+pub(crate) fn col_f64(row: &ecat_data::Row, col: &str) -> f64 {
     row.get(col)
         .and_then(|v| {
             v.as_f64()
@@ -262,7 +264,7 @@ async fn fetch_attraction(db: &SqlxClient, id: u64, lang: &str) -> Option<Attrac
         }
     };
     let row = result.first()?;
-    Some(AttractionDetail {
+    let mut detail = AttractionDetail {
         id: col_u64(row, "id"),
         destination_id: col_u64(row, "destination_id"),
         name: pick_name(row, lang),
@@ -272,7 +274,17 @@ async fn fetch_attraction(db: &SqlxClient, id: u64, lang: &str) -> Option<Attrac
         rating_avg: col_f64(row, "rating_avg"),
         cover_url: col_str(row, "cover_url"),
         reviews: Vec::new(),
-    })
+    };
+    // P5-01：详情返回真实评价（最近 20 条），均分读时 AVG 聚合覆盖表内缓存值
+    detail.reviews = reviews::fetch_reviews(db, id, reviews::DETAIL_REVIEW_LIMIT, 0)
+        .await
+        .into_iter()
+        .map(|r| serde_json::to_value(r).unwrap_or_default())
+        .collect();
+    if let Some(avg) = reviews::fetch_rating_avg(db, id).await {
+        detail.rating_avg = avg;
+    }
+    Some(detail)
 }
 
 pub(crate) async fn attractions_list(
@@ -411,15 +423,23 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     // 业务路由：完整中间件链，执行顺序（外层 → 内层）：
     //   ApiVersion → CircuitBreaker → Security → RateLimit
     // API 版本经 X-Api-Version header 传递（URL 无版本前缀），缺失/非法直接 400。
-    // dates 为公开接口（热门目的地展示，无鉴权），限流保留防止滥用。
+    // dates/attractions 为公开接口（无鉴权），限流保留防止滥用；
+    // POST /api/reviews 挂 JWT（Auth 层内），GET /api/reviews 公开。
     // e-cat 中间件的 Error 非 Infallible，需 map_err 归一以满足 axum Router::layer
     // 约束；RateLimit（Redis 分布式）对所有请求计数。
     // 注：tower 先添加的层在外层，且 map_err 内部也是 layer()（新层在内），
     // 故 map_err 声明在目标层之前才能包住它的 error。
+    let jwt = JwtAuthLayer::new(jwt_secret()).expect("valid jwt secret");
     let api = Router::new()
         .route("/api/booking/dates", get(available_dates))
         .route("/api/booking/attractions", get(attractions_list))
         .route("/api/booking/attractions/{id}", get(attraction_detail))
+        .route("/api/reviews", get(reviews::list_reviews))
+        .merge(
+            Router::new()
+                .route("/api/reviews", post(reviews::create_review))
+                .layer(ServiceBuilder::new().map_err(no_error).layer(jwt)),
+        )
         .layer(
             ServiceBuilder::new()
                 .layer(shared::ApiVersionLayer)

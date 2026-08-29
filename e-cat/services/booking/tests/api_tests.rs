@@ -149,7 +149,7 @@ async fn attractions_list_caches_in_redis_on_miss() {
     assert_eq!(body2["message"], "cache hit");
 }
 
-/// 详情返回完整字段：zh 取中文名与中文描述，reviews 预留空数组；
+/// 详情返回完整字段：zh 取中文名与中文描述，reviews 返回真实评价；
 /// 未知语种 description 回退 en。
 #[tokio::test]
 async fn attraction_detail_returns_localized_description_with_real_db() {
@@ -164,7 +164,16 @@ async fn attraction_detail_returns_localized_description_with_real_db() {
     assert_eq!(body["data"]["name"], "东京晴空塔");
     let desc_zh = body["data"]["description"].as_str().unwrap_or("");
     assert!(desc_zh.contains("634米"), "zh description should contain Chinese text, got: {desc_zh}");
-    assert_eq!(body["data"]["reviews"], serde_json::json!([]));
+    // P5-01：reviews 为真实评价；有评价时 rating_avg 应等于评分的读时聚合
+    let reviews = body["data"]["reviews"].as_array().cloned().unwrap_or_default();
+    if !reviews.is_empty() {
+        let avg = reviews.iter().filter_map(|r| r["rating"].as_u64()).sum::<u64>() as f64
+            / reviews.len() as f64;
+        let got = body["data"]["rating_avg"].as_f64().unwrap_or(0.0);
+        assert!((got - avg).abs() < 0.001, "rating_avg {got} should match review ratings avg {avg}");
+        assert!(reviews.iter().all(|r| r["comment"].is_string() && !r["comment"].as_str().unwrap().is_empty()),
+            "review comments should be decoded, got: {reviews:?}");
+    }
 
     let (_, body_en) = body_json(attraction_detail(
         State(AppState { db: Some(db), replica: None, cache: None }),

@@ -146,6 +146,8 @@ cargo test --workspace                          # 全 workspace
 | `scripts/cdn_setup.sh` / `cdn_upload.sh` | CDN 配置与资源上传（`--dry-run` 为默认） |
 | `scripts/release.sh` | 发布流程辅助 |
 
+管理端 CDN 云商管理接口（提供商列表 / 启停 / 配置更新 / dry-run 命令预览）由 admin-service 提供，详见 `../docs/api.md` 管理服务章节；云凭据不入库，命令需在部署机配置云 CLI 凭据后执行。
+
 ### 版本发布流程
 
 项目版本（当前 v1.0.0，按 semver 演进）**独立于** e-cat 框架版本（当前 3.0.3）。

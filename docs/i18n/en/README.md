@@ -9,7 +9,7 @@
 
 ## Introduction
 
-Open Travel is a global travel platform monorepo built on **e-cat (a cat)** — a **Rust microservice framework** (v3.0.2 · 51 crates) modeled after [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 — delivering a high-performance backend, paired with Flutter multi-platform and HarmonyOS native clients, to offer a unified travel booking experience to users around the globe.
+Open Travel is a global travel platform monorepo built on **e-cat (a cat)** — a **Rust microservice framework** (v3.0.3 · 51 crates) modeled after [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 — delivering a high-performance backend, paired with Flutter multi-platform and HarmonyOS native clients, to offer a unified travel booking experience to users around the globe.
 
 | Dimension | Description |
 | :--- | :--- |
@@ -91,6 +91,15 @@ cargo check -p user-service -p booking-service -p admin-service   # compile chec
 | OpenSearch | 9201→9200 | Multilingual search |
 
 The admin Flutter Web console lives in `apps/admin/`; the development default admin account is `admin@travel.local` / `Admin@123` (local use only).
+
+### Scripts
+
+| Script | Description |
+|---|---|
+| `scripts/opensearch_init.sh` | Idempotently creates the OpenSearch index (cjk analyzer) |
+| `scripts/loadtest.sh` | Load testing |
+| `scripts/cdn_setup.sh` / `cdn_upload.sh` | CDN configuration and upload (`--provider` eight-cloud plugin: cloudfront/aliyun/gcp/azure/cloudflare/tencent/huawei/bunny, `--dry-run` by default) |
+| `scripts/release.sh` | Release process helper |
 
 ---
 

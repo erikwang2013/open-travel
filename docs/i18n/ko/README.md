@@ -9,7 +9,7 @@
 
 ## 프로젝트 소개
 
-Open Travel은 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3를 벤치마킹한 **Rust 마이크로서비스 프레임워크**(v3.0.2 · 51 crates)인 **e-cat(고양이 한 마리)** 을 사용해 고성능 백엔드를 구축하고, Flutter 멀티 플랫폼 및 HarmonyOS 네이티브 클라이언트를 결합하여 전 세계 사용자에게 통일된 여행 예약 경험을 제공하는 글로벌 여행 플랫폼 monorepo입니다.
+Open Travel은 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3를 벤치마킹한 **Rust 마이크로서비스 프레임워크**(v3.0.3 · 51 crates)인 **e-cat(고양이 한 마리)** 을 사용해 고성능 백엔드를 구축하고, Flutter 멀티 플랫폼 및 HarmonyOS 네이티브 클라이언트를 결합하여 전 세계 사용자에게 통일된 여행 예약 경험을 제공하는 글로벌 여행 플랫폼 monorepo입니다.
 
 | 항목 | 설명 |
 | :--- | :--- |
@@ -91,6 +91,15 @@ cargo check -p user-service -p booking-service -p admin-service   # 비즈니스
 | OpenSearch | 9201→9200 | 다국어 검색 |
 
 관리자 Flutter Web은 `apps/admin/`에 있으며, 개발 환경 기본 관리자 계정은 `admin@travel.local` / `Admin@123`(로컬 전용)입니다.
+
+### 스크립트
+
+| 스크립트 | 설명 |
+|---|---|
+| `scripts/opensearch_init.sh` | OpenSearch 인덱스를 멱등적으로 생성 (cjk 분석기) |
+| `scripts/loadtest.sh` | 부하 테스트 |
+| `scripts/cdn_setup.sh` / `cdn_upload.sh` | CDN 구성 및 업로드 (`--provider` 8클라우드 플러그인: cloudfront/aliyun/gcp/azure/cloudflare/tencent/huawei/bunny, 기본 `--dry-run`) |
+| `scripts/release.sh` | 릴리스 프로세스 보조 |
 
 ---
 

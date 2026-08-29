@@ -266,7 +266,7 @@ services:
 | **Phase 1** | 2-3 周 | e-cat 基础服务搭建 + MySQL（读写分离）/Redis/OpenSearch 集成，验证缓存与搜索链路 |
 | **Phase 2** | 4-5 周 | Flutter 多端布局适配 + 12+ 语种 ARB 资源编写 + 鸿蒙端骨架 |
 | **Phase 3** | 2 周 | 安全加固：SecurityLayer 规则调优 + JWT 认证 + 审计日志入 Kafka/ClickHouse |
-| **Phase 4** | 1-2 周 | 全链路联调 + CDN 加速（CloudFront / 阿里云 OSS）+ 压测 |
+| **Phase 4** | 1-2 周 | 全链路联调 + CDN 加速（八云插件：CloudFront/阿里云/腾讯云/GCP/Azure/Cloudflare/华为云/Bunny，管理端可配置管理）+ 压测 |
 
 ## 九、成本估算（首年，AWS 参考）
 
@@ -276,7 +276,7 @@ services:
 | 数据库 | RDS MySQL Medium | ≈ $80 |
 | 缓存 | ElastiCache Redis | ≈ $60 |
 | 搜索 | OpenSearch t3.small | ≈ $50 |
-| CDN | CloudFront 免费额度内 | ≈ $0 |
+| CDN | 八云插件（CloudFront 免费额度内起步） | ≈ $0 |
 
 **合计约 $3,200 – $4,500/月**，初期可用各云厂商免费额度起步。
 

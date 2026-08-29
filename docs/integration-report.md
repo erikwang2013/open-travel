@@ -64,6 +64,6 @@ open-novel 的容器未做任何改动。调整以注释记录在 `config/docker
 
 ## 4. 遗留问题
 
-- 无 JWT 签发接口（register 为占位实现），带 token 的业务验证需 Phase 2 接入真实用户/登录
+- 无 JWT 签发接口（register 为占位实现），带 token 的业务验证需 Phase 2 接入真实用户/登录（已解决：user-service 已实现真实 register/login 并签发 JWT）
 - e-cat 其他中间件若返回 Err 仍有 panic 风险（本次仅修 SecurityLayer 路径）
 - compose 端口调整为临时方案，生产/多人环境需统一端口规划

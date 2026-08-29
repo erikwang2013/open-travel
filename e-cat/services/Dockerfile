@@ -8,9 +8,11 @@ WORKDIR /build
 # protobuf-compiler: tonic 构建期 protoc；g++/make: rdkafka 编译 librdkafka；
 # cmake/libssl-dev/libsasl2-dev/libzstd-dev: TLS/SASL/zstd 支持（gssapi feature 链接系统 sasl）
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    protobuf-compiler cmake g++ make pkg-config libssl-dev libsasl2-dev libzstd-dev \
+    protobuf-compiler cmake g++ make pkg-config libssl-dev libsasl2-dev libzstd-dev git \
     && rm -rf /var/lib/apt/lists/*
 COPY e-cat ./e-cat
+# cargo libgit2 抓 git 依赖在此环境挂起（无进展），改用系统 git CLI 抓取
+ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
 RUN cargo build --release --manifest-path e-cat/Cargo.toml \
     -p user-service -p booking-service -p admin-service -p search-service -p line-service -p order-service \
     -p flight-service -p hotel-service -p payment-service

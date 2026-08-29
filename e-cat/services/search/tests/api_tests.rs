@@ -178,6 +178,41 @@ async fn search_logs_to_travel_searches_with_real_db() {
     assert_eq!(after, before + 1, "search log row should be inserted");
 }
 
+/// 热词聚合（P5-03）：自造 keyword 写入 travel_searches，all 周期应包含该词。
+#[tokio::test]
+async fn hotwords_aggregates_recent_keywords_with_real_db() {
+    let Some(db) = test_db().await else { return };
+    let kw = format!("hotwords_test_{}", std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs());
+    db.query_with(
+        "INSERT INTO travel_searches (keyword, lang, result_count) VALUES (?, 'en', 0)",
+        &[serde_json::json!(kw)],
+    ).await.unwrap();
+    let (status, body) = body_json(hotwords(
+        State(AppState { db: Some(db.clone()), replica: None, cache: None, os: None }),
+        Query(HotwordsQuery { period: "all".into(), limit: 50 }),
+    ).await).await;
+    let _ = db.query_with("DELETE FROM travel_searches WHERE keyword = ?", &[serde_json::json!(kw)]).await;
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(body["code"], 0);
+    assert!(body["data"].as_array().unwrap().iter().any(|h| h["keyword"] == serde_json::json!(kw)),
+        "inserted keyword should appear in hotwords");
+}
+
+#[tokio::test]
+async fn hotwords_rejects_invalid_period_and_limit() {
+    let cases = [
+        HotwordsQuery { period: "hour".into(), limit: 10 },
+        HotwordsQuery { period: "day".into(), limit: 0 },
+        HotwordsQuery { period: "day".into(), limit: 51 },
+    ];
+    for q in cases {
+        let (status, body) = body_json(hotwords(State(state()), Query(q)).await).await;
+        assert_eq!(status, StatusCode::BAD_REQUEST, "should reject invalid params");
+        assert_eq!(body["code"], 400);
+    }
+}
+
 /// 缓存：结果写入 Redis（60s），二次请求命中缓存（无 DB 也返回）。
 #[tokio::test]
 async fn search_caches_result_in_redis() {

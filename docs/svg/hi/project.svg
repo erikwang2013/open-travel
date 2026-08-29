@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600">
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="660" viewBox="0 0 1000 660">
   <defs>
     <style>
       text { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }
@@ -21,7 +21,7 @@
   <text x="500" y="56" text-anchor="middle" class="t-sub">Open-Travel Monorepo Overview</text>
 
   <!-- 左：Monorepo 组成 -->
-  <rect x="40" y="110" width="560" height="400" class="panel"/>
+  <rect x="40" y="110" width="560" height="500" class="panel"/>
   <text x="60" y="140" class="t-h">Monorepo संरचना</text>
   <text x="60" y="160" class="t-s">एकल रेपो · मल्टी-प्लेटफ़ॉर्म · साझा कॉन्फ़िग</text>
 
@@ -40,6 +40,7 @@
   <rect x="60" y="312" width="115" height="78" class="box"/>
   <text x="76" y="340" class="t-code">docs/</text>
   <text x="76" y="364" class="t-s">तकनीकी दस्तावेज़</text>
+  <text x="76" y="382" class="t-s">i18n दस्तावेज़ · SVG आरेख</text>
 
   <rect x="192" y="312" width="115" height="78" class="box"/>
   <text x="208" y="340" class="t-code">config/</text>
@@ -49,10 +50,14 @@
   <text x="340" y="340" class="t-code">README.md</text>
   <text x="340" y="364" class="t-s">परियोजना विवरण</text>
 
-  <rect x="60" y="410" width="520" height="80" class="box"/>
-  <text x="76" y="438" class="t-m">इन्फ्रास्ट्रक्चर</text>
-  <text x="76" y="462" class="t-s">HTTP axum · gRPC tonic · MySQL · Redis · OpenSearch · Kafka</text>
-  <text x="76" y="480" class="t-s">सुरक्षा: ecat-security · ecat-auth · ecat-tls</text>
+  <rect x="60" y="410" width="250" height="78" class="box"/>
+  <text x="76" y="438" class="t-code">scripts/</text>
+  <text x="76" y="462" class="t-s">डिप्लॉय स्क्रिप्ट · 8 CDN प्लगइन</text>
+  <text x="76" y="480" class="t-s">लोड टेस्ट · हेल्थ चेक · एनव अडिट</text>
+  <rect x="60" y="508" width="520" height="80" class="box"/>
+  <text x="76" y="536" class="t-m">इन्फ्रास्ट्रक्चर</text>
+  <text x="76" y="560" class="t-s">HTTP axum · gRPC tonic · MySQL · Redis · OpenSearch · Kafka</text>
+  <text x="76" y="578" class="t-s">सुरक्षा: ecat-security · ecat-auth · ecat-tls</text>
 
   <!-- 右：डेटा परत -->
   <rect x="620" y="110" width="340" height="170" class="panel"/>
@@ -78,6 +83,6 @@
   <circle cx="652" cy="460" r="4" class="dot"/>
   <text x="664" y="464" class="t-s">Nginx API गेटवे सेवा रजिस्ट्री</text>
 
-  <text x="500" y="558" text-anchor="middle" class="t-s">51 crates · 12+ भाषाएँ · मल्टी-प्लेटफ़ॉर्म (iOS / Android / Web / Desktop / HarmonyOS)</text>
-  <text x="988" y="588" text-anchor="end" font-size="12" fill="#8b949e" fill-opacity="0.5" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">https://erik.xyz</text>
+  <text x="500" y="618" text-anchor="middle" class="t-s">51 crates · 12+ भाषाएँ · मल्टी-प्लेटफ़ॉर्म (iOS / Android / Web / Desktop / HarmonyOS)</text>
+  <text x="988" y="648" text-anchor="end" font-size="12" fill="#8b949e" fill-opacity="0.5" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">https://erik.xyz</text>
 </svg>

@@ -9,7 +9,7 @@
 
 ## プロジェクト概要
 
-Open Travel は、[go-kratos/kratos](https://github.com/go-kratos/kratos) v3 に範をとった **Rust マイクロサービスフレームワーク**（v3.0.2 · 51 crates）である **e-cat（一匹の猫）** を採用した、グローバル旅行プラットフォームの monorepo です。高性能なバックエンドと Flutter マルチプラットフォーム・鸿蒙（HarmonyOS）ネイティブクライアントを組み合わせ、世界中のユーザーに統一された旅行予約体験を提供します。
+Open Travel は、[go-kratos/kratos](https://github.com/go-kratos/kratos) v3 に範をとった **Rust マイクロサービスフレームワーク**（v3.0.3 · 51 crates）である **e-cat（一匹の猫）** を採用した、グローバル旅行プラットフォームの monorepo です。高性能なバックエンドと Flutter マルチプラットフォーム・鸿蒙（HarmonyOS）ネイティブクライアントを組み合わせ、世界中のユーザーに統一された旅行予約体験を提供します。
 
 | 項目 | 説明 |
 | :--- | :--- |
@@ -91,6 +91,15 @@ cargo check -p user-service -p booking-service -p admin-service   # 業務サー
 | OpenSearch | 9201→9200 | 多言語検索 |
 
 管理端 Flutter Web は `apps/admin/`、開発環境のデフォルト管理者アカウントは `admin@travel.local` / `Admin@123`（ローカルのみ）。
+
+### スクリプト
+
+| スクリプト | 説明 |
+|---|---|
+| `scripts/opensearch_init.sh` | OpenSearch インデックスを冪等に作成（cjk アナライザー） |
+| `scripts/loadtest.sh` | 負荷テスト |
+| `scripts/cdn_setup.sh` / `cdn_upload.sh` | CDN の設定とアップロード（`--provider` 八雲プラグイン：cloudfront/aliyun/gcp/azure/cloudflare/tencent/huawei/bunny、`--dry-run` がデフォルト） |
+| `scripts/release.sh` | リリースプロセス補助 |
 
 ---
 

@@ -237,7 +237,7 @@ curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/attractions?desti
 公开接口，无鉴权。仅返回上架景区（`status=1`）。`description` 为 JSON 对象（键为语言代码），按 `lang` 取键，缺失或为空回退 `en`。
 
 - `404`：景区不存在或已下架
-- `reviews` 为预留空数组，P5-01 评价体系落地后接入
+- `reviews` 返回该景区最近 20 条真实评价（按 id 倒序），`rating_avg` 为读时 `AVG(rating)` 聚合，无评价时保留表内字段
 
 ```bash
 curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/attractions/1?lang=zh"
@@ -247,8 +247,42 @@ curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/attractions/1?lan
 {
   "code": 0,
   "message": "ok",
-  "data": { "id": 1, "destination_id": 1, "name": "东京塔", "description": "东京地标", "price_cents": 5000, "open_hours": "09:00-22:00", "rating_avg": 4.5, "cover_url": "https://...", "reviews": [] }
+  "data": { "id": 1, "destination_id": 1, "name": "东京塔", "description": "东京地标", "price_cents": 5000, "open_hours": "09:00-22:00", "rating_avg": 4.5, "cover_url": "https://...", "reviews": [ { "id": 1, "attraction_id": 1, "user_id": 2, "rating": 5, "comment": "非常棒的体验", "nickname": "alice", "created_at": "2026-08-29T10:00:00Z" } ] }
 }
+```
+
+#### `POST /api/reviews` — 提交评价
+
+鉴权：**需要 JWT**（`Authorization: Bearer <JWT>`，由登录接口签发）。请求体 JSON：
+
+```json
+{ "attraction_id": 1, "rating": 5, "comment": "非常棒的体验" }
+```
+
+| 字段 | 必填 | 说明 |
+|------|------|------|
+| `attraction_id` | 是 | 目标景区 ID，景区不存在或已下架返回 404 |
+| `rating` | 是 | 评分，1-5 整数，越界返回 400 |
+| `comment` | 否 | 评价内容，最多 500 字符，超长返回 400 |
+
+- `400`：`attraction_id` 缺失 / `rating` 越界 / `comment` 超长
+- `401`：无 token / token 无效
+- `404`：景区不存在或已下架
+- 成功返回 `201`，`data` 为创建后的评价对象（含 `id` / `created_at`）
+
+```bash
+curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X POST \
+  http://localhost:8082/api/reviews -d '{"attraction_id":1,"rating":5,"comment":"非常棒的体验"}'
+```
+
+#### `GET /api/reviews?attraction_id=N&page=&page_size=` — 评价列表
+
+公开接口，无鉴权。`attraction_id` 必填（缺失返回 400），按 `id` 倒序分页（`page` 默认 1，`page_size` 默认 10、上限 50）。
+
+响应 `data` 为裸数组：`[ { "id", "attraction_id", "user_id", "rating", "comment", "nickname", "created_at" } ]`。
+
+```bash
+curl -H "X-Api-Version: v1" "http://localhost:8082/api/reviews?attraction_id=1&page=1&page_size=10"
 ```
 
 ### 管理服务
@@ -383,6 +417,23 @@ curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorizatio
 
 ```bash
 curl -H "X-Api-Version: v1" "http://localhost:8082/api/search?q=tokyo&lang=zh"
+```
+
+#### `GET /api/search/hotwords?period=day|week|all&limit=N` — 热词推荐
+
+公开接口，无鉴权。按 `travel_searches` 检索日志对 `keyword` 分组计数，倒序返回 Top N。
+
+| 查询参数 | 必填 | 说明 |
+|------|------|------|
+| `period` | 否 | 统计周期：`day`（默认，近 1 天）/ `week`（近 7 天）/ `all`（全部），非法值 400 |
+| `limit` | 否 | 返回条数，默认 `10`，上限 50，非法值 400 |
+
+结果走 Redis 缓存（`hotwords:{period}:{limit}`，TTL 300s）→ MySQL 聚合回源。
+
+响应 `data`：`[ { "keyword", "count" } ]`。
+
+```bash
+curl -H "X-Api-Version: v1" "http://localhost:8082/api/search/hotwords?period=day&limit=10"
 ```
 
 ### 线路服务（line-service）
@@ -565,7 +616,43 @@ curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorizatio
 
 #### `GET /api/admin/users?page=&page_size=` — 用户列表
 
-全量用户分页，含注册时间；`PUT /api/admin/users/{id}/status` 请求 `{"status": 1}` 禁用（`0` 恢复）。禁用用户 JWT 请求返回 `403`（user-service 所有接口生效）。
+全量用户分页，含注册时间；`PATCH /api/admin/users/{id}/status` 请求 `{"status": 0 | 1}`（非法值 400），`1` 禁用 / `0` 恢复。`404`：用户不存在。禁用用户 JWT 请求返回 `403`（user-service 所有接口生效）。
+
+### 数据看板（admin-service，P5-02）
+
+鉴权同管理服务。聚合在 MySQL 内完成，金额单位分（cents）。
+
+#### `GET /api/admin/stats/overview` — 总览
+
+`data`：`{ "total_orders", "paid_orders", "gmv_cents"（status>=1 求和）, "conversion_rate"（百分比，两位小数）, "status_counts": { "0".."4" } }`。
+
+#### `GET /api/admin/stats/top` — Top 目的地与线路
+
+`data`：`{ "top_destinations": [ { "id", "name"（中文优先）, "orders" } ], "top_lines": [ ... ] }`，各 Top 5（按线路订单量）。
+
+#### `GET /api/admin/stats/trend` — 近 7 天订单趋势
+
+`data.items`：`[ { "day"（YYYY-MM-DD）, "orders" } ]`，恒定 7 行（含当日，无单日补零）。
+
+### CDN 云商管理（admin-service，P5-08）
+
+鉴权同管理服务。**服务端不存储云凭据**：接口仅管理配置并生成 dry-run 命令预览文本，真实执行需在部署机配置对应云 CLI 凭据。
+
+#### `GET /api/admin/cdn/providers` — 提供商列表
+
+全量返回（含禁用项），按 `provider_code` 升序。`data.items` 字段：`provider_code`、`name`、`enabled`（bool）、`bucket`、`region`、`domain`、`endpoint`、`updated_at`。
+
+#### `PATCH /api/admin/cdn/providers/{code}/status` — 启停
+
+请求体 `{ "enabled": true | false }`。`404`：提供商不存在；成功返回更新后对象。
+
+#### `PUT /api/admin/cdn/providers/{code}` — 更新配置
+
+请求体可选字段 `bucket` / `region` / `domain` / `endpoint`（null 跳过，空串表示清空；`region` 不允许为空）。`400`：无可更新字段 / region 为空；`404`：提供商不存在。
+
+#### `POST /api/admin/cdn/providers/{code}/plan` — dry-run 命令预览
+
+`404`：提供商不存在；`400`：bucket 未配置（`configure bucket first`）。成功返回 `{ "provider_code", "commands": ["cdn_setup.sh ...", "cdn_upload.sh ..."], "hint" }`——命令仅输出预览，本服务不执行。
 
 ### 订单扩展（order-service，P4-12）
 
@@ -585,7 +672,7 @@ curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorizatio
 
 - **user-service**：`Tracing → CircuitBreaker → Security → RateLimit(Redis) → Auth(JWT)`
 - **booking-service**：`Tracing → CircuitBreaker → Security → RateLimit`
-- **admin-service**：`Tracing → CircuitBreaker → Security → RateLimit(Redis) → JWT(Auth)`（`/api/admin/login` 公开，仅 CRUD 挂 JWT）
+- **admin-service**：`Tracing → CircuitBreaker → Security → RateLimit(Redis) → JWT(Auth)`（`/api/admin/login` 公开，其余业务路由挂 JWT）
 - **search-service / line-service**：`Tracing → CircuitBreaker → Security → RateLimit`（公开，无 JWT）
 - **order-service**：`Tracing → CircuitBreaker → Security → RateLimit → JWT(Auth)`（全部接口需用户 JWT；`POST /api/orders/{id}/pay-success` 内部接口无 JWT，以 X-Internal-Token 防护）
 - **flight-service / hotel-service**：`Tracing → CircuitBreaker → Security → RateLimit`（公开，无 JWT）

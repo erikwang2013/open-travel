@@ -9,7 +9,7 @@
 
 ## О проекте
 
-Open Travel — это monorepo глобальной туристической платформы, построенной на **e-cat (одна кошка)** — Rust-микросервисном фреймворке уровня [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 (v3.0.2 · 51 крейт) — для высокопроизводительного бэкенда, в сочетании с клиентами на Flutter и нативным клиентом HarmonyOS, обеспечивающими единый опыт бронирования путешествий для пользователей по всему миру.
+Open Travel — это monorepo глобальной туристической платформы, построенной на **e-cat (одна кошка)** — Rust-микросервисном фреймворке уровня [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 (v3.0.3 · 51 крейт) — для высокопроизводительного бэкенда, в сочетании с клиентами на Flutter и нативным клиентом HarmonyOS, обеспечивающими единый опыт бронирования путешествий для пользователей по всему миру.
 
 | Измерение | Описание |
 | :--- | :--- |
@@ -91,6 +91,15 @@ cargo check -p user-service -p booking-service -p admin-service   # провер
 | OpenSearch | 9201→9200 | Многоязычный поиск |
 
 Админ-консоль Flutter Web — в `apps/admin/`; учётная запись администратора по умолчанию для разработки: `admin@travel.local` / `Admin@123` (только локально).
+
+### Скрипты
+
+| Скрипт | Описание |
+|---|---|
+| `scripts/opensearch_init.sh` | Идемпотентное создание индекса OpenSearch (анализатор cjk) |
+| `scripts/loadtest.sh` | Нагрузочное тестирование |
+| `scripts/cdn_setup.sh` / `cdn_upload.sh` | Настройка и загрузка CDN (плагин `--provider` «восемь облаков»: cloudfront/aliyun/gcp/azure/cloudflare/tencent/huawei/bunny, по умолчанию `--dry-run`) |
+| `scripts/release.sh` | Помощник процесса релиза |
 
 ---
 

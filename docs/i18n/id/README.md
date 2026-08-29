@@ -9,7 +9,7 @@
 
 ## Tentang Proyek
 
-Open Travel adalah monorepo platform wisata global yang menggunakan **e-cat (seekor kucing)** — **framework mikroservis Rust** (v3.0.2 · 51 crates) yang setara dengan [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 — untuk membangun backend berperforma tinggi, dipadukan dengan klien multi-platform Flutter dan klien native HarmonyOS, guna memberikan pengalaman pemesanan wisata yang seragam bagi pengguna global.
+Open Travel adalah monorepo platform wisata global yang menggunakan **e-cat (seekor kucing)** — **framework mikroservis Rust** (v3.0.3 · 51 crates) yang setara dengan [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 — untuk membangun backend berperforma tinggi, dipadukan dengan klien multi-platform Flutter dan klien native HarmonyOS, guna memberikan pengalaman pemesanan wisata yang seragam bagi pengguna global.
 
 | Aspek | Deskripsi |
 | :--- | :--- |
@@ -91,6 +91,15 @@ cargo check -p user-service -p booking-service -p admin-service   # pemeriksaan 
 | OpenSearch | 9201→9200 | Pencarian multibahasa |
 
 Konsol admin Flutter Web ada di `apps/admin/`; akun admin default pengembangan adalah `admin@travel.local` / `Admin@123` (hanya untuk penggunaan lokal).
+
+### Skrip
+
+| Skrip | Deskripsi |
+|---|---|
+| `scripts/opensearch_init.sh` | Membuat indeks OpenSearch secara idempoten (penganalisis cjk) |
+| `scripts/loadtest.sh` | Pengujian beban |
+| `scripts/cdn_setup.sh` / `cdn_upload.sh` | Konfigurasi dan unggah CDN (plugin `--provider` delapan-cloud: cloudfront/aliyun/gcp/azure/cloudflare/tencent/huawei/bunny, `--dry-run` secara default) |
+| `scripts/release.sh` | Pembantu proses rilis |
 
 ---
 
