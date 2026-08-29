@@ -56,6 +56,9 @@ pub(crate) mod hotel_handlers;
 #[path = "stats_handlers.rs"]
 pub(crate) mod stats_handlers;
 
+#[path = "cdn_handlers.rs"]
+pub(crate) mod cdn_handlers;
+
 const PORT: &str = "0.0.0.0:8003";
 const TOKEN_TTL_SECS: u64 = 24 * 3600;
 // 防枚举：未知邮箱对固定 hash 执行一次 bcrypt verify，与真实校验耗时一致
@@ -330,6 +333,13 @@ pub(crate) fn api_router(state: AppState) -> Router {
             "/api/admin/hotels/{id}/rooms/{room_id}",
             delete(hotel_handlers::delete_room),
         )
+        .route("/api/admin/cdn/providers", get(cdn_handlers::list_providers))
+        .route("/api/admin/cdn/providers/{code}", put(cdn_handlers::update_provider))
+        .route(
+            "/api/admin/cdn/providers/{code}/status",
+            patch(cdn_handlers::update_provider_status),
+        )
+        .route("/api/admin/cdn/providers/{code}/plan", post(cdn_handlers::provider_plan))
         .layer(ServiceBuilder::new().map_err(no_error).layer(state.jwt.clone()));
 
     Router::new()

@@ -280,3 +280,27 @@ CREATE TABLE IF NOT EXISTS travel_payment_channels (
   created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   UNIQUE KEY uk_channel (channel_code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='支付渠道表';
+
+-- ===== Phase 4 增量（P4-17 CDN 云服务商管理）=====
+-- 管理端配置/启停/命令预览；不存储任何云凭据，真实执行在部署机
+CREATE TABLE IF NOT EXISTS travel_cdn_providers (
+  provider_code VARCHAR(32)  NOT NULL PRIMARY KEY COMMENT '云商代码',
+  name          VARCHAR(64)  NOT NULL COMMENT '云商名称',
+  enabled       TINYINT      NOT NULL DEFAULT 1 COMMENT '1启用/0停用',
+  bucket        VARCHAR(128) NOT NULL DEFAULT '' COMMENT '对象存储桶',
+  region        VARCHAR(64)  NOT NULL DEFAULT 'us-east-1' COMMENT '区域',
+  domain        VARCHAR(128) NOT NULL DEFAULT '' COMMENT 'CDN 加速域名',
+  endpoint      VARCHAR(255) NOT NULL DEFAULT '' COMMENT '自定义 endpoint',
+  updated_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='CDN 云服务商配置表';
+
+-- 8 家云商种子（INSERT IGNORE：已存在则跳过，不覆盖管理端改动）
+INSERT IGNORE INTO travel_cdn_providers (provider_code, name) VALUES
+('cloudfront', 'AWS CloudFront'),
+('aliyun', '阿里云 CDN'),
+('gcp', 'Google Cloud CDN'),
+('azure', 'Azure CDN'),
+('cloudflare', 'Cloudflare'),
+('tencent', '腾讯云 CDN'),
+('huawei', '华为云 CDN'),
+('bunny', 'Bunny.net');

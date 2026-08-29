@@ -9,6 +9,7 @@ import 'hotels_page.dart';
 import 'lines_page.dart';
 import 'orders_page.dart';
 import 'payments_page.dart';
+import 'cdn_page.dart';
 import 'users_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -31,6 +32,7 @@ class _HomePageState extends State<HomePage> {
     FlightsPage(),
     HotelsPage(),
     PaymentsPage(),
+    CdnPage(),
   ];
 
   @override
@@ -79,6 +81,10 @@ class _HomePageState extends State<HomePage> {
                   icon: Icon(Icons.payment_outlined),
                   selectedIcon: Icon(Icons.payment),
                   label: Text('支付管理')),
+              NavigationRailDestination(
+                  icon: Icon(Icons.cloud_outlined),
+                  selectedIcon: Icon(Icons.cloud),
+                  label: Text('CDN 管理')),
             ],
             trailing: Padding(
               padding: const EdgeInsets.only(top: 12),
