@@ -29,7 +29,7 @@ use ecat_security::SecurityLayer;
 use ecat_tracing::TracingLayer;
 use ecat_transport_http::HttpServer;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
+use serde_json::{json, Value};
 use ecat_mq_kafka::KafkaMq;
 use shared::{connect_kafka, connect_primary, jwt_secret, no_error, publish_audit, RedisRateLimitLayer};
 use std::sync::Arc;
@@ -283,6 +283,10 @@ pub(crate) async fn profile(State(state): State<AppState>, req: Request) -> Resp
         return err::<ProfileOut>(StatusCode::SERVICE_UNAVAILABLE, 503, "database unavailable")
             .into_response();
     };
+    // P4-14：禁用用户（status=1）的 JWT 请求一律 403
+    if let Err(resp) = ensure_user_enabled(&state, user_id).await {
+        return resp;
+    }
     let rows = match db
         .query_with(
             "SELECT id, email, lang FROM travel_users WHERE id = ?",
@@ -344,6 +348,10 @@ pub(crate) async fn update_profile(State(state): State<AppState>, req: Request) 
         return err::<ProfileUpdateOut>(StatusCode::SERVICE_UNAVAILABLE, 503, "database unavailable")
             .into_response();
     };
+    // P4-14：禁用用户（status=1）的 JWT 请求一律 403
+    if let Err(resp) = ensure_user_enabled(&state, user_id).await {
+        return resp;
+    }
     let rows = match db
         .query_with(
             "SELECT id, email, nickname, lang FROM travel_users WHERE id = ?",
@@ -385,6 +393,36 @@ pub(crate) async fn update_profile(State(state): State<AppState>, req: Request) 
         lang: new_lang,
     }))
     .into_response()
+}
+
+/// P4-14 禁用检查：token 有效但 travel_users.status=1（禁用）→ 403。
+/// 每次请求查一次库（profile 低频，简单优先；压测需要时再上 Redis 缓存）。
+/// db 缺失或用户不存在时放行，交给 handler 的 503/404 兜底。
+async fn ensure_user_enabled(state: &AppState, user_id: u64) -> Result<(), Response> {
+    let Some(db) = state.db.clone() else { return Ok(()) };
+    let rows = match db
+        .query_with(
+            "SELECT CAST(status AS SIGNED) AS status FROM travel_users WHERE id = ?",
+            &[json!(user_id)],
+        )
+        .await
+    {
+        Ok(rows) => rows,
+        Err(e) => {
+            tracing::warn!(error = %e, "user status query failed");
+            return Err(err::<Value>(StatusCode::SERVICE_UNAVAILABLE, 503, "database unavailable")
+                .into_response());
+        }
+    };
+    let Some(row) = rows.first() else { return Ok(()) };
+    let status = row
+        .get("status")
+        .and_then(|v| v.as_i64().or_else(|| v.as_str().and_then(|s| s.parse().ok())))
+        .unwrap_or(0);
+    if status == 1 {
+        return Err(err::<Value>(StatusCode::FORBIDDEN, 403, "account disabled").into_response());
+    }
+    Ok(())
 }
 
 async fn connect_cache() -> Option<Arc<RedisCache>> {

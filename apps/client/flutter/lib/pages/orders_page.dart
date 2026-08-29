@@ -6,6 +6,7 @@ import '../services/localization_service.dart';
 import '../services/order_service.dart';
 import '../widgets/login_dialog.dart';
 import 'order_detail_page.dart';
+import 'payment_page.dart';
 
 /// 订单中心：未登录提示登录，已登录展示订单列表（状态徽标/金额/日期）。
 class OrdersPage extends StatefulWidget {
@@ -139,12 +140,27 @@ class _OrderCard extends StatelessWidget {
               ? '#${order.id} · ${formatYuan(order.amountCents)}'
               : '${order.createdAt} · ${formatYuan(order.amountCents)}',
         ),
-        trailing: Text(
-          loc.getString(orderStatusKey(order.status)),
-          style: TextStyle(
-            color: order.isPending ? scheme.error : scheme.primary,
-            fontWeight: FontWeight.w600,
-          ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (order.isPending)
+              TextButton(
+                onPressed: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => PaymentPage(orderId: order.id)),
+                  );
+                  onChanged();
+                },
+                child: Text(loc.getString('payment.goPay')),
+              ),
+            Text(
+              loc.getString(orderStatusKey(order.status)),
+              style: TextStyle(
+                color: order.isPending ? scheme.error : scheme.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
         ),
         onTap: () async {
           await Navigator.of(context).push(

@@ -263,6 +263,163 @@ String orderStatusKey(int status) {
   }
 }
 
+/// 航班。cabin: 0经济/1商务/2头等。
+class Flight {
+  const Flight({
+    required this.id,
+    this.airline = '',
+    this.flightNo = '',
+    this.fromCode = '',
+    this.toCode = '',
+    this.departAt = '',
+    this.arriveAt = '',
+    this.cabin = 0,
+    this.priceCents = 0,
+    this.seatsLeft = 0,
+  });
+
+  final int id;
+  final String airline;
+  final String flightNo;
+  final String fromCode;
+  final String toCode;
+  final String departAt;
+  final String arriveAt;
+  final int cabin;
+  final int priceCents;
+  final int seatsLeft;
+
+  bool get soldOut => seatsLeft <= 0;
+
+  static Flight fromJson(Map<String, dynamic> json) => Flight(
+        id: (json['id'] as num?)?.toInt() ?? 0,
+        airline: (json['airline'] as String?) ?? '',
+        flightNo: (json['flight_no'] as String?) ?? '',
+        fromCode: (json['from_code'] as String?) ?? '',
+        toCode: (json['to_code'] as String?) ?? '',
+        departAt: (json['depart_at'] as String?) ?? '',
+        arriveAt: (json['arrive_at'] as String?) ?? '',
+        cabin: (json['cabin'] as num?)?.toInt() ?? 0,
+        priceCents: (json['price_cents'] as num?)?.toInt() ?? 0,
+        seatsLeft: (json['seats_left'] as num?)?.toInt() ?? 0,
+      );
+}
+
+/// 舱位 i18n key：0经济/1商务/2头等。
+String flightCabinKey(int cabin) => switch (cabin) {
+      1 => 'flight.cabin.business',
+      2 => 'flight.cabin.first',
+      _ => 'flight.cabin.economy',
+    };
+
+/// 酒店房型。名称按 room_type_en/zh/ja 多语列取。
+class HotelRoom {
+  const HotelRoom({
+    required this.id,
+    this.name = '',
+    this.priceCents = 0,
+    this.breakfast = false,
+    this.inventory = 0,
+  });
+
+  final int id;
+  final String name;
+  final int priceCents;
+  final bool breakfast;
+  final int inventory;
+
+  bool get available => inventory > 0;
+
+  static HotelRoom fromJson(Map<String, dynamic> json, String lang) {
+    String? name;
+    for (final key in [lang, 'zh', 'en']) {
+      final v = json['room_type_$key'];
+      if (v is String && v.isNotEmpty) {
+        name = v;
+        break;
+      }
+    }
+    return HotelRoom(
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      name: name ?? 'ID ${json['id']}',
+      priceCents: (json['price_cents'] as num?)?.toInt() ?? 0,
+      breakfast: (json['breakfast'] as bool?) ?? false,
+      inventory: (json['inventory'] as num?)?.toInt() ?? 0,
+    );
+  }
+}
+
+/// 酒店。name 按 name_* 多语列取。
+class Hotel {
+  const Hotel({
+    required this.id,
+    this.name = '',
+    this.cityCode = '',
+    this.star = 0,
+    this.coverUrl = '',
+    this.rooms = const [],
+  });
+
+  final int id;
+  final String name;
+  final String cityCode;
+  final int star;
+  final String coverUrl;
+  final List<HotelRoom> rooms;
+
+  static Hotel fromJson(Map<String, dynamic> json, String lang) => Hotel(
+        id: (json['id'] as num?)?.toInt() ?? 0,
+        name: localizedName(json, lang) ?? 'ID ${json['id']}',
+        cityCode: (json['city_code'] as String?) ?? '',
+        star: (json['star'] as num?)?.toInt() ?? 0,
+        coverUrl: (json['cover_url'] as String?) ?? '',
+        rooms: [
+          for (final r in (json['rooms'] as List? ?? const []))
+            if (r is Map<String, dynamic>) HotelRoom.fromJson(r, lang),
+        ],
+      );
+}
+
+/// 支付渠道。name 为多语 JSON（已按 lang 路由）或字符串。
+class PaymentChannel {
+  const PaymentChannel({
+    required this.channelCode,
+    this.name = '',
+    this.type = '',
+    this.enabled = false,
+    this.priority = 0,
+  });
+
+  final String channelCode;
+  final String name;
+  final String type;
+  final bool enabled;
+  final int priority;
+
+  static PaymentChannel fromJson(Map<String, dynamic> json, String lang) {
+    var name = json['name'];
+    if (name is Map) {
+      name = localizedName(Map<String, dynamic>.from(name), lang) ?? '';
+    }
+    return PaymentChannel(
+      channelCode: (json['channel_code'] as String?) ?? '',
+      name: name is String ? name : '',
+      type: (json['type'] as String?) ?? '',
+      enabled: (json['enabled'] as bool?) ?? false,
+      priority: (json['priority'] as num?)?.toInt() ?? 0,
+    );
+  }
+}
+
+/// 发起支付返回：流水号 + 金额 + 沙箱收银台地址。
+class PaymentResult {
+  const PaymentResult({this.txnNo = '', this.amountCents = 0, this.checkoutUrl = ''});
+
+  final String txnNo;
+  final int amountCents;
+  final String checkoutUrl;
+}
+
 /// 订单产品快照取标题：Map 形态（title/name/name_*）或字符串（含 JSON 字符串）容错解析。
 String snapshotTitle(dynamic snapshot, String lang) {
   if (snapshot is Map) {

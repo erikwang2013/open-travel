@@ -1,5 +1,8 @@
 # ecat-data-iotdb
 
+<p align="center"><img src="../../docs/mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+
+
 Apache IoTDB time-series database client for e-cat (REST v2 API).
 
 Writes use the REST v2 `insertTablet` endpoint: one tablet per `DataPoint`

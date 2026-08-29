@@ -1,5 +1,8 @@
 # ecat-data-mongodb
 
+<p align="center"><img src="../../docs/mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+
+
 [MongoDB](https://www.mongodb.com) document database client for the e-cat ecosystem, powered by the official [mongodb](https://crates.io/crates/mongodb) driver.
 
 ```rust

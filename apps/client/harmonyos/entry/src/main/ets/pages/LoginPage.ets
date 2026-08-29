@@ -39,10 +39,15 @@ struct LoginPage {
 
   build() {
     Column() {
+      Image($r('app.media.mascot'))
+        .width(96)
+        .height(96)
+        .margin({ top: 48, bottom: 8 })
+
       Text($r('app.string.login_title'))
         .fontSize(24)
         .fontWeight(FontWeight.Bold)
-        .margin({ top: 64, bottom: 32 })
+        .margin({ top: 8, bottom: 32 })
 
       TextInput({ placeholder: $r('app.string.login_email_hint'), text: this.email })
         .width('88%')

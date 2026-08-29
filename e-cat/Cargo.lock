@@ -26,6 +26,7 @@ dependencies = [
  "tokio",
  "tower 0.5.3",
  "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -2110,6 +2111,29 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b7ac824320a75a52197e8f2d787f6a38b6718bb6897a35142d749af3c0e8f4fe"
 
 [[package]]
+name = "flight-service"
+version = "0.1.0"
+dependencies = [
+ "axum 0.8.9",
+ "base64",
+ "ecat",
+ "ecat-circuit-breaker",
+ "ecat-data",
+ "ecat-data-redis",
+ "ecat-data-sqlx",
+ "ecat-middleware",
+ "ecat-security",
+ "ecat-tracing",
+ "ecat-transport-http",
+ "serde",
+ "serde_json",
+ "shared",
+ "tokio",
+ "tower 0.5.3",
+ "tracing",
+]
+
+[[package]]
 name = "flume"
 version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2528,6 +2552,29 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cc627f471c528ff0c4a49e1d5e60450c8f6461dd6d10ba9dcd3a61d3dff7728d"
 dependencies = [
  "windows-sys 0.61.2",
+]
+
+[[package]]
+name = "hotel-service"
+version = "0.1.0"
+dependencies = [
+ "axum 0.8.9",
+ "base64",
+ "ecat",
+ "ecat-circuit-breaker",
+ "ecat-data",
+ "ecat-data-redis",
+ "ecat-data-sqlx",
+ "ecat-middleware",
+ "ecat-security",
+ "ecat-tracing",
+ "ecat-transport-http",
+ "serde",
+ "serde_json",
+ "shared",
+ "tokio",
+ "tower 0.5.3",
+ "tracing",
 ]
 
 [[package]]
@@ -3639,6 +3686,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "payment-service"
+version = "0.1.0"
+dependencies = [
+ "axum 0.8.9",
+ "base64",
+ "ecat",
+ "ecat-auth",
+ "ecat-circuit-breaker",
+ "ecat-data",
+ "ecat-data-sqlx",
+ "ecat-middleware",
+ "ecat-security",
+ "ecat-tracing",
+ "ecat-transport-http",
+ "hmac 0.12.1",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "sha2 0.10.9",
+ "shared",
+ "tokio",
+ "tower 0.5.3",
+ "tracing",
+]
+
+[[package]]
 name = "pbkdf2"
 version = "0.12.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4660,12 +4733,10 @@ dependencies = [
 
 [[package]]
 name = "security-rust"
-version = "1.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "65999385099ea7718f7aba9995270b82877d2132309c17278bc7338e93d9a7da"
+version = "1.0.7"
+source = "git+https://github.com/erikwang2013/security-rust?tag=v1.0.7#80f3750f21b5a6a8d9604380b076a3fcb4aa0c9e"
 dependencies = [
  "regex",
- "thiserror 2.0.19",
 ]
 
 [[package]]

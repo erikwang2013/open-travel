@@ -263,6 +263,43 @@ async fn update_profile_updates_nickname_and_lang() {
 }
 
 #[tokio::test]
+async fn disabled_user_jwt_request_403() {
+    let Some(db) = user_real_db().await else { return };
+    let email = format!("disabled-{}@example.com", std::process::id());
+    let _ = db
+        .execute_with(
+            "INSERT INTO travel_users (email, password_hash, status) VALUES (?, 'x', 1)",
+            &[json!(email)],
+        )
+        .await;
+    let rows = db.query_with("SELECT id FROM travel_users WHERE email = ?", &[json!(email)]).await.unwrap();
+    let Some(id) = rows.first().and_then(|r| r.get("id")).and_then(|v| v.as_u64()) else {
+        return;
+    };
+    let state = AppState {
+        db: Some(Arc::new(db)),
+        cache: None,
+        mq: None,
+        jwt: JwtAuthLayer::new(jwt_secret()).unwrap(),
+    };
+    // 禁用用户：token 有效但 status=1 → 403
+    let (status, body) = body_json(profile(State(state.clone()), req_with_claims(&id.to_string())).await).await;
+    assert_eq!(status, StatusCode::FORBIDDEN, "{body}");
+    assert_eq!(body["code"], 403);
+    assert_eq!(body["message"], "account disabled");
+    // 恢复为正常用户后可访问
+    let _ = state
+        .db
+        .as_ref()
+        .unwrap()
+        .execute_with("UPDATE travel_users SET status = 0 WHERE id = ?", &[json!(id)])
+        .await;
+    let (status, _) = body_json(profile(State(state.clone()), req_with_claims(&id.to_string())).await).await;
+    assert_eq!(status, StatusCode::OK);
+    let _ = state.db.as_ref().unwrap().execute_with("DELETE FROM travel_users WHERE id = ?", &[json!(id)]).await;
+}
+
+#[tokio::test]
 async fn ready_reports_degraded_without_datasources() {
     let (status, body) = body_json(ready(State(state())).await).await;
     assert_eq!(status, StatusCode::OK);

@@ -11,6 +11,11 @@
     "pages/LineDetail",
     "pages/OrderList",
     "pages/OrderDetail",
-    "pages/LoginPage"
+    "pages/LoginPage",
+    "pages/FlightList",
+    "pages/FlightDetail",
+    "pages/HotelList",
+    "pages/HotelDetail",
+    "pages/PaymentPage"
   ]
 }

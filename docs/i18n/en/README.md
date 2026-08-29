@@ -2,6 +2,9 @@
 
 # Open Travel — Global Travel Platform
 
+<p align="center"><img src="../../mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+
+
 > A travel booking platform for users worldwide: Rust microservice backend + Flutter / HarmonyOS multi-platform clients, supporting **12+ languages**, international payments, and multilingual search.
 
 ## Introduction

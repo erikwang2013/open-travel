@@ -63,17 +63,25 @@ export class ApiClient {
     }
   }
 
-  static async get<T>(path: string): Promise<T> {
+  static async get<T>(path: string, auth: boolean = false): Promise<T> {
     const client = http.createHttp();
     try {
+      const header: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'X-Api-Version': ApiClient.API_VERSION
+      };
+      if (auth) {
+        const token = ApiClient.getToken();
+        if (token.length === 0) {
+          throw new Error('not logged in');
+        }
+        header['Authorization'] = 'Bearer ' + token;
+      }
       const resp = await client.request(ApiClient.BASE_URL + path, {
         method: http.RequestMethod.GET,
         connectTimeout: 10000,
         readTimeout: 10000,
-        header: {
-          'Content-Type': 'application/json',
-          'X-Api-Version': ApiClient.API_VERSION
-        }
+        header: header
       });
       const code: number = resp.responseCode;
       if (code < 200 || code >= 300) {

@@ -48,6 +48,7 @@ struct OrderList {
   @State loading: boolean = true;
   @State failed: boolean = false;
   @State notLoggedIn: boolean = false;
+  private firstShow: boolean = true;
 
   aboutToAppear(): void {
     if (!ApiClient.isLoggedIn()) {
@@ -56,6 +57,16 @@ struct OrderList {
       return;
     }
     this.load();
+  }
+
+  onPageShow(): void {
+    if (this.firstShow) {
+      this.firstShow = false;
+      return;
+    }
+    if (!this.notLoggedIn) {
+      this.load();
+    }
   }
 
   async load(): Promise<void> {

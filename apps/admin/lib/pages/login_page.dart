@@ -58,6 +58,8 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Center(child: Image.asset('assets/mascot.png', width: 80)),
+                  const SizedBox(height: 16),
                   const Text('Open Travel 管理端',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),

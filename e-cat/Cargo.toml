@@ -64,6 +64,9 @@ members = [
     "services/search",
     "services/line",
     "services/order",
+    "services/flight",
+    "services/hotel",
+    "services/payment",
     "services/shared",
 ]
 resolver = "2"

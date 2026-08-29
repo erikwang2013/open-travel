@@ -1,5 +1,8 @@
 # Open Travel — বৈশ্বিক ভ্রমণ প্ল্যাটফর্ম
 
+<p align="center"><img src="../../mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+
+
 [简体中文](../../README.md) | [English](README.md) | [日本語](ja/README.md) | [한국어](ko/README.md) | [Русский](ru/README.md) | [Deutsch](de/README.md) | [Français](fr/README.md) | [Español](es/README.md) | [Português](pt/README.md) | [हिन्दी](hi/README.md) | [العربية](ar/README.md) | [বাংলা](bn/README.md) | [Bahasa Indonesia](id/README.md)
 
 > একটি বৈশ্বিক ভ্রমণ বুকিং প্ল্যাটফর্ম: Rust মাইক্রোসার্ভিস ব্যাকএন্ড + Flutter / HarmonyOS মাল্টি-প্ল্যাটফর্ম ক্লায়েন্ট, **12+ ভাষা**, আন্তর্জাতিক পেমেন্ট এবং বহুভাষিক অনুসন্ধান সমর্থন করে।

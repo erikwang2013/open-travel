@@ -65,23 +65,23 @@
 
 | 任务编号 | 任务 | 所属模块 | 依赖 | 验收标准 | 负责端 | 状态 |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| P4-01 | `travel_flights` 表（airline/flight_no/from_code/to_code/depart_at/arrive_at/cabin/price_cents/seats_left）+ 种子数据 | 数据层 | P2-01 | 增量 DDL 可执行，种子覆盖多条航线 | 后端 | 待开始 |
-| P4-02 | flight-service：`GET /api/flights/search?from=&to=&date=&cabin=` 航班查询/比价 + `GET /api/flights/:id` 详情 | 机票服务 | P4-01 | 查询支持日期/舱位过滤，结果按价格排序 | 后端 | 待开始 |
-| P4-03 | `travel_hotels`（name_*/city_code/star/lat/lng/cover_url/status）+ `travel_hotel_rooms`（room_type_*/price_cents/breakfast/inventory）表 + 种子 | 数据层 | P2-01 | 增量 DDL 可执行，种子 ≥5 家酒店含房型 | 后端 | 待开始 |
-| P4-04 | hotel-service：`GET /api/hotels/search?city=&check_in=&check_out=` 搜索 + `GET /api/hotels/:id` 详情（房型/房价日历） | 酒店服务 | P4-03 | 搜索/详情接口 curl 验证通过，房价日历准确 | 后端 | 待开始 |
+| P4-01 | `travel_flights` 表（airline/flight_no/from_code/to_code/depart_at/arrive_at/cabin/price_cents/seats_left）+ 种子数据 | 数据层 | P2-01 | 增量 DDL 可执行，种子覆盖多条航线 | 后端 | 已完成 |
+| P4-02 | flight-service：`GET /api/flights/search?from=&to=&date=&cabin=` 航班查询/比价 + `GET /api/flights/:id` 详情 | 机票服务 | P4-01 | 查询支持日期/舱位过滤，结果按价格排序 | 后端 | 已完成 |
+| P4-03 | `travel_hotels`（name_*/city_code/star/lat/lng/cover_url/status）+ `travel_hotel_rooms`（room_type_*/price_cents/breakfast/inventory）表 + 种子 | 数据层 | P2-01 | 增量 DDL 可执行，种子 ≥5 家酒店含房型 | 后端 | 已完成 |
+| P4-04 | hotel-service：`GET /api/hotels/search?city=&check_in=&check_out=` 搜索 + `GET /api/hotels/:id` 详情（房型/房价日历） | 酒店服务 | P4-03 | 搜索/详情接口 curl 验证通过，房价日历准确 | 后端 | 已完成 |
 | P4-05 | `travel_payments` 表（order_id/channel/amount_cents/status/txn_no/paid_at） | 数据层 | P3-08 | 增量 DDL 可执行 | 后端 | 已完成 |
-| P4-06 | payment-service：`POST /api/payments` 发起支付（渠道下单）+ 回调接口（验签 + 按流水号幂等）+ 每日对账脚本 | 支付服务 | P4-05 | 回调重复投递不重复入账，验签失败拒绝 | 后端 | 待开始 |
-| P4-07 | 订单支付闭环：支付成功 → 订单确认 → 库存确认 → Kafka 事件（订单/通知） | 订单服务 | P4-06, P3-08 | 支付后订单状态自动流转，事件消费方收到通知 | 后端 | 待开始 |
-| P4-08 | 管理端订单管理（列表/筛选/详情/改退操作/支付记录查看） | 管理端 | P3-09, P4-06 | 订单全流程可视，改退操作生效 | 管理端 | 待开始 |
-| P4-09 | 管理端用户管理（列表、禁用/启用） | 管理端 | P2-06, P4-14 | 禁用后该用户接口 403 | 管理端 | 待开始 |
-| P4-10 | 管理端机票/酒店管理：航班 CRUD + 舱位价格/余票调整；酒店/房型 CRUD + 房价日历 + 库存 | 管理端 | P4-02, P4-04 | 双域管理全流程可用 | 管理端 | 待开始 |
-| P4-11 | 客户端机票/酒店搜索预订页（Flutter 先行：航班比价、酒店房型选择） | 客户端 | P4-02, P4-04 | 搜索→选品→下单链路可走通 | 客户端 | 待开始 |
-| P4-12 | 客户端预订支付流程（接入 payment-service，支付引导/回调刷新）+ 取消退款 | 客户端 | P4-07, P3-12 | 下单→支付→订单确认全链路走通 | 客户端 | 待开始 |
-| P4-13 | 全链路联调（下单→支付→回调→状态刷新）+ 压测 + CDN 接入 | 全端 | P4-12 | 联调报告全绿，压测 QPS 达标，CDN 生效 | 全端 | 待开始 |
-| P4-14 | `travel_users` 扩展 status 字段（0 正常/1 禁用）+ user-service 管理接口（用户列表、`PATCH /api/admin/users/:id/status` 禁用/启用） | 用户服务 | P1-01 | 禁用用户 JWT 请求返回 403，列表分页 | 后端 | 待开始 |
-| P4-15 | 支付渠道体系：国际卡（Stripe）+ 本地支付（按用户 lang/国家路由，如微信/支付宝、PayPay、KakaoPay 等）+ USDT 等加密渠道（NOWPayments/Binance Pay 等）；`travel_payment_channels` 表（channel_code/name/type/enabled/priority/languages 或 countries/merchant_config）+ 渠道注册表抽象，payment-service 按用户语言优先路由本国渠道 | 支付服务 | P4-06 | 各渠道开关可控，按 lang 返回可用渠道列表，渠道层可插拔 | 后端 | 待开始 |
-| P4-16 | 管理端支付管理：渠道开关（按语言/国家控制前端展示）+ 流水账单（travel_payments 列表/筛选：渠道、状态、时间、金额） | 管理端 | P4-15, P4-08 | 渠道开关即时生效，账单筛选分页可用 | 管理端 | 待开始 |
-| P4-17 | 客户端支付页：按用户语言展示可用渠道（本国优先）并跳转渠道收银台/扫码，支付结果轮询与回调刷新 | 客户端 | P4-15, P4-12 | 多语言下支付渠道列表正确，支付链路走通 | 客户端 | 待开始 |
+| P4-06 | payment-service：`POST /api/payments` 发起支付（渠道下单）+ 回调接口（验签 + 按流水号幂等）+ 每日对账脚本 | 支付服务 | P4-05 | 回调重复投递不重复入账，验签失败拒绝 | 后端 | 已完成 |
+| P4-07 | 订单支付闭环：支付成功 → 订单确认 → 库存确认 → Kafka 事件（订单/通知） | 订单服务 | P4-06, P3-08 | 支付后订单状态自动流转，事件消费方收到通知 | 后端 | 已完成 |
+| P4-08 | 管理端订单管理（列表/筛选/详情/改退操作/支付记录查看） | 管理端 | P3-09, P4-06 | 订单全流程可视，改退操作生效 | 管理端 | 已完成 |
+| P4-09 | 管理端用户管理（列表、禁用/启用） | 管理端 | P2-06, P4-14 | 禁用后该用户接口 403 | 管理端 | 已完成 |
+| P4-10 | 管理端机票/酒店管理：航班 CRUD + 舱位价格/余票调整；酒店/房型 CRUD + 房价日历 + 库存 | 管理端 | P4-02, P4-04 | 双域管理全流程可用 | 管理端 | 已完成 |
+| P4-11 | 客户端机票/酒店搜索预订页（Flutter 先行：航班比价、酒店房型选择） | 客户端 | P4-02, P4-04 | 搜索→选品→下单链路可走通 | 客户端 | 已完成 |
+| P4-12 | 客户端预订支付流程（接入 payment-service，支付引导/回调刷新）+ 取消退款 | 客户端 | P4-07, P3-12 | 下单→支付→订单确认全链路走通 | 客户端 | 已完成 |
+| P4-13 | 全链路联调（下单→支付→回调→状态刷新）+ 压测 + CDN 接入 | 全端 | P4-12 | 联调报告全绿，压测 QPS 达标，CDN 生效 | 全端 | 进行中 |
+| P4-14 | `travel_users` 扩展 status 字段（0 正常/1 禁用）+ user-service 管理接口（用户列表、`PATCH /api/admin/users/:id/status` 禁用/启用） | 用户服务 | P1-01 | 禁用用户 JWT 请求返回 403，列表分页 | 后端 | 已完成 |
+| P4-15 | 支付渠道体系：国际卡（Stripe）+ 本地支付（按用户 lang/国家路由，如微信/支付宝、PayPay、KakaoPay 等）+ USDT 等加密渠道（NOWPayments/Binance Pay 等）；`travel_payment_channels` 表（channel_code/name/type/enabled/priority/languages 或 countries/merchant_config）+ 渠道注册表抽象，payment-service 按用户语言优先路由本国渠道 | 支付服务 | P4-06 | 各渠道开关可控，按 lang 返回可用渠道列表，渠道层可插拔 | 后端 | 已完成 |
+| P4-16 | 管理端支付管理：渠道开关（按语言/国家控制前端展示）+ 流水账单（travel_payments 列表/筛选：渠道、状态、时间、金额） | 管理端 | P4-15, P4-08 | 渠道开关即时生效，账单筛选分页可用 | 管理端 | 已完成 |
+| P4-17 | 客户端支付页：按用户语言展示可用渠道（本国优先）并跳转渠道收银台/扫码，支付结果轮询与回调刷新 | 客户端 | P4-15, P4-12 | 多语言下支付渠道列表正确，支付链路走通 | 客户端 | 已完成 |
 
 ## 六、Phase 5 优化与上线
 

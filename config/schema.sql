@@ -193,3 +193,89 @@ ALTER TABLE travel_orders
 UPDATE travel_orders SET status = 4 WHERE status = 2;
 -- travel_bookings：旧 0待确认/1已确认/2已完成/3已取消 → 新 0待支付/1已支付/2已确认/3已完成/4已取消
 UPDATE travel_bookings SET status = CASE status WHEN 1 THEN 2 WHEN 2 THEN 3 WHEN 3 THEN 4 ELSE status END;
+
+-- ===== Phase 4 机票/酒店与支付 =====
+
+-- P4-05 支付流水（补建）：每笔支付一条，回调按 txn_no 幂等
+CREATE TABLE IF NOT EXISTS travel_payments (
+  id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '流水ID',
+  order_id      BIGINT UNSIGNED NOT NULL COMMENT '订单ID',
+  channel_code  VARCHAR(32)  NOT NULL DEFAULT 'card' COMMENT '渠道代码（stripe/alipay/paypay/...）',
+  amount_cents  BIGINT       NOT NULL COMMENT '支付金额（分）',
+  status        TINYINT      NOT NULL DEFAULT 0 COMMENT '0待支付/1成功/2失败/3已退款',
+  txn_no        VARCHAR(64)  NOT NULL COMMENT '渠道流水号（幂等键）',
+  paid_at       DATETIME NULL COMMENT '支付完成时间',
+  created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  UNIQUE KEY uk_txn_no (txn_no),
+  INDEX idx_order (order_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='支付流水表';
+
+-- P4-01 航班表：舱位分价格，余票随下单预占扣减（同 travel_line_dates）
+CREATE TABLE IF NOT EXISTS travel_flights (
+  id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '航班ID',
+  airline     VARCHAR(64)  NOT NULL COMMENT '航司',
+  flight_no   VARCHAR(16)  NOT NULL COMMENT '航班号',
+  from_code   CHAR(3)      NOT NULL COMMENT '出发机场 IATA',
+  to_code     CHAR(3)      NOT NULL COMMENT '到达机场 IATA',
+  depart_at   DATETIME     NOT NULL COMMENT '起飞时间',
+  arrive_at   DATETIME     NOT NULL COMMENT '到达时间',
+  cabin       TINYINT      NOT NULL DEFAULT 0 COMMENT '舱位（0经济/1商务/2头等）',
+  price_cents BIGINT       NOT NULL COMMENT '票价（分）',
+  seats_left  INT          NOT NULL DEFAULT 0 COMMENT '余票',
+  status      TINYINT      NOT NULL DEFAULT 1 COMMENT '1上架/0下架',
+  created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  INDEX idx_route (from_code, to_code, depart_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='航班表';
+
+-- P4-03 酒店表：多语种名称 + 星级 + 城市
+CREATE TABLE IF NOT EXISTS travel_hotels (
+  id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '酒店ID',
+  name_en     VARCHAR(128) NOT NULL COMMENT '英文名',
+  name_zh     VARCHAR(128) NOT NULL COMMENT '中文名',
+  name_ja     VARCHAR(128) NOT NULL DEFAULT '' COMMENT '日文名',
+  city_code   CHAR(3)      NOT NULL COMMENT '城市代码',
+  star        TINYINT      NOT NULL DEFAULT 3 COMMENT '星级（1-5）',
+  latitude    DECIMAL(10,6) NOT NULL DEFAULT 0 COMMENT '纬度',
+  longitude   DECIMAL(10,6) NOT NULL DEFAULT 0 COMMENT '经度',
+  cover_url   VARCHAR(512) NOT NULL DEFAULT '' COMMENT '封面图',
+  status      TINYINT      NOT NULL DEFAULT 1 COMMENT '1上架/0下架',
+  created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  INDEX idx_city (city_code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='酒店表';
+
+-- P4-03 房型表：一间房一个库存，价格随日期浮动（本期固定价格）
+CREATE TABLE IF NOT EXISTS travel_hotel_rooms (
+  id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '房型ID',
+  hotel_id      BIGINT UNSIGNED NOT NULL COMMENT '酒店ID',
+  room_type_en  VARCHAR(128) NOT NULL COMMENT '英文房型',
+  room_type_zh  VARCHAR(128) NOT NULL COMMENT '中文房型',
+  room_type_ja  VARCHAR(128) NOT NULL DEFAULT '' COMMENT '日文房型',
+  price_cents   BIGINT NOT NULL COMMENT '房价（分/晚）',
+  breakfast     TINYINT NOT NULL DEFAULT 0 COMMENT '0无早/1含早',
+  inventory     INT NOT NULL DEFAULT 0 COMMENT '可订库存',
+  status        TINYINT NOT NULL DEFAULT 1 COMMENT '1上架/0下架',
+  INDEX idx_hotel (hotel_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='酒店房型表';
+
+-- P4-14 用户状态：0 正常 / 1 禁用（禁用后 JWT 请求 403）
+SET @col_exists = (SELECT COUNT(*) FROM information_schema.COLUMNS
+  WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'travel_users' AND COLUMN_NAME = 'status');
+SET @sql = IF(@col_exists = 0,
+  'ALTER TABLE travel_users ADD COLUMN status TINYINT NOT NULL DEFAULT 0 COMMENT ''0正常/1禁用'' AFTER lang',
+  'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+-- P4-15 支付渠道注册表：按语言/国家路由本国渠道，管理端可开关
+CREATE TABLE IF NOT EXISTS travel_payment_channels (
+  id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '渠道ID',
+  channel_code    VARCHAR(32)  NOT NULL COMMENT '渠道代码',
+  name            VARCHAR(255) NOT NULL COMMENT '渠道名（多语种 JSON）',
+  type            TINYINT      NOT NULL DEFAULT 0 COMMENT '0国际卡/1本地钱包/2加密',
+  enabled         TINYINT      NOT NULL DEFAULT 1 COMMENT '1启用/0停用',
+  priority        INT          NOT NULL DEFAULT 0 COMMENT '排序权重（大在前）',
+  languages       VARCHAR(128) NOT NULL DEFAULT '' COMMENT '适配语言（空=全部）',
+  countries       VARCHAR(128) NOT NULL DEFAULT '' COMMENT '适配国家（空=全部）',
+  merchant_config VARCHAR(512) NOT NULL DEFAULT '' COMMENT '商户配置（JSON，开发环境留空）',
+  created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  UNIQUE KEY uk_channel (channel_code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='支付渠道表';

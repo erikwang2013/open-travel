@@ -3,7 +3,12 @@ import 'package:flutter/material.dart';
 import '../api.dart';
 import 'attractions_page.dart';
 import 'destinations_page.dart';
+import 'flights_page.dart';
+import 'hotels_page.dart';
 import 'lines_page.dart';
+import 'orders_page.dart';
+import 'payments_page.dart';
+import 'users_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,7 +20,16 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _index = 0;
 
-  static const _pages = [DestinationsPage(), AttractionsPage(), LinesPage()];
+  static const _pages = [
+    DestinationsPage(),
+    AttractionsPage(),
+    LinesPage(),
+    OrdersPage(),
+    UsersPage(),
+    FlightsPage(),
+    HotelsPage(),
+    PaymentsPage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +53,26 @@ class _HomePageState extends State<HomePage> {
                   icon: Icon(Icons.route_outlined),
                   selectedIcon: Icon(Icons.route),
                   label: Text('线路管理')),
+              NavigationRailDestination(
+                  icon: Icon(Icons.receipt_long_outlined),
+                  selectedIcon: Icon(Icons.receipt_long),
+                  label: Text('订单管理')),
+              NavigationRailDestination(
+                  icon: Icon(Icons.people_outline),
+                  selectedIcon: Icon(Icons.people),
+                  label: Text('用户管理')),
+              NavigationRailDestination(
+                  icon: Icon(Icons.flight_outlined),
+                  selectedIcon: Icon(Icons.flight),
+                  label: Text('航班管理')),
+              NavigationRailDestination(
+                  icon: Icon(Icons.hotel_outlined),
+                  selectedIcon: Icon(Icons.hotel),
+                  label: Text('酒店管理')),
+              NavigationRailDestination(
+                  icon: Icon(Icons.payment_outlined),
+                  selectedIcon: Icon(Icons.payment),
+                  label: Text('支付管理')),
             ],
             trailing: Padding(
               padding: const EdgeInsets.only(top: 12),

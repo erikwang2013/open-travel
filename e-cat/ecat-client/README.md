@@ -1,5 +1,8 @@
 # e-cat-client
 
+<p align="center"><img src="../../docs/mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+
+
 HTTP and gRPC service client with service discovery and load balancing.
 
 ## Components

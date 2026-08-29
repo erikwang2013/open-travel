@@ -1,5 +1,8 @@
 # ecat-data-memcached
 
+<p align="center"><img src="../../docs/mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+
+
 ⚠️ **内存实现，仅用于开发/测试，禁止生产使用** / **IN-MEMORY FAKE IMPLEMENTATION — development/testing only, NOT for production.**
 
 This crate does **not** implement the memcached network protocol and never

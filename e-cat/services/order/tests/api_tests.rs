@@ -105,17 +105,17 @@ async fn create_order_requires_jwt() {
 }
 
 #[tokio::test]
-async fn unsupported_order_type_returns_501() {
+async fn unsupported_order_type_returns_400() {
     let Some(db) = connect_primary().await else { return };
     let (status, _) = call(
         router(state_with(db)),
         "POST",
         "/api/orders",
         Some(&sign("1")),
-        Some(json!({"order_type": 2, "product_id": 1, "line_date_id": 1, "quantity": 1})),
+        Some(json!({"order_type": 9, "product_id": 1, "quantity": 1})),
     )
     .await;
-    assert_eq!(status, StatusCode::NOT_IMPLEMENTED);
+    assert_eq!(status, StatusCode::BAD_REQUEST);
 }
 
 #[tokio::test]
@@ -297,7 +297,7 @@ async fn redis_stock_key_released_on_cancel() {
     };
     let r = router(state);
     let token = sign("1");
-    let key = format!("travel:stock:{ld_id}");
+    let key = format!("travel:stock:1:{ld_id}");
     let _ = cache.delete(&key).await;
     let (_, body) = call(r.clone(), "POST", "/api/orders", Some(&token), Some(order_body(line_id, ld_id, 4))).await;
     assert_eq!(body["code"], 0, "body: {body}");
@@ -319,6 +319,79 @@ async fn redis_stock_key_released_on_cancel() {
         .and_then(|s| s.parse().ok())
         .unwrap();
     assert_eq!(left2, 10);
+}
+
+// ---- P4-07 支付闭环：pay-success 内部接口 ----
+
+/// pay-success 专用请求：带 X-Internal-Token（None 表示不带，测 401）。
+async fn pay_success_call(router: Router, order_id: u64, token: Option<&str>) -> (StatusCode, Value) {
+    let mut builder = Request::builder()
+        .method("POST")
+        .uri(format!("/api/orders/{order_id}/pay-success"))
+        .header("x-api-version", "v1")
+        .header("content-type", "application/json");
+    if let Some(t) = token {
+        builder = builder.header("x-internal-token", t);
+    }
+    let req = builder
+        .body(Body::from(json!({"txn_no": "stripe_test_txn"}).to_string()))
+        .unwrap();
+    let resp = router.clone().oneshot(req).await.unwrap();
+    let status = resp.status();
+    let bytes = axum::body::to_bytes(resp.into_body(), usize::MAX).await.unwrap();
+    (status, serde_json::from_slice(&bytes).unwrap_or(Value::Null))
+}
+
+async fn new_pending_order(db: &SqlxClient, r: &Router, user: &str) -> u64 {
+    let (ld_id, line_id, _) = pick_line_date(db, 10).await;
+    let (_, body) = call(r.clone(), "POST", "/api/orders", Some(&sign(user)), Some(order_body(line_id, ld_id, 1))).await;
+    body["data"]["id"].as_u64().unwrap()
+}
+
+#[tokio::test]
+async fn pay_success_marks_order_paid() {
+    let Some(db) = connect_primary().await else { return };
+    let r = router(state_with(db.clone()));
+    let order_id = new_pending_order(&db, &r, "1").await;
+    let (status, body) = pay_success_call(r, order_id, Some("dev-internal-secret")).await;
+    assert_eq!(status, StatusCode::OK, "body: {body}");
+    assert_eq!(body["data"]["status"], 1);
+    let rows = db
+        .query_with("SELECT CAST(status AS CHAR) AS status FROM travel_orders WHERE id = ?", &[json!(order_id)])
+        .await
+        .unwrap();
+    assert_eq!(rows[0].get("status").and_then(|v| v.as_str()).unwrap(), "1");
+}
+
+#[tokio::test]
+async fn pay_success_idempotent() {
+    let Some(db) = connect_primary().await else { return };
+    let r = router(state_with(db.clone()));
+    let order_id = new_pending_order(&db, &r, "1").await;
+    let (s1, b1) = pay_success_call(r.clone(), order_id, Some("dev-internal-secret")).await;
+    let (s2, b2) = pay_success_call(r, order_id, Some("dev-internal-secret")).await;
+    assert_eq!(s1, StatusCode::OK);
+    assert_eq!(s2, StatusCode::OK, "重复确认应幂等成功: {b1} {b2}");
+    assert_eq!(b2["data"]["status"], 1);
+}
+
+#[tokio::test]
+async fn pay_success_without_token_401() {
+    let Some(db) = connect_primary().await else { return };
+    let r = router(state_with(db.clone()));
+    let order_id = new_pending_order(&db, &r, "1").await;
+    let (status, _) = pay_success_call(r, order_id, None).await;
+    assert_eq!(status, StatusCode::UNAUTHORIZED);
+}
+
+#[tokio::test]
+async fn pay_success_cancelled_order_409() {
+    let Some(db) = connect_primary().await else { return };
+    let r = router(state_with(db.clone()));
+    let order_id = new_pending_order(&db, &r, "1").await;
+    let (_, _) = call(r.clone(), "POST", &format!("/api/orders/{order_id}/cancel"), Some(&sign("1")), None).await;
+    let (status, body) = pay_success_call(r, order_id, Some("dev-internal-secret")).await;
+    assert_eq!(status, StatusCode::CONFLICT, "取消后不可支付: {body}");
 }
 
 // 无 DB 时的 401 用例：构造无数据源 state（db/cache/mq 均 None）

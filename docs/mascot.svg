@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Travly 小旅 — Open Travel 吉祥物</title>
+  <desc id="desc">一只戴珊瑚橙太阳帽、拖着蓝色行李箱、微笑的旅行小猫，配纸飞机与航线点缀。</desc>
+  <!-- 背景 -->
+  <circle cx="256" cy="256" r="228" fill="#EAF4FF" stroke="#C9E0F7" stroke-width="4"/>
+  <!-- 地面阴影 -->
+  <ellipse cx="256" cy="492" rx="150" ry="14" fill="#DCEBFB"/>
+  <!-- 航线虚线 -->
+  <path d="M150 118 Q 250 62 382 118" fill="none" stroke="#A9CBEF" stroke-width="5" stroke-dasharray="10 12" stroke-linecap="round"/>
+  <!-- 纸飞机 -->
+  <path d="M392 112 L440 96 L430 136 L448 148 L440 154 L426 144 L392 154 Z" fill="#FFC96B" stroke="#E8A83E" stroke-width="3" stroke-linejoin="round"/>
+  <!-- 猫耳 -->
+  <path d="M180 142 L186 82 L228 118 Z" fill="#FFFFFF" stroke="#6FA8DC" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M332 142 L326 82 L284 118 Z" fill="#FFFFFF" stroke="#6FA8DC" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M192 128 L195 96 L222 116 Z" fill="#FFC9B8"/>
+  <path d="M320 128 L317 96 L290 116 Z" fill="#FFC9B8"/>
+  <!-- 猫头 -->
+  <circle cx="256" cy="208" r="88" fill="#FFFFFF" stroke="#6FA8DC" stroke-width="5"/>
+  <!-- 太阳帽（帽冠 + 帽檐 + 缎带） -->
+  <path d="M188 132 A68 68 0 0 1 324 132 Z" fill="#FF8C69"/>
+  <ellipse cx="256" cy="132" rx="126" ry="26" fill="#FF8C69" stroke="#E06F4E" stroke-width="4"/>
+  <path d="M130 132 A126 26 0 0 0 382 132" fill="none" stroke="#E06F4E" stroke-width="5" stroke-linecap="round"/>
+  <!-- 眼睛 -->
+  <circle cx="220" cy="205" r="11" fill="#3A5A80"/>
+  <circle cx="292" cy="205" r="11" fill="#3A5A80"/>
+  <circle cx="224" cy="201" r="4" fill="#FFFFFF"/>
+  <circle cx="296" cy="201" r="4" fill="#FFFFFF"/>
+  <!-- 腮红 -->
+  <ellipse cx="192" cy="232" rx="15" ry="10" fill="#FFD3C4"/>
+  <ellipse cx="320" cy="232" rx="15" ry="10" fill="#FFD3C4"/>
+  <!-- 鼻子 -->
+  <path d="M250 222 L262 222 L256 232 Z" fill="#FF8C69"/>
+  <!-- 微笑 -->
+  <path d="M232 234 Q256 256 280 234" fill="none" stroke="#3A5A80" stroke-width="7" stroke-linecap="round"/>
+  <!-- 行李箱提手 -->
+  <path d="M218 372 V356 Q256 342 294 356 V372" fill="none" stroke="#2F6FB2" stroke-width="8" stroke-linecap="round"/>
+  <!-- 行李箱箱体 -->
+  <rect x="186" y="372" width="140" height="98" rx="18" fill="#4A90D9" stroke="#2F6FB2" stroke-width="5"/>
+  <!-- 箱体带子 -->
+  <rect x="248" y="380" width="16" height="84" rx="6" fill="#EAF4FF"/>
+  <!-- 行李牌 -->
+  <circle cx="320" cy="406" r="14" fill="#FFC96B" stroke="#E8A83E" stroke-width="3"/>
+  <circle cx="320" cy="406" r="5" fill="#E8A83E"/>
+  <!-- 滚轮 -->
+  <circle cx="216" cy="476" r="11" fill="#2F6FB2"/>
+  <circle cx="296" cy="476" r="11" fill="#2F6FB2"/>
+</svg>

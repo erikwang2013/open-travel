@@ -1,5 +1,8 @@
 # ecat-data-tdengine
 
+<p align="center"><img src="../../docs/mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+
+
 [TDengine](https://www.tdengine.com) time-series database client for the e-cat ecosystem, backed by the TDengine REST API (`/rest/sql`).
 
 ```rust

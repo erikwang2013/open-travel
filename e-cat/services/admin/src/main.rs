@@ -8,7 +8,7 @@
 use axum::extract::{Request, State};
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
-use axum::routing::{delete, get, post, put};
+use axum::routing::{delete, get, patch, post, put};
 use axum::{Json, Router};
 use ecat::App;
 use ecat_auth::{claims_from_request, AuthClaims, JwtAuthLayer};
@@ -37,6 +37,21 @@ pub(crate) mod line_handlers;
 
 #[path = "line_date_handlers.rs"]
 pub(crate) mod line_date_handlers;
+
+#[path = "orders_handlers.rs"]
+pub(crate) mod orders_handlers;
+
+#[path = "users_handlers.rs"]
+pub(crate) mod users_handlers;
+
+#[path = "payments_handlers.rs"]
+pub(crate) mod payments_handlers;
+
+#[path = "flight_handlers.rs"]
+pub(crate) mod flight_handlers;
+
+#[path = "hotel_handlers.rs"]
+pub(crate) mod hotel_handlers;
 
 const PORT: &str = "0.0.0.0:8003";
 const TOKEN_TTL_SECS: u64 = 24 * 3600;
@@ -265,6 +280,49 @@ pub(crate) fn api_router(state: AppState) -> Router {
         .route(
             "/api/admin/lines/{id}/dates/{date_id}",
             delete(line_date_handlers::delete_line_date),
+        )
+        .route("/api/admin/orders", get(orders_handlers::list_orders))
+        .route("/api/admin/orders/{id}", get(orders_handlers::order_detail))
+        .route("/api/admin/orders/{id}/refund", post(orders_handlers::refund_order))
+        .route("/api/admin/users", get(users_handlers::list_users))
+        .route("/api/admin/users/{id}/status", patch(users_handlers::update_user_status))
+        .route("/api/admin/payments", get(payments_handlers::list_payments))
+        .route("/api/admin/payments/channels", get(payments_handlers::list_channels))
+        .route(
+            "/api/admin/payments/channels/{code}/enabled",
+            patch(payments_handlers::update_channel_enabled),
+        )
+        .route(
+            "/api/admin/flights",
+            get(flight_handlers::list_flights).post(flight_handlers::create_flight),
+        )
+        .route("/api/admin/flights/{id}", put(flight_handlers::update_flight))
+        .route("/api/admin/flights/{id}", delete(flight_handlers::delete_flight))
+        .route(
+            "/api/admin/flights/{id}/status",
+            put(flight_handlers::update_flight_status),
+        )
+        .route(
+            "/api/admin/hotels",
+            get(hotel_handlers::list_hotels).post(hotel_handlers::create_hotel),
+        )
+        .route("/api/admin/hotels/{id}", put(hotel_handlers::update_hotel))
+        .route("/api/admin/hotels/{id}", delete(hotel_handlers::delete_hotel))
+        .route(
+            "/api/admin/hotels/{id}/status",
+            put(hotel_handlers::update_hotel_status),
+        )
+        .route(
+            "/api/admin/hotels/{id}/rooms",
+            get(hotel_handlers::list_rooms).post(hotel_handlers::create_room),
+        )
+        .route(
+            "/api/admin/hotels/{id}/rooms/{room_id}",
+            put(hotel_handlers::update_room),
+        )
+        .route(
+            "/api/admin/hotels/{id}/rooms/{room_id}",
+            delete(hotel_handlers::delete_room),
         )
         .layer(ServiceBuilder::new().map_err(no_error).layer(state.jwt.clone()));
 

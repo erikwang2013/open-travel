@@ -4,6 +4,8 @@ import '../models/travel_models.dart';
 import '../services/content_service.dart';
 import '../services/localization_service.dart';
 import 'destination_detail_page.dart';
+import 'flight_search_page.dart';
+import 'hotel_search_page.dart';
 import 'search_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -76,6 +78,30 @@ class _HomePageState extends State<HomePage> {
         Text(
           loc.getString('home.heroTitle'),
           style: Theme.of(context).textTheme.headlineSmall,
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _QuickEntryCard(
+                icon: Icons.flight_takeoff,
+                label: loc.getString('flight.title'),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const FlightSearchPage()),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _QuickEntryCard(
+                icon: Icons.hotel,
+                label: loc.getString('hotel.title'),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const HotelSearchPage()),
+                ),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 16),
         Text(
@@ -153,6 +179,36 @@ class _DestinationCard extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickEntryCard extends StatelessWidget {
+  const _QuickEntryCard({required this.icon, required this.label, required this.onTap});
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Card(
+      margin: EdgeInsets.zero,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            children: [
+              Icon(icon, size: 32, color: scheme.primary),
+              const SizedBox(height: 8),
+              Text(label, style: Theme.of(context).textTheme.titleSmall),
+            ],
+          ),
         ),
       ),
     );

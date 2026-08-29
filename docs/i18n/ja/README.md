@@ -2,6 +2,9 @@
 
 # Open Travel — グローバル旅行プラットフォーム
 
+<p align="center"><img src="../../mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+
+
 > 世界中のユーザーのための旅行予約プラットフォーム：Rust マイクロサービスバックエンド + Flutter / HarmonyOS マルチプラットフォームクライアント、**12+ 言語**対応、国際決済、多言語検索をサポート。
 
 ## プロジェクト概要

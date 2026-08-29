@@ -38,6 +38,10 @@ class ProfilePage extends StatelessWidget {
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            Center(
+              child: Image.asset('assets/mascot.png', width: 96),
+            ),
+            const SizedBox(height: 16),
             Text(
               loc.getString('profile.title'),
               style: Theme.of(context).textTheme.titleLarge,

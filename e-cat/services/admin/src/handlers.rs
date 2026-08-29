@@ -127,11 +127,11 @@ pub(crate) struct PageQuery {
     pub(crate) destination_id: Option<u64>,
 }
 
-fn default_page() -> u64 {
+pub(crate) fn default_page() -> u64 {
     1
 }
 
-fn default_page_size() -> u64 {
+pub(crate) fn default_page_size() -> u64 {
     10
 }
 

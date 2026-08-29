@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/travel_models.dart';
 import '../services/localization_service.dart';
 import '../services/order_service.dart';
+import 'payment_page.dart';
 
 /// 订单详情：快照信息 + 状态 + 金额 + 下单时间，待支付可取消。
 class OrderDetailPage extends StatefulWidget {
@@ -147,6 +148,17 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         if (order.isPending) ...[
           const SizedBox(height: 16),
           FilledButton.icon(
+            onPressed: () async {
+              await Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => PaymentPage(orderId: order.id)),
+              );
+              _load();
+            },
+            icon: const Icon(Icons.payment),
+            label: Text(loc.getString('payment.goPay')),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
             onPressed: _cancelling ? null : _cancel,
             icon: _cancelling
                 ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))

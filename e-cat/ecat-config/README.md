@@ -1,5 +1,8 @@
 # e-cat-config
 
+<p align="center"><img src="../../docs/mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+
+
 Configuration management for e-cat services.
 
 ## Sources

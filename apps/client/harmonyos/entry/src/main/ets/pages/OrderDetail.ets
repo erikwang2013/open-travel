@@ -4,16 +4,20 @@ import { ApiClient } from '../services/ApiClient';
 
 class OrderDetailData {
   id: number = 0;
+  order_type: number = 0;
   amount_cents: number = 0;
   status: number = 0;
   created_at: string = '';
   expire_at: string = '';
   title: string = '';
   depart_date: string = '';
+  check_in: string = '';
+  check_out: string = '';
   quantity: number = 0;
 
   constructor(raw: Record<string, Object>) {
     this.id = (raw['id'] as number) ?? 0;
+    this.order_type = (raw['order_type'] as number) ?? 0;
     this.amount_cents = (raw['amount_cents'] as number) ?? 0;
     this.status = (raw['status'] as number) ?? 0;
     this.created_at = (raw['created_at'] as string) ?? '';
@@ -23,6 +27,8 @@ class OrderDetailData {
       const s = snap as Record<string, Object>;
       this.title = (s['title'] as string) ?? '';
       this.depart_date = (s['depart_date'] as string) ?? '';
+      this.check_in = (s['check_in'] as string) ?? '';
+      this.check_out = (s['check_out'] as string) ?? '';
       this.quantity = (s['quantity'] as number) ?? 0;
     }
   }
@@ -96,6 +102,20 @@ struct OrderDetail {
       return '#999999';
     }
     return '#FF9500';
+  }
+
+  typeText(t: number): string {
+    const zh: string = t === 2 ? '机票' : (t === 3 ? '酒店' : '线路');
+    const en: string = t === 2 ? 'Flight' : (t === 3 ? 'Hotel' : 'Tour');
+    return ApiClient.lang() === 'zh' ? zh : en;
+  }
+
+  goPay(): void {
+    if (this.order === null) {
+      return;
+    }
+    const p: Record<string, Object> = { 'id': this.order.id };
+    router.pushUrl({ url: 'pages/PaymentPage', params: p });
   }
 
   canCancel(): boolean {
@@ -207,9 +227,16 @@ struct OrderDetail {
 
             Column() {
               this.infoRow($r('app.string.order_no'), '#' + this.order.id.toString())
+              this.infoRow($r('app.string.order_type'), this.typeText(this.order.order_type))
               this.infoRow($r('app.string.order_amount'), this.priceText(this.order.amount_cents))
               if (this.order.depart_date.length > 0) {
                 this.infoRow($r('app.string.depart_date'), this.order.depart_date)
+              }
+              if (this.order.check_in.length > 0) {
+                this.infoRow($r('app.string.check_in'), this.order.check_in)
+              }
+              if (this.order.check_out.length > 0) {
+                this.infoRow($r('app.string.check_out'), this.order.check_out)
               }
               if (this.order.quantity > 0) {
                 this.infoRow($r('app.string.quantity'), this.order.quantity.toString())
@@ -226,12 +253,23 @@ struct OrderDetail {
             .borderRadius(12)
             .margin({ top: 8 })
 
+            if (this.order.status === 0) {
+              Button($r('app.string.go_pay'))
+                .width('100%')
+                .height(44)
+                .backgroundColor('#0A59F7')
+                .margin({ top: 16 })
+                .onClick(() => {
+                  this.goPay();
+                })
+            }
+
             if (this.canCancel()) {
               Button(this.cancelling ? $r('app.string.cancelling') : $r('app.string.cancel_order'))
                 .width('100%')
                 .height(44)
                 .backgroundColor('#E84026')
-                .margin({ top: 16, bottom: 24 })
+                .margin({ top: 12, bottom: 24 })
                 .enabled(!this.cancelling)
                 .onClick(() => {
                   this.doCancel();

@@ -1,5 +1,8 @@
 # ecat-scheduler
 
+<p align="center"><img src="../../docs/mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+
+
 Periodic and one-shot task scheduling for the e-cat ecosystem.
 
 ```rust

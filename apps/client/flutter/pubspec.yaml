@@ -61,6 +61,7 @@ flutter:
   generate: false
   assets:
     - assets/i18n/
+    - assets/mascot.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

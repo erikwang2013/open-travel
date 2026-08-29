@@ -147,6 +147,9 @@ services:
       - ecat-search
       - ecat-line
       - ecat-order
+      - ecat-flight
+      - ecat-hotel
+      - ecat-payment
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
@@ -264,6 +267,72 @@ services:
       KAFKA_BROKERS: kafka:9092
     ports:
       - "8006:8006"
+
+  # Phase 4：机票服务（P4-02 航班查询/比价）
+  ecat-flight:
+    build:
+      context: ..
+      dockerfile: e-cat/services/Dockerfile
+    command: ["flight-service"]
+    container_name: travel-ecat-flight
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel?charset=utf8mb4
+      REPLICA_DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql-replica:3306/travel?charset=utf8mb4
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
+    ports:
+      - "8007:8007"
+
+  # Phase 4：酒店服务（P4-04 酒店搜索/详情）
+  ecat-hotel:
+    build:
+      context: ..
+      dockerfile: e-cat/services/Dockerfile
+    command: ["hotel-service"]
+    container_name: travel-ecat-hotel
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel?charset=utf8mb4
+      REPLICA_DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql-replica:3306/travel?charset=utf8mb4
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
+    ports:
+      - "8008:8008"
+
+  # Phase 4：支付服务（P4-06/15 发起支付/回调验签幂等/渠道体系）
+  ecat-payment:
+    build:
+      context: ..
+      dockerfile: e-cat/services/Dockerfile
+    command: ["payment-service"]
+    container_name: travel-ecat-payment
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel?charset=utf8mb4
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
+      KAFKA_BROKERS: kafka:9092
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-dev-internal-secret}
+    ports:
+      - "8009:8009"
 
 volumes:
   travel-mysql-data:

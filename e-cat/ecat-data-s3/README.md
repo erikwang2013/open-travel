@@ -1,5 +1,8 @@
 # ecat-data-s3
 
+<p align="center"><img src="../../docs/mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+
+
 [S3](https://aws.amazon.com/s3/) / [MinIO](https://min.io) object storage client for the e-cat ecosystem, powered by [rust-s3](https://crates.io/crates/rust-s3).
 
 ```rust

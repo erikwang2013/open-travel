@@ -105,8 +105,13 @@ impl<S: Send + Sync> axum::extract::FromRequestParts<S> for UserGuard {
 pub(crate) struct CreateOrderReq {
     pub(crate) order_type: u8,
     pub(crate) product_id: u64,
+    #[serde(default)]
     pub(crate) line_date_id: u64,
     pub(crate) quantity: u64,
+    #[serde(default)]
+    pub(crate) check_in: Option<String>,
+    #[serde(default)]
+    pub(crate) check_out: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -119,6 +124,12 @@ pub(crate) struct OrderOut {
     snapshot: serde_json::Value,
     expire_at: Option<String>,
     created_at: String,
+}
+
+/// P4-07 支付确认请求（内部接口，仅 txn_no）。
+#[derive(Deserialize)]
+pub(crate) struct PaySuccessReq {
+    pub(crate) txn_no: String,
 }
 
 #[derive(Deserialize)]
@@ -159,9 +170,15 @@ pub(crate) fn api_router(state: AppState) -> Router {
         .route("/api/orders/{id}", get(handlers::order_detail))
         .route("/api/orders/{id}/cancel", axum::routing::post(handlers::cancel_order))
         .layer(ServiceBuilder::new().map_err(no_error).layer(state.jwt.clone()));
+    // 内部接口（P4-07）：payment-service 回调确认，不挂 JWT，用 X-Internal-Token 防护
+    let internal = Router::new().route(
+        "/api/orders/{id}/pay-success",
+        axum::routing::post(handlers::pay_success),
+    );
 
     Router::new()
         .merge(orders)
+        .merge(internal)
         .layer(
             ServiceBuilder::new()
                 .layer(shared::ApiVersionLayer)

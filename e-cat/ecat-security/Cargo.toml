@@ -6,7 +6,7 @@ description = "WAF/security scanning middleware for e-cat"
 license = "Apache-2.0"
 
 [dependencies]
-security-rust = "1.0"
+security-rust = { git = "https://github.com/erikwang2013/security-rust", tag = "v1.0.7" }
 thiserror.workspace = true
 tracing.workspace = true
 tower = { workspace = true, features = ["util"] }

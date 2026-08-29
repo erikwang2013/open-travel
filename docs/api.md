@@ -489,6 +489,96 @@ curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorizatio
 
 `404`：班期不存在；成功：`data` 为 `null`。
 
+### 航班服务（flight-service，P4-01/02）
+
+#### `GET /api/flights/search?from=HND&to=HKG&depart_date=YYYY-MM-DD&cabin=0&page=&page_size=` — 航班检索
+
+公开。`from`/`to` 为 IATA 三字码，必填；`cabin` 0经济/1商务/2头等，缺省全部；`depart_date` 精确匹配当天航班（可省）。返回 `items`（`id/airline/flight_no/from_code/to_code/depart_at/arrive_at/cabin/price_cents/seats_left`）、`total`、`page`、`page_size`。`404`：该航线无航班。
+
+#### `GET /api/flights/{id}` — 航班详情
+
+公开。`404`：航班不存在或已下架。
+
+### 酒店服务（hotel-service，P4-03/04）
+
+#### `GET /api/hotels/search?city=HKG&star=&page=&page_size=` — 酒店检索
+
+公开。`city` 三字码必填；`star` 1-5 可省。返回 `items`（`id/name_en/name_zh/city_code/star/latitude/longitude/cover_url`）、分页信息。
+
+#### `GET /api/hotels/{id}` — 酒店详情（含房型）
+
+公开。返回酒店信息 + `rooms` 列表（`id/room_type_en/room_type_zh/price_cents/breakfast/inventory`）。`404`：酒店不存在或已下架。
+
+### 支付服务（payment-service，P4-05/06/15）
+
+#### `POST /api/payments` — 发起支付（用户 JWT）
+
+请求 `{"order_id": 123, "channel_code": "stripe"}`。校验订单属于当前用户且 `status=0`（已支付/已取消返回 400）。写支付流水（`status=0` 待支付）并返回 `{"txn_no", "amount_cents", "checkout_url"}`——沙箱环境 `checkout_url` 指向 `GET /api/payments/sandbox/{txn_no}`（模拟收银台页）。`404`：订单不存在。
+
+#### `POST /api/payments/callback/{channel_code}` — 支付渠道回调（内部）
+
+无 JWT，以 `X-Internal-Token`（环境变量 `INTERNAL_TOKEN`，默认 `dev-internal-secret`）防护。请求 `{"txn_no": "...", "status": 1}`（status 1 成功/2 失败）。按 `txn_no` 幂等：已处理过直接返回 `{"duplicate": true}`。成功时更新流水 `status=1/paid_at` 并调用 order-service `POST /api/orders/{id}/pay-success` 推进订单 `0→1`（内部 X-Internal-Token）。回调请求体以 `X-Signature`（HMAC-SHA256，密钥固定 `sandbox-secret`，开发环境模拟验签）签名校验，非法返回 401。
+
+#### `GET /api/payments/sandbox/{txn_no}` — 沙箱收银台页
+
+公开。展示待支付流水与「模拟支付成功/失败」按钮（开发环境用）。
+
+#### `GET /api/payments/channels?lang=zh` — 渠道列表（按语言路由）
+
+公开。返回全部启用渠道，本国渠道（`languages` 含当前 lang）排前、全语言渠道（`languages=''`）兜底，同档按 `priority` 降序；`name` 取当前语言。返回 `items`（`channel_code/name/type/priority`）。
+
+### 管理端支付（admin-service，P4-16）
+
+#### `GET /api/admin/payments?channel=&status=&page=&page_size=` — 支付流水列表（管理 JWT）
+
+`channel_code` 精确匹配；`status` 0待支付/1成功/2失败/3已退款，越界 400。JOIN 订单/用户返回 `email`。按 id 倒序分页。
+
+#### `GET /api/admin/payments/channels` — 渠道列表（含禁用项）
+
+全量返回，按 `priority` 升序。
+
+#### `PATCH /api/admin/payments/channels/{code}/enabled` — 渠道开关
+
+请求 `{"enabled": true}`，即时生效（payment-service 路由渠道时实时读表）。`404`：渠道不存在；成功返回更新后渠道对象。
+
+### 管理端订单/用户/航班/酒店（admin-service，P4-08/09/10/14）
+
+#### `GET /api/admin/orders?page=&page_size=` — 订单列表
+
+全量订单倒序分页，含用户 `email` 与商品快照。
+
+#### `POST /api/admin/orders/{id}/refund` — 退款
+
+`status IN (1,2)` 才可退，置 `4` 并回补对应商品库存（线路回补班期余位、航班回补余票、酒店回补房态库存）。已退/其他状态 `400`；`404`：订单不存在。
+
+#### `GET /api/admin/flights` / `POST /api/admin/flights` / `PUT /api/admin/flights/{id}` / `PUT /api/admin/flights/{id}/status` — 航班管理
+
+航班 CRUD 与上下架；新增字段 `airline/flight_no/from_code/to_code/depart_at/arrive_at/cabin/price_cents/seats_left`。
+
+#### `GET /api/admin/hotels` / `POST /api/admin/hotels` / `PUT /api/admin/hotels/{id}` / `PUT /api/admin/hotels/{id}/status` — 酒店管理
+
+酒店 CRUD 与上下架。
+
+#### `GET/POST /api/admin/hotels/{id}/rooms`、`PUT/DELETE /api/admin/hotels/{id}/rooms/{room_id}` — 房型管理
+
+房型 CRUD，字段 `room_type_en/room_type_zh/room_type_ja/price_cents/breakfast/inventory`。
+
+#### `GET /api/admin/users?page=&page_size=` — 用户列表
+
+全量用户分页，含注册时间；`PUT /api/admin/users/{id}/status` 请求 `{"status": 1}` 禁用（`0` 恢复）。禁用用户 JWT 请求返回 `403`（user-service 所有接口生效）。
+
+### 订单扩展（order-service，P4-12）
+
+#### `POST /api/orders` — 下单（用户 JWT，支持 type 1/2/3）
+
+请求 `{"order_type": 1, "product_id": 123, "line_date_id": 45, "quantity": 2}`：
+
+- `order_type=1` 线路：`product_id`=线路 id、`line_date_id`=班期 id（必填且须匹配该线路，否则 400）；库存扣减/Redis 预占以班期余位计。
+- `order_type=2` 航班：`product_id`=航班 id；已起飞/下架返回 404，余票不足 409。
+- `order_type=3` 酒店：`product_id`=房型 id，可带 `check_in`/`check_out`（存快照）；房态库存不足 409。
+
+`quantity` 1-99，越界 400。防超卖双防线不变：Redis 预占（`travel:stock:{order_type}:{stock_id}`）+ DB 原子扣减（`WHERE ... >= ?`，受影响 0 行回滚并 409）。快照含商品标题/价格/日期，`destination_id` 仅线路填真实目的地，航班/酒店记 0。成功 `data` 含 `expire_at`（15 分钟后自动取消，惰性 + 60s 后台扫描）。
+
 ## 中间件链
 
 业务路由挂载完整中间件链（执行顺序：外层 → 内层）：
@@ -497,7 +587,9 @@ curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorizatio
 - **booking-service**：`Tracing → CircuitBreaker → Security → RateLimit`
 - **admin-service**：`Tracing → CircuitBreaker → Security → RateLimit(Redis) → JWT(Auth)`（`/api/admin/login` 公开，仅 CRUD 挂 JWT）
 - **search-service / line-service**：`Tracing → CircuitBreaker → Security → RateLimit`（公开，无 JWT）
-- **order-service**：`Tracing → CircuitBreaker → Security → RateLimit → JWT(Auth)`（全部接口需用户 JWT）
+- **order-service**：`Tracing → CircuitBreaker → Security → RateLimit → JWT(Auth)`（全部接口需用户 JWT；`POST /api/orders/{id}/pay-success` 内部接口无 JWT，以 X-Internal-Token 防护）
+- **flight-service / hotel-service**：`Tracing → CircuitBreaker → Security → RateLimit`（公开，无 JWT）
+- **payment-service**：`Tracing → CircuitBreaker → Security → RateLimit`；`/api/payments` 需用户 JWT，`/api/payments/callback/{channel_code}` 无 JWT（X-Internal-Token + HMAC 签名防护）
 
 ## 相关文档
 

@@ -1,5 +1,8 @@
 # Open Travel — منصة السفر العالمية
 
+<p align="center"><img src="../../mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+
+
 [简体中文](../../README.md) | [English](README.md) | [日本語](ja/README.md) | [한국어](ko/README.md) | [Русский](ru/README.md) | [Deutsch](de/README.md) | [Français](fr/README.md) | [Español](es/README.md) | [Português](pt/README.md) | [हिन्दी](hi/README.md) | [العربية](ar/README.md) | [বাংলা](bn/README.md) | [Bahasa Indonesia](id/README.md)
 
 > منصة حجز سفر موجهة للمستخدمين حول العالم: خلفية ميكروسيرفيس بلغة Rust + عملاء Flutter / HarmonyOS متعددو المنصات، مع دعم **أكثر من 12 لغة**، مدفوعات دولية وبحث متعدد اللغات.

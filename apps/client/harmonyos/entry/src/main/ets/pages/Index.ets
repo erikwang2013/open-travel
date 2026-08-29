@@ -104,6 +104,8 @@ struct Index {
           router.pushUrl({ url: 'pages/SearchPage' });
         })
       this.quickEntry($r('app.string.line_go'), 'pages/LineList')
+      this.quickEntry($r('app.string.flight_go'), 'pages/FlightList')
+      this.quickEntry($r('app.string.hotel_go'), 'pages/HotelList')
       this.quickEntry($r('app.string.order_go'), 'pages/OrderList')
       Blank()
     }

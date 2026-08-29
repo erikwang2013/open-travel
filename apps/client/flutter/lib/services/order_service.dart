@@ -80,19 +80,113 @@ class OrderService {
     ];
   }
 
+  /// order_type=1 线路：lineDateId 为班期 id/date；2 航班/3 酒店：可带 check_in/check_out。
   Future<Order> createOrder({
     required int productId,
     required Object lineDateId,
     required int quantity,
+    int orderType = 1,
+    String? checkIn,
+    String? checkOut,
   }) async {
     final res = await ApiClient.instance.dio.post<Map<String, dynamic>>(
       '/api/orders',
-      data: {'order_type': 1, 'product_id': productId, 'line_date_id': lineDateId, 'quantity': quantity},
+      data: {
+        'order_type': orderType,
+        'product_id': productId,
+        if (orderType == 1) 'line_date_id': lineDateId,
+        'quantity': quantity,
+        'check_in': ?checkIn,
+        'check_out': ?checkOut,
+      },
       options: _auth,
     );
     final data = res.data?['data'];
     if (data is! Map<String, dynamic>) throw Exception('bad response');
     return Order.fromJson(data, _lang);
+  }
+
+  Future<List<Flight>> searchFlights({
+    required String from,
+    required String to,
+    String? departDate,
+    int? cabin,
+  }) async {
+    final res = await ApiClient.instance.dio.get<Map<String, dynamic>>(
+      '/api/flights/search',
+      queryParameters: {
+        'from': from,
+        'to': to,
+        'depart_date': departDate,
+        'cabin': cabin,
+      },
+    );
+    final data = res.data?['data'];
+    if (data is! Map<String, dynamic>) return const [];
+    return [
+      for (final item in (data['items'] as List? ?? const []))
+        if (item is Map<String, dynamic>) Flight.fromJson(item),
+    ];
+  }
+
+  Future<Flight> fetchFlight(int id) async {
+    final res =
+        await ApiClient.instance.dio.get<Map<String, dynamic>>('/api/flights/$id');
+    final data = res.data?['data'];
+    if (data is! Map<String, dynamic>) throw Exception('bad response');
+    return Flight.fromJson(data);
+  }
+
+  Future<List<Hotel>> searchHotels({required String city, int? star}) async {
+    final res = await ApiClient.instance.dio.get<Map<String, dynamic>>(
+      '/api/hotels/search',
+      queryParameters: {'city': city, 'star': star},
+    );
+    final data = res.data?['data'];
+    if (data is! Map<String, dynamic>) return const [];
+    return [
+      for (final item in (data['items'] as List? ?? const []))
+        if (item is Map<String, dynamic>) Hotel.fromJson(item, _lang),
+    ];
+  }
+
+  Future<Hotel> fetchHotel(int id) async {
+    final res =
+        await ApiClient.instance.dio.get<Map<String, dynamic>>('/api/hotels/$id');
+    final data = res.data?['data'];
+    if (data is! Map<String, dynamic>) throw Exception('bad response');
+    return Hotel.fromJson(data, _lang);
+  }
+
+  Future<List<PaymentChannel>> fetchPaymentChannels() async {
+    final res = await ApiClient.instance.dio.get<Map<String, dynamic>>(
+      '/api/payments/channels',
+      queryParameters: {'lang': _lang},
+    );
+    final data = res.data?['data'];
+    if (data is! Map<String, dynamic>) return const [];
+    return [
+      for (final item in (data['items'] as List? ?? const []))
+        if (item is Map<String, dynamic>) PaymentChannel.fromJson(item, _lang),
+    ];
+  }
+
+  Future<PaymentResult> createPayment({
+    required int orderId,
+    required String channelCode,
+  }) async {
+    final res = await ApiClient.instance.dio.post<Map<String, dynamic>>(
+      '/api/payments',
+      data: {'order_id': orderId, 'channel_code': channelCode},
+      options: _auth,
+    );
+    final data = res.data?['data'];
+    if (data is! Map<String, dynamic>) throw Exception('bad response');
+    return PaymentResult(
+      txnNo: (data['txn_no'] as String?) ?? '',
+      amountCents: (data['amount_cents'] as num?)?.toInt() ?? 0,
+      checkoutUrl: (data['checkout_url'] as String?) ?? '',
+    );
   }
 
   Future<OrderPage> fetchOrders({int page = 1, int pageSize = 20}) async {

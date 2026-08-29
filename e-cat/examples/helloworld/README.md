@@ -1,5 +1,8 @@
 # Hello World
 
+<p align="center"><img src="../../../docs/mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+
+
 Minimal e-cat application demonstrating HTTP and gRPC transports.
 
 ## Run
