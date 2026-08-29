@@ -1,6 +1,15 @@
 # Changelog
 
-## [1.1.0] — 2026-08-28
+## [1.1.0] — 2026-08-29
+
+### Added
+- Phase 4 全链路（航班/酒店/支付）：flight-service（8007，航班搜索/详情）、hotel-service（8008，酒店/房型搜索与房价日历）、payment-service（8009，支付发起/回调/渠道列表）；order-service 下单扩展类型 1/2/3（线路/航班/酒店）与防超卖库存语义，travel_payments 流水 + 支付渠道体系（stripe/wechat/alipay/paypay/kakaopay/usdt，按用户语言路由）
+- 支付闭环：HMAC-SHA256 回调验签（X-Signature，dev 密钥 sandbox-secret）+ txn_no 幂等 + 内部 X-Internal-Token 鉴权，支付成功自动推进订单 0→1
+- 管理端：订单管理（筛选/详情/改退/支付记录）、用户管理（禁用/启用 403）、机票/酒店管理（航班 CRUD、酒店/房型/房价日历）、支付管理（渠道开关即时生效、流水账单筛选）
+- 客户端三端：机票/酒店搜索预订、支付渠道页、订单中心（Flutter 先行 + 鸿蒙同构）
+- 吉祥物 Travly（docs/mascot.svg + 71 个 README + 三端代码层展示）
+- 安全架构图全语种重绘（13 SVG）：中间件链、支付验签、审计事件、用户禁用等 Phase 4 真实架构
+- security-rust 升级：切换 GitHub 源并升至 v1.0.8（SQL 注释符检测防误杀，26 测试全绿）
 
 ### Changed
 - API 版本从 URL 路径移至请求头 `X-Api-Version: v1` 传递并强制要求：缺失该 header 或值不是 `v1` 时返回 400，当前仅 v1 一个版本
