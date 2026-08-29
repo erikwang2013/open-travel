@@ -16,7 +16,7 @@ usage() {
   cat <<EOF
 用法: $0 --bucket <bucket> [选项]
 
-  --provider cloudfront|aliyun|gcp|azure   源站类型（默认 cloudfront；aliyun 兼容旧名 oss）
+  --provider cloudfront|aliyun|bunny|gcp|azure|huawei|cloudflare|tencent   源站类型（默认 cloudfront；aliyun 兼容旧名 oss）
   --bucket <name>              源站 bucket（必填）
   --region <name>              region（默认 us-east-1，各云含义不同）
   --endpoint <url>             endpoint（仅 aliyun，如 oss-cn-hangzhou.aliyuncs.com）

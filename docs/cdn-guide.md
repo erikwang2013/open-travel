@@ -2,7 +2,7 @@
 
 CDN 仅加速**静态资源**：docs 图片（`docs/svg/*`、`docs/*.png`）、Flutter web 构建产物（`apps/client/flutter/build/web`）、App 图标。API 走 nginx 网关（动态接口）不经过 CDN；CDN 配置中的 `/api/*` 不缓存规则是兜底保护。
 
-默认方案 **CloudFront + S3**（免费额度内 ≈ $0/月）。脚本为插件式，**AWS / 阿里云 / Google Cloud / Azure** 四云可切换：`--provider cloudfront|aliyun|gcp|azure`（旧名 `oss` 兼容映射到 `aliyun`）。无云凭据时自动进入 dry-run 预览全部命令，配置凭据后重跑即真实执行。
+默认方案 **CloudFront + S3**（免费额度内 ≈ $0/月）。脚本为插件式，**AWS / 阿里云 / Google Cloud / Azure / Cloudflare / 腾讯云 / 华为云 / Bunny.net** 八云可切换：`--provider cloudfront|aliyun|gcp|azure|cloudflare|tencent|huawei|bunny`（旧名 `oss` 兼容映射到 `aliyun`）。无云凭据时自动进入 dry-run 预览全部命令，配置凭据后重跑即真实执行。
 
 ## 一、前置条件
 
@@ -12,6 +12,10 @@ CDN 仅加速**静态资源**：docs 图片（`docs/svg/*`、`docs/*.png`）、F
 | 阿里云 | ossutil | `ALIBABA_CLOUD_ACCESS_KEY_ID` + `ALIBABA_CLOUD_ACCESS_KEY_SECRET`；CDN 控制台配置（无完整 CLI 流程） |
 | Google Cloud | gcloud + gsutil | `GOOGLE_APPLICATION_CREDENTIALS`（服务账号 JSON）或 `gcloud auth login` |
 | Azure | az CLI | `az login`（可选 `AZURE_SUBSCRIPTION_ID`） |
+| Cloudflare | wrangler（R2） | `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID`（可选 `CLOUDFLARE_ZONE_ID`） |
+| 腾讯云 | coscmd + tccli | `TENCENTCLOUD_SECRET_ID` + `TENCENTCLOUD_SECRET_KEY`（可选 `TENCENTCLOUD_APP_ID`） |
+| 华为云 | obsutil | `OBS_ACCESS_KEY_ID` + `OBS_SECRET_ACCESS_KEY` |
+| Bunny.net | 无（纯 REST API，curl） | `BUNNY_API_KEY`；`BUNNY_STORAGE_PASSWORD` 未设则 setup 自动生成并打印 |
 | 自定义域名（可选） | — | AWS 需 ACM 证书（**us-east-1** 签发）；其余云按控制台指引绑定 |
 
 ## 二、部署步骤

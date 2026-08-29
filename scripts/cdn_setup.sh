@@ -20,7 +20,7 @@ usage() {
   cat <<EOF
 用法: $0 --bucket <bucket> [选项]
 
-  --provider cloudfront|aliyun|gcp|azure   CDN 提供方（默认 cloudfront；aliyun 兼容旧名 oss）
+  --provider cloudfront|aliyun|bunny|gcp|azure|huawei|cloudflare|tencent   CDN 提供方（默认 cloudfront；aliyun 兼容旧名 oss）
   --bucket <name>              源站 bucket（必填）
   --region <name>              源站 region（默认 us-east-1，各云含义不同）
   --domain <name>              CDN 域名 CNAME（可选；用自定义域名时需先申请证书）
@@ -50,11 +50,12 @@ done
 [[ -n "$BUCKET" ]] || { echo "错误: --bucket 必填" >&2; usage; exit 1; }
 [[ "$PROVIDER" == oss ]] && PROVIDER=aliyun
 case "$PROVIDER" in
-  cloudfront|aliyun|gcp|azure) ;;
-  *) echo "错误: --provider 只能为 cloudfront|aliyun|gcp|azure" >&2; exit 1 ;;
+  cloudfront|aliyun|bunny|gcp|azure|huawei|cloudflare|tencent) ;;
+  *) echo "错误: --provider 只能为 cloudfront|aliyun|bunny|gcp|azure|huawei|cloudflare|tencent" >&2; exit 1 ;;
 esac
-[[ -n "$DOMAIN" && -z "$CERT_ARN" ]] && { echo "错误: 使用 --domain 时必须同时提供 --cert" >&2; exit 1; }
-[[ -z "$DOMAIN" && -n "$CERT_ARN" ]] && { echo "错误: 提供 --cert 时必须同时提供 --domain" >&2; exit 1; }
+# bunny/tencent 无需证书（bunny 自带免费 SSL；tencent 证书在控制台配），其余云用自定义域名必须配证书
+[[ "$PROVIDER" != bunny && "$PROVIDER" != tencent && -n "$DOMAIN" && -z "$CERT_ARN" ]] && { echo "错误: 使用 --domain 时必须同时提供 --cert" >&2; exit 1; }
+[[ "$PROVIDER" != bunny && "$PROVIDER" != tencent && -z "$DOMAIN" && -n "$CERT_ARN" ]] && { echo "错误: 提供 --cert 时必须同时提供 --domain" >&2; exit 1; }
 
 PROVIDER_SCRIPT="$SCRIPT_DIR/cdn/$PROVIDER.sh"
 [[ -f "$PROVIDER_SCRIPT" ]] || { echo "错误: 缺少 provider 脚本 $PROVIDER_SCRIPT" >&2; exit 1; }
