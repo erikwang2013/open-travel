@@ -25,7 +25,7 @@ Open Travel은 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3를 벤
 - 🏨 목적지 / 호텔 / 항공권 다국어 검색 및 예약
 - 🌍 12+ 언어 개별 지원(중국어, 영어, 일본어, 한국어, 아랍어, 스페인어, 프랑스어, 독일어…)
 - 💳 국제 결제(WeChat Pay / Alipay)
-- 🔐 심층 방어: TLS 1.3, JWT 인증, 감사 로그, 입력 필터링, 속도 제한
+- 🔐 심층 방어: TLS 1.3, JWT 인증, 감사 로그, 입력 필터링, 속도 제한, 결제 콜백 HMAC 검증, 내부 서비스 인증
 - 📱 멀티 플랫폼 일관된 경험: Flutter(iOS/Android/Web/Desktop) + HarmonyOS
 
 ## 아키텍처 다이어그램

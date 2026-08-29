@@ -46,7 +46,7 @@
   <text x="480" y="256" text-anchor="middle" class="t-s">TLS · limitation · routage · authentification</text>
 
   <!-- e-cat 核心服务层 -->
-  <rect x="30" y="304" width="720" height="168" class="panel"/>
+  <rect x="30" y="304" width="720" height="224" class="panel"/>
   <text x="48" y="334" class="t-h">Couche services e-cat</text>
   <text x="48" y="354" class="t-s">e-cat Core Services · microservices Rust</text>
   <rect x="216" y="372" width="168" height="64" class="box"/>
@@ -58,6 +58,15 @@
   <rect x="576" y="372" width="168" height="64" class="box"/>
   <text x="660" y="396" text-anchor="middle" class="t-m">Admin</text>
   <text x="660" y="418" text-anchor="middle" class="t-s">Connexion admin · CRUD de contenu</text>
+  <rect x="216" y="448" width="168" height="64" class="box"/>
+  <text x="300" y="472" text-anchor="middle" class="t-m">Flight — vols</text>
+  <text x="300" y="494" text-anchor="middle" class="t-s">Recherche de vols · Réservation</text>
+  <rect x="396" y="448" width="168" height="64" class="box"/>
+  <text x="480" y="472" text-anchor="middle" class="t-m">Hotel — hôtels</text>
+  <text x="480" y="494" text-anchor="middle" class="t-s">Recherche d'hôtels · Réservation</text>
+  <rect x="576" y="448" width="168" height="64" class="box"/>
+  <text x="660" y="472" text-anchor="middle" class="t-m">Payment — paiement</text>
+  <text x="660" y="494" text-anchor="middle" class="t-s">Canaux de paiement · Callbacks</text>
 
   <!-- 数据层 -->
   <rect x="30" y="544" width="720" height="96" class="panel"/>
@@ -96,7 +105,7 @@
   <!-- 箭头 -->
   <line x1="390" y1="179" x2="390" y2="189" class="arrow"/>
   <line x1="390" y1="291" x2="390" y2="301" class="arrow"/>
-  <line x1="390" y1="440" x2="390" y2="540" class="arrow"/>
+  <line x1="390" y1="528" x2="390" y2="540" class="arrow"/>
   <line x1="748" y1="240" x2="768" y2="240" class="arrow"/>
   <line x1="748" y1="452" x2="768" y2="452" class="arrow"/>
 

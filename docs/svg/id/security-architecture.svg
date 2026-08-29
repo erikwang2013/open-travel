@@ -26,26 +26,26 @@
   <text x="56" y="158" class="t-eng">Transport Security</text>
   <line x1="56" y1="170" x2="324" y2="170" class="line"/>
   <text x="190" y="200" text-anchor="middle" class="t-kw">TLS 1.3</text>
-  <text x="190" y="232" text-anchor="middle" class="t-s">Terminasi TLS Nginx · Enkripsi End-to-End</text>
-  <text x="190" y="254" text-anchor="middle" class="t-s">Manajemen Sertifikat · Proteksi Downgrade</text>
+  <text x="190" y="232" text-anchor="middle" class="t-s">Terminasi TLS Nginx · End-to-End</text>
+  <text x="190" y="254" text-anchor="middle" class="t-s">Verifikasi ApiVersion · X-Api-Version: v1</text>
 
   <rect x="350" y="100" width="300" height="210" class="panel"/>
   <circle cx="370" cy="132" r="5" fill="#00b894"/>
   <text x="384" y="137" class="t-h">Autentikasi &amp; Otorisasi</text>
   <text x="366" y="158" class="t-eng">Authentication &amp; Authorization</text>
   <line x1="366" y1="170" x2="634" y2="170" class="line"/>
-  <text x="500" y="200" text-anchor="middle" class="t-kw">JWT · OAuth2</text>
-  <text x="500" y="232" text-anchor="middle" class="t-s">Modul ecat-auth Terbitkan &amp; Verifikasi</text>
-  <text x="500" y="254" text-anchor="middle" class="t-s">Refresh Token · Izin Peran</text>
+  <text x="500" y="200" text-anchor="middle" class="t-kw">JWT · HS256</text>
+  <text x="500" y="232" text-anchor="middle" class="t-s">claims.sub = user_id · JWT_SECRET ≥ 32 B</text>
+  <text x="500" y="254" text-anchor="middle" class="t-s">JWT admin terpisah · Pengguna dinonaktifkan (status=1) → 403</text>
 
   <rect x="660" y="100" width="300" height="210" class="panel"/>
   <circle cx="680" cy="132" r="5" fill="#ff9f43"/>
   <text x="694" y="137" class="t-h">Rate Limiting</text>
   <text x="676" y="158" class="t-eng">Rate Limiting</text>
   <line x1="676" y1="170" x2="944" y2="170" class="line"/>
-  <text x="810" y="200" text-anchor="middle" class="t-kw">Nginx + Rate Limit Gateway</text>
-  <text x="810" y="232" text-anchor="middle" class="t-s">Rate Limit per IP / Pengguna</text>
-  <text x="810" y="254" text-anchor="middle" class="t-s">Anti-Abuse · Proteksi DDoS</text>
+  <text x="810" y="200" text-anchor="middle" class="t-kw">Window tetap terdistribusi Redis</text>
+  <text x="810" y="232" text-anchor="middle" class="t-s">100 req / 60 dtk per layanan</text>
+  <text x="810" y="254" text-anchor="middle" class="t-s">Melebihi 429 · Anti-Abuse / DDoS</text>
 
   <!-- 第二行 -->
   <rect x="40" y="330" width="300" height="210" class="panel"/>
@@ -53,9 +53,9 @@
   <text x="74" y="367" class="t-h">Filter Input</text>
   <text x="56" y="388" class="t-eng">Input Filtering</text>
   <line x1="56" y1="400" x2="324" y2="400" class="line"/>
-  <text x="190" y="430" text-anchor="middle" class="t-kw">Proteksi XSS / SQL Injection</text>
-  <text x="190" y="462" text-anchor="middle" class="t-s">Validasi Whitelist · Escaping</text>
-  <text x="190" y="484" text-anchor="middle" class="t-s">SQL Prepared · Anti-Injection</text>
+  <text x="190" y="430" text-anchor="middle" class="t-kw">Pemindai security-rust</text>
+  <text x="190" y="462" text-anchor="middle" class="t-s">Deteksi XSS / SQL Injection · header + body</text>
+  <text x="190" y="484" text-anchor="middle" class="t-s">Whitelist · SQL Prepared</text>
 
   <rect x="350" y="330" width="300" height="210" class="panel"/>
   <circle cx="370" cy="362" r="5" fill="#00b894"/>
@@ -63,17 +63,21 @@
   <text x="366" y="388" class="t-eng">Audit Logs</text>
   <line x1="366" y1="400" x2="634" y2="400" class="line"/>
   <text x="500" y="430" text-anchor="middle" class="t-kw">Kafka → travel-audit</text>
-  <text x="500" y="462" text-anchor="middle" class="t-s">Audit Operasi · Jejak Lengkap</text>
-  <text x="500" y="484" text-anchor="middle" class="t-s">Peringatan Anomali · Penelusuran Perilaku</text>
+  <text x="500" y="462" text-anchor="middle" class="t-s">user.register · user.login · admin.login</text>
+  <text x="500" y="484" text-anchor="middle" class="t-s">order.created · order.paid · order.cancelled</text>
 
   <rect x="660" y="330" width="300" height="210" class="panel"/>
   <circle cx="680" cy="362" r="5" fill="#ff9f43"/>
   <text x="694" y="367" class="t-h">Keamanan Pembayaran</text>
   <text x="676" y="388" class="t-eng">Payment Security</text>
   <line x1="676" y1="400" x2="944" y2="400" class="line"/>
-  <text x="810" y="430" text-anchor="middle" class="t-kw">WeChat Pay · Alipay</text>
-  <text x="810" y="462" text-anchor="middle" class="t-s">Tanda Tangan SDK Resmi · Verifikasi</text>
-  <text x="810" y="484" text-anchor="middle" class="t-s">Verifikasi Callback · Konsistensi Nominal</text>
+  <text x="810" y="430" text-anchor="middle" class="t-kw">Verifikasi HMAC-SHA256</text>
+  <text x="810" y="462" text-anchor="middle" class="t-s">Verifikasi X-Signature callback · tidak valid → 401</text>
+  <text x="810" y="484" text-anchor="middle" class="t-s">Idempotensi txn_no · internal X-Internal-Token</text>
+  <text x="810" y="506" text-anchor="middle" class="t-s">Kanal sesuai bahasa · stripe/wechat/alipay…</text>
+
+  <!-- 中间件链 -->
+  <text x="500" y="556" text-anchor="middle" class="t-s">Rantai middleware: Tracing → CircuitBreaker → Security → RateLimit(Redis) → JWT · ApiVersion di lapisan terluar</text>
 
   <!-- 密码哈希 -->
   <rect x="40" y="560" width="920" height="80" class="panel"/>

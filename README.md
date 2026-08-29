@@ -89,7 +89,7 @@ curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/attractions?desti
 - 🏨 目的地 / 酒店 / 机票多语言搜索与预订
 - 🌍 12+ 语种独立适配（中、英、日、韩、阿、西、法、德……）
 - 💳 国际支付（微信支付 / 支付宝）
-- 🔐 安全纵深：TLS 1.3、JWT 认证、审计日志、输入过滤、限流
+- 🔐 安全纵深：TLS 1.3、JWT 认证、审计日志、输入过滤、限流、支付回调 HMAC 验签与内部服务鉴权
 - 📱 多端一致体验：Flutter（iOS/Android/Web/Desktop）+ 鸿蒙
 
 ## 架构图
@@ -111,6 +111,8 @@ curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/attractions?desti
 ## 安全架构图
 
 ![安全架构图](docs/svg/security-architecture.svg)
+
+> 分层防护：ApiVersion 校验 → Tracing → CircuitBreaker → Security → RateLimit(Redis) → JWT；支付回调 HMAC 验签 + 内部 X-Internal-Token 鉴权。
 
 ## 项目结构图
 

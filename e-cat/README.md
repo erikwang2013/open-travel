@@ -19,7 +19,7 @@ Open Travel 是一个全球旅游平台 monorepo。后端基于 **e-cat（一只
 | **网关** | Nginx（`config/nginx.conf`），按 URL 前缀分流 |
 | **多端客户端** | `apps/client/flutter`（iOS / Android / Web / Desktop）、`apps/client/harmonyos`（鸿蒙） |
 | **数据源** | MySQL + Redis 缓存 + OpenSearch 多语言搜索 |
-| **安全** | ecat-security / ecat-auth（JWT）/ ecat-tls：认证、审计、限流、防注入 |
+| **安全** | ecat-security / ecat-auth（JWT）/ ecat-tls：认证、审计、限流、防注入、支付回调 HMAC 验签与内部服务鉴权 |
 | **国际化** | 12+ 语种，RTL 支持，OpenSearch 多语言分词 |
 
 ## 项目结构

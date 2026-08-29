@@ -27,7 +27,7 @@ Open Travel es un monorepo de una plataforma global de viajes que utiliza **e-ca
 - 🏨 Búsqueda y reserva multilingüe de destinos / hoteles / vuelos
 - 🌍 Adaptación independiente a más de 12 idiomas (chino, inglés, japonés, coreano, árabe, español, francés, alemán…)
 - 💳 Pagos internacionales (WeChat Pay / Alipay)
-- 🔐 Seguridad en profundidad: TLS 1.3, autenticación JWT, registros de auditoría, filtrado de entradas, limitación de velocidad
+- 🔐 Seguridad en profundidad: TLS 1.3, autenticación JWT, registros de auditoría, filtrado de entradas, limitación de velocidad, verificación HMAC de callbacks de pago, autenticación de servicios internos
 - 📱 Experiencia coherente en múltiples plataformas: Flutter (iOS/Android/Web/Desktop) + HarmonyOS
 
 ## Diagrama de arquitectura

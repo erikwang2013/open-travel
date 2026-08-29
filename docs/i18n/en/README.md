@@ -25,7 +25,7 @@ Open Travel is a global travel platform monorepo built on **e-cat (a cat)** — 
 - 🏨 Multilingual search and booking for destinations / hotels / flights
 - 🌍 12+ languages independently adapted (Chinese, English, Japanese, Korean, Arabic, Spanish, French, German…)
 - 💳 International payments (WeChat Pay / Alipay)
-- 🔐 Defense in depth: TLS 1.3, JWT authentication, audit logs, input filtering, rate limiting
+- 🔐 Defense in depth: TLS 1.3, JWT authentication, audit logs, input filtering, rate limiting, payment callback HMAC verification, internal service auth
 - 📱 Consistent experience across platforms: Flutter (iOS/Android/Web/Desktop) + HarmonyOS
 
 ## Architecture Diagram

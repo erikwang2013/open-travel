@@ -27,25 +27,25 @@
   <line x1="56" y1="170" x2="324" y2="170" class="line"/>
   <text x="190" y="200" text-anchor="middle" class="t-kw">TLS 1.3</text>
   <text x="190" y="232" text-anchor="middle" class="t-s">Nginx で TLS 終端・全経路暗号化</text>
-  <text x="190" y="254" text-anchor="middle" class="t-s">証明書管理・ダウングレード保護</text>
+  <text x="190" y="254" text-anchor="middle" class="t-s">ApiVersion 検証・X-Api-Version: v1</text>
 
   <rect x="350" y="100" width="300" height="210" class="panel"/>
   <circle cx="370" cy="132" r="5" fill="#00b894"/>
   <text x="384" y="137" class="t-h">認証・認可</text>
   <text x="366" y="158" class="t-eng">Authentication &amp; Authorization</text>
   <line x1="366" y1="170" x2="634" y2="170" class="line"/>
-  <text x="500" y="200" text-anchor="middle" class="t-kw">JWT · OAuth2</text>
-  <text x="500" y="232" text-anchor="middle" class="t-s">ecat-auth モジュールの発行と検証</text>
-  <text x="500" y="254" text-anchor="middle" class="t-s">リフレッシュトークン・ロール権限</text>
+  <text x="500" y="200" text-anchor="middle" class="t-kw">JWT・HS256</text>
+  <text x="500" y="232" text-anchor="middle" class="t-s">claims.sub = user_id・JWT_SECRET ≥ 32 バイト</text>
+  <text x="500" y="254" text-anchor="middle" class="t-s">管理側独立 JWT・無効ユーザー(status=1) → 403</text>
 
   <rect x="660" y="100" width="300" height="210" class="panel"/>
   <circle cx="680" cy="132" r="5" fill="#ff9f43"/>
   <text x="694" y="137" class="t-h">レート制限</text>
   <text x="676" y="158" class="t-eng">Rate Limiting</text>
   <line x1="676" y1="170" x2="944" y2="170" class="line"/>
-  <text x="810" y="200" text-anchor="middle" class="t-kw">Nginx + ゲートウェイ制限</text>
-  <text x="810" y="232" text-anchor="middle" class="t-s">IP / ユーザー単位の制限</text>
-  <text x="810" y="254" text-anchor="middle" class="t-s">スパム防止・DDoS 攻撃対策</text>
+  <text x="810" y="200" text-anchor="middle" class="t-kw">Redis 分散固定ウィンドウ</text>
+  <text x="810" y="232" text-anchor="middle" class="t-s">100 req / 60 秒・サービス単位</text>
+  <text x="810" y="254" text-anchor="middle" class="t-s">超過 429・スパム/DDoS 対策</text>
 
   <!-- 第二行 -->
   <rect x="40" y="330" width="300" height="210" class="panel"/>
@@ -53,9 +53,9 @@
   <text x="74" y="367" class="t-h">入力フィルタリング</text>
   <text x="56" y="388" class="t-eng">Input Filtering</text>
   <line x1="56" y1="400" x2="324" y2="400" class="line"/>
-  <text x="190" y="430" text-anchor="middle" class="t-kw">XSS / SQL インジェクション対策</text>
-  <text x="190" y="462" text-anchor="middle" class="t-s">パラメータホワイトリスト検証・エスケープ</text>
-  <text x="190" y="484" text-anchor="middle" class="t-s">SQL プリコンパイル・インジェクション防止</text>
+  <text x="190" y="430" text-anchor="middle" class="t-kw">security-rust スキャナー</text>
+  <text x="190" y="462" text-anchor="middle" class="t-s">XSS / SQL インジェクション検出・header + body</text>
+  <text x="190" y="484" text-anchor="middle" class="t-s">パラメータホワイトリスト・SQL プリコンパイル</text>
 
   <rect x="350" y="330" width="300" height="210" class="panel"/>
   <circle cx="370" cy="362" r="5" fill="#00b894"/>
@@ -63,17 +63,21 @@
   <text x="366" y="388" class="t-eng">Audit Logs</text>
   <line x1="366" y1="400" x2="634" y2="400" class="line"/>
   <text x="500" y="430" text-anchor="middle" class="t-kw">Kafka → travel-audit</text>
-  <text x="500" y="462" text-anchor="middle" class="t-s">操作監査・全量記録</text>
-  <text x="500" y="484" text-anchor="middle" class="t-s">異常アラート・行動追跡</text>
+  <text x="500" y="462" text-anchor="middle" class="t-s">user.register・user.login・admin.login</text>
+  <text x="500" y="484" text-anchor="middle" class="t-s">order.created・order.paid・order.cancelled</text>
 
   <rect x="660" y="330" width="300" height="210" class="panel"/>
   <circle cx="680" cy="362" r="5" fill="#ff9f43"/>
   <text x="694" y="367" class="t-h">決済セキュリティ</text>
   <text x="676" y="388" class="t-eng">Payment Security</text>
   <line x1="676" y1="400" x2="944" y2="400" class="line"/>
-  <text x="810" y="430" text-anchor="middle" class="t-kw">WeChat Pay・Alipay</text>
-  <text x="810" y="462" text-anchor="middle" class="t-s">公式 SDK 署名・署名検証</text>
-  <text x="810" y="484" text-anchor="middle" class="t-s">コールバック検証・金額整合性</text>
+  <text x="810" y="430" text-anchor="middle" class="t-kw">HMAC-SHA256 署名検証</text>
+  <text x="810" y="462" text-anchor="middle" class="t-s">コールバック X-Signature 検証・不正 → 401</text>
+  <text x="810" y="484" text-anchor="middle" class="t-s">txn_no 冪等・内部 X-Internal-Token</text>
+  <text x="810" y="506" text-anchor="middle" class="t-s">言語でチャネル選択・stripe/wechat/alipay…</text>
+
+  <!-- 中间件链 -->
+  <text x="500" y="556" text-anchor="middle" class="t-s">ミドルウェアチェーン: Tracing → CircuitBreaker → Security → RateLimit(Redis) → JWT・最外層 ApiVersion 検証</text>
 
   <!-- 密码哈希 -->
   <rect x="40" y="560" width="920" height="80" class="panel"/>
