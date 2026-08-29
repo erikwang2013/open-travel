@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.2.0] — 2026-08-30
+
+### Added
+- CDN 八云插件式接入：scripts/cdn/ 下 cloudfront/aliyun/gcp/azure/cloudflare/tencent/huawei/bunny 八个 provider 脚本，实现 cdn_require_creds / cdn_setup / cdn_upload 契约，无凭据自动 dry-run 预览，幂等状态文件 .cdn-state-<provider>
+- 管理端 CDN 云商管理（P5-08）：travel_cdn_providers 表 + 8 家种子，管理页八云列表/启停开关/配置表单/命令预览（plan 生成 dry-run 命令）；真实执行留部署机，服务端不存储云凭据
+- 评价体系（P5-01）：booking-service `POST /api/reviews`（JWT 鉴权，rating 1-5、comment ≤500）+ `GET /api/reviews` 分页列表；景区详情返回真实评价（最近 20 条），rating_avg 读时 AVG 聚合；travel_reviews 补 attraction_id 列与幂等种子
+- 热词推荐（P5-03）：search-service `GET /api/search/hotwords?period=day|week|all&limit=N`，travel_searches 按周期聚合，Redis 缓存（hotwords:{period}:{limit}，TTL 300s）
+- 网关新增 /api/reviews 分流规则（HTTP/HTTPS 双 server）
+
+### Changed
+- 构建修复：.dockerignore 排除 e-cat/target（16G 调试产物导致 docker 上下文 13GB 触发 ENOSPC）；Dockerfile 使用系统 git CLI 抓取 git 依赖（CARGO_NET_GIT_FETCH_WITH_CLI，libgit2 确定性挂起）
+- search-service PORT 支持裸端口或完整地址环境变量覆盖，便于临时端口验证
+- 文档全量同步：api.md 补看板/CDN/评价/热词端点并修正用户状态 PATCH 契约；12 语种 README 补脚本表（八云 CDN）；planning/integration-report 过期表述修正
+- SVG 架构图更新（4 图 × 13 语种）：architecture 补 Search/Line/Order 三服务与 CDN 静态加速旁路、features 补看板/CDN 管理卡、project-structure 补 scripts/cdn 八云、评价标注；全部 XML 校验 + 水印齐备
+
 ## [1.1.0] — 2026-08-29
 
 ### Added
