@@ -15,7 +15,7 @@ Open Travel is a global travel platform monorepo. The backend is built on **e-ca
 | Dimension | Description |
 | :--- | :--- |
 | **Backend** | e-cat (Rust): HTTP/axum + gRPC/tonic, 51-crate microservice ecosystem |
-| **Services** | user-service (:8001), booking-service (:8002), under `e-cat/services/` |
+| **Services** | user-service (:8001), booking-service (:8002), under `e-cat/ecat/src/business/` |
 | **Gateway** | Nginx (`config/nginx.conf`), prefix-based routing |
 | **Clients** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS) |
 | **Data** | MySQL + Redis cache + OpenSearch multilingual search |
@@ -71,10 +71,10 @@ cargo run -p user-service &
 cargo run -p booking-service
 ```
 
-Build Docker images (`e-cat/services/Dockerfile`, builds from `e-cat/Cargo.toml` with `-p`):
+Build Docker images (`e-cat/Dockerfile`, builds from `e-cat/Cargo.toml` with `-p`):
 
 ```bash
-docker build -f e-cat/services/Dockerfile -t open-travel/services .
+docker build -f e-cat/Dockerfile -t travel-services .
 ```
 
 ### Start (Docker Compose)

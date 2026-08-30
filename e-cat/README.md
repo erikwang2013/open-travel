@@ -15,7 +15,7 @@ Open Travel 是一个全球旅游平台 monorepo。后端基于 **e-cat（一只
 | 维度 | 说明 |
 | :--- | :--- |
 | **后端** | e-cat（Rust）：HTTP/axum + gRPC/tonic，51 crates 微服务生态 |
-| **业务服务** | user-service（:8001）、booking-service（:8002），位于 `e-cat/services/` |
+| **业务服务** | user-service（:8001）、booking-service（:8002），位于 `e-cat/ecat/src/business/` |
 | **网关** | Nginx（`config/nginx.conf`），按 URL 前缀分流 |
 | **多端客户端** | `apps/client/flutter`（iOS / Android / Web / Desktop）、`apps/client/harmonyos`（鸿蒙） |
 | **数据源** | MySQL + Redis 缓存 + OpenSearch 多语言搜索 |
@@ -71,10 +71,10 @@ cargo run -p user-service &
 cargo run -p booking-service
 ```
 
-构建 Docker 镜像（`e-cat/services/Dockerfile`，从 `e-cat/Cargo.toml` 按 `-p` 构建）：
+构建 Docker 镜像（`e-cat/Dockerfile`，从 `e-cat/Cargo.toml` 按 `-p` 构建）：
 
 ```bash
-docker build -f e-cat/services/Dockerfile -t open-travel/services .
+docker build -f e-cat/Dockerfile -t travel-services .
 ```
 
 ### 启动（Docker Compose）
