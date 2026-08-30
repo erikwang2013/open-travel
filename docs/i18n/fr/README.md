@@ -48,10 +48,6 @@ Open Travel est un monorepo de plateforme de voyage mondiale, construit sur **e-
 
 ![Diagramme de l'architecture de sécurité](../../svg/fr/security-architecture.svg)
 
-## Diagramme de la structure du projet
-
-![Diagramme de la structure du projet](../../svg/fr/project-structure.svg)
-
 ## Structure du projet
 
 ```

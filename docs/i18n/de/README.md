@@ -48,10 +48,6 @@ Open Travel ist ein Monorepo einer globalen Reiseplattform, aufgebaut auf **e-ca
 
 ![Sicherheitsarchitektur-Diagramm](../../svg/de/security-architecture.svg)
 
-## Projektstruktur-Diagramm
-
-![Projektstruktur-Diagramm](../../svg/de/project-structure.svg)
-
 ## Projektstruktur
 
 ```

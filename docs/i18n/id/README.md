@@ -48,10 +48,6 @@ Open Travel adalah monorepo platform wisata global yang menggunakan **e-cat (see
 
 ![Diagram Arsitektur Keamanan](../../svg/id/security-architecture.svg)
 
-## Diagram Struktur Proyek
-
-![Diagram Struktur Proyek](../../svg/id/project-structure.svg)
-
 ## Struktur Proyek
 
 ```

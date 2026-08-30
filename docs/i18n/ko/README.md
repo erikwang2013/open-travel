@@ -48,10 +48,6 @@ Open Travel은 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3를 벤
 
 ![보안 아키텍처 다이어그램](../../svg/ko/security-architecture.svg)
 
-## 프로젝트 구조 다이어그램
-
-![프로젝트 구조 다이어그램](../../svg/ko/project-structure.svg)
-
 ## 프로젝트 구조
 
 ```

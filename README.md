@@ -122,10 +122,6 @@ curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/attractions?desti
 
 > 分层防护：ApiVersion 校验 → Tracing → CircuitBreaker → Security → RateLimit(Redis) → JWT；支付回调 HMAC 验签 + 内部 X-Internal-Token 鉴权。
 
-## 项目结构图
-
-![项目结构图](docs/svg/project-structure.svg)
-
 ## 项目结构
 
 ```

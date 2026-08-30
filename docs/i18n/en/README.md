@@ -48,10 +48,6 @@ Open Travel is a global travel platform monorepo built on **e-cat (a cat)** — 
 
 ![Security Architecture Diagram](../../svg/en/security-architecture.svg)
 
-## Project Structure Diagram
-
-![Project Structure Diagram](../../svg/en/project-structure.svg)
-
 ## Project Structure
 
 ```

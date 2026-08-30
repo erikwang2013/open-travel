@@ -48,10 +48,6 @@ Open Travel は、[go-kratos/kratos](https://github.com/go-kratos/kratos) v3 に
 
 ![セキュリティアーキテクチャ図](../../svg/ja/security-architecture.svg)
 
-## プロジェクト構造図
-
-![プロジェクト構造図](../../svg/ja/project-structure.svg)
-
 ## プロジェクト構造
 
 ```

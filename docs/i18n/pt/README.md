@@ -50,10 +50,6 @@ Open Travel é um monorepo de plataforma global de viagens que usa **e-cat (um g
 
 ![Diagrama de arquitetura de segurança](../../svg/pt/security-architecture.svg)
 
-## Diagrama da estrutura do projeto
-
-![Diagrama da estrutura do projeto](../../svg/pt/project-structure.svg)
-
 ## Estrutura do projeto
 
 ```
