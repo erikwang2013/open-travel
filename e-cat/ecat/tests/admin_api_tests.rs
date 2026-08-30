@@ -19,6 +19,7 @@ use serde_json::json;
 use service::handlers::*;
 use service::line_date_handlers::*;
 use service::line_handlers::*;
+use service::reports_handlers::*;
 use service::*;
 use ecat::business::shared::jwt_secret;
 use std::collections::HashMap;
@@ -805,4 +806,58 @@ async fn line_and_date_not_found_404() {
     ).await).await;
     assert_eq!(status, StatusCode::BAD_REQUEST);
     assert_eq!(body["message"], "depart_date must be YYYY-MM-DD");
+}
+
+// ===== 报表中心：真实 DB（MySQL 3308 不可用时跳过）=====
+
+#[tokio::test]
+async fn reports_sales_and_payments() {
+    let Some(db) = real_db().await else { return };
+    let st = state_with(db);
+
+    // 默认范围（近 30 天）：结构完整、逐日补零
+    let (status, body) = body_json(sales_report(
+        State(st.clone()),
+        admin_guard(),
+        Query(ReportQuery { from: None, to: None }),
+    ).await).await;
+    assert_eq!(status, StatusCode::OK, "sales default: {body}");
+    assert_eq!(body["code"], 0);
+    assert_eq!(body["data"]["items"].as_array().unwrap().len(), 30);
+    let first = &body["data"]["items"][0];
+    assert!(first["day"].as_str().is_some_and(|d| d.len() == 10), "day 应为 YYYY-MM-DD: {body}");
+    for k in ["orders", "paid_orders", "gmv_cents"] {
+        assert!(first[k].is_number(), "sales item 缺 {k}: {body}");
+    }
+
+    // 支付渠道报表：结构 + 非空项含 channel 字段
+    let (status, body) = body_json(payments_report(
+        State(st.clone()),
+        admin_guard(),
+        Query(ReportQuery { from: None, to: None }),
+    ).await).await;
+    assert_eq!(status, StatusCode::OK, "payments default: {body}");
+    for it in body["data"]["items"].as_array().unwrap() {
+        assert!(it["channel"].as_str().is_some(), "channel 缺失: {it}");
+        assert!(it["count"].is_number());
+        assert!(it["amount_cents"].is_number());
+    }
+
+    // 非法 from 格式 → 400
+    let (status, body) = body_json(sales_report(
+        State(st.clone()),
+        admin_guard(),
+        Query(ReportQuery { from: Some("2026/08/01".into()), to: None }),
+    ).await).await;
+    assert_eq!(status, StatusCode::BAD_REQUEST);
+    assert_eq!(body["code"], 400);
+
+    // from > to → 400
+    let (status, body) = body_json(payments_report(
+        State(st.clone()),
+        admin_guard(),
+        Query(ReportQuery { from: Some("2026-08-02".into()), to: Some("2026-08-01".into()) }),
+    ).await).await;
+    assert_eq!(status, StatusCode::BAD_REQUEST);
+    assert_eq!(body["code"], 400);
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../api.dart';
 import 'dashboard_page.dart';
+import 'reports_page.dart';
 import 'attractions_page.dart';
 import 'destinations_page.dart';
 import 'flights_page.dart';
@@ -24,6 +25,7 @@ class _HomePageState extends State<HomePage> {
 
   static const _pages = [
     DashboardPage(),
+    ReportsPage(),
     DestinationsPage(),
     AttractionsPage(),
     LinesPage(),
@@ -49,6 +51,10 @@ class _HomePageState extends State<HomePage> {
                   icon: Icon(Icons.dashboard_outlined),
                   selectedIcon: Icon(Icons.dashboard),
                   label: Text('数据看板')),
+              NavigationRailDestination(
+                  icon: Icon(Icons.receipt_long_outlined),
+                  selectedIcon: Icon(Icons.receipt_long),
+                  label: Text('报表中心')),
               NavigationRailDestination(
                   icon: Icon(Icons.place_outlined),
                   selectedIcon: Icon(Icons.place),

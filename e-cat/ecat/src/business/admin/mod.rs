@@ -56,6 +56,9 @@ pub(crate) mod hotel_handlers;
 #[path = "stats_handlers.rs"]
 pub(crate) mod stats_handlers;
 
+#[path = "reports_handlers.rs"]
+pub(crate) mod reports_handlers;
+
 #[path = "cdn_handlers.rs"]
 pub(crate) mod cdn_handlers;
 
@@ -290,6 +293,8 @@ pub(crate) fn api_router(state: AppState) -> Router {
         .route("/api/admin/stats/overview", get(stats_handlers::overview))
         .route("/api/admin/stats/top", get(stats_handlers::top))
         .route("/api/admin/stats/trend", get(stats_handlers::trend))
+        .route("/api/admin/reports/sales", get(reports_handlers::sales_report))
+        .route("/api/admin/reports/payments", get(reports_handlers::payments_report))
         .route("/api/admin/orders", get(orders_handlers::list_orders))
         .route("/api/admin/orders/{id}", get(orders_handlers::order_detail))
         .route("/api/admin/orders/{id}/refund", post(orders_handlers::refund_order))
