@@ -32,10 +32,9 @@ open-travel/
 ├── scripts/               # opensearch_init / loadtest / cdn_setup / cdn_upload / release
 └── e-cat/                 # e-cat framework + business services (single Cargo workspace)
     ├── ecat*/             # 51 ecat-* framework crates
-    ├── services/          # Business microservices (workspace members)
-    │   ├── user/          # user-service: profile / register, entry src/main.rs
-    │   ├── booking/       # booking-service: hot destination dates, entry src/main.rs
-    │   └── shared/        # Shared code (JWT secret, Redis rate-limit middleware, etc.)
+    ├── user/              # user-service: profile / register, entry src/main.rs
+    ├── booking/           # booking-service: hot destination dates, entry src/main.rs
+    ├── shared/            # Shared code (JWT secret, Redis rate-limit middleware, etc.)
     ├── config/            # Framework config examples
     └── examples/          # Framework examples
 ```

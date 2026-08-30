@@ -1,6 +1,6 @@
 # open-travel 业务服务镜像（user/booking/admin/search/line/order/flight/hotel/payment 九个二进制）
 # 构建上下文必须为仓库根（e-cat workspace 在 ./e-cat）
-# 用法：docker build -f e-cat/services/Dockerfile -t travel-services .
+# 用法：docker build -f e-cat/Dockerfile -t travel-services .
 #       docker run travel-services user-service   （或任一服务名）
 
 FROM rust:1.88-slim AS build

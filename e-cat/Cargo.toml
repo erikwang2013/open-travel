@@ -58,16 +58,16 @@ members = [
     "examples/middleware",
     "examples/websocket",
     # open-travel 业务服务（在 e-cat 仓库内做业务功能开发）
-    "services/user",
-    "services/booking",
-    "services/admin",
-    "services/search",
-    "services/line",
-    "services/order",
-    "services/flight",
-    "services/hotel",
-    "services/payment",
-    "services/shared",
+    "user",
+    "booking",
+    "admin",
+    "search",
+    "line",
+    "order",
+    "flight",
+    "hotel",
+    "payment",
+    "shared",
 ]
 resolver = "2"
 

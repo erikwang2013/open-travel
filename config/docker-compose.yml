@@ -118,7 +118,7 @@ services:
   ecat-user:
     build:
       context: ..
-      dockerfile: e-cat/services/Dockerfile
+      dockerfile: e-cat/Dockerfile
     command: ["user-service"]
     container_name: travel-ecat-user
     restart: unless-stopped
@@ -163,7 +163,7 @@ services:
   ecat-booking:
     build:
       context: ..
-      dockerfile: e-cat/services/Dockerfile
+      dockerfile: e-cat/Dockerfile
     command: ["booking-service"]
     container_name: travel-ecat-booking
     restart: unless-stopped
@@ -187,7 +187,7 @@ services:
   ecat-admin:
     build:
       context: ..
-      dockerfile: e-cat/services/Dockerfile
+      dockerfile: e-cat/Dockerfile
     command: ["admin-service"]
     container_name: travel-ecat-admin
     restart: unless-stopped
@@ -208,7 +208,7 @@ services:
   ecat-search:
     build:
       context: ..
-      dockerfile: e-cat/services/Dockerfile
+      dockerfile: e-cat/Dockerfile
     command: ["search-service"]
     container_name: travel-ecat-search
     restart: unless-stopped
@@ -232,7 +232,7 @@ services:
   ecat-line:
     build:
       context: ..
-      dockerfile: e-cat/services/Dockerfile
+      dockerfile: e-cat/Dockerfile
     command: ["line-service"]
     container_name: travel-ecat-line
     restart: unless-stopped
@@ -253,7 +253,7 @@ services:
   ecat-order:
     build:
       context: ..
-      dockerfile: e-cat/services/Dockerfile
+      dockerfile: e-cat/Dockerfile
     command: ["order-service"]
     container_name: travel-ecat-order
     restart: unless-stopped
@@ -276,7 +276,7 @@ services:
   ecat-flight:
     build:
       context: ..
-      dockerfile: e-cat/services/Dockerfile
+      dockerfile: e-cat/Dockerfile
     command: ["flight-service"]
     container_name: travel-ecat-flight
     restart: unless-stopped
@@ -297,7 +297,7 @@ services:
   ecat-hotel:
     build:
       context: ..
-      dockerfile: e-cat/services/Dockerfile
+      dockerfile: e-cat/Dockerfile
     command: ["hotel-service"]
     container_name: travel-ecat-hotel
     restart: unless-stopped
@@ -318,7 +318,7 @@ services:
   ecat-payment:
     build:
       context: ..
-      dockerfile: e-cat/services/Dockerfile
+      dockerfile: e-cat/Dockerfile
     command: ["payment-service"]
     container_name: travel-ecat-payment
     restart: unless-stopped

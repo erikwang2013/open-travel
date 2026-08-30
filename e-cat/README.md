@@ -32,10 +32,9 @@ open-travel/
 ├── scripts/               # opensearch_init / loadtest / cdn_setup / cdn_upload / release
 └── e-cat/                 # e-cat 框架 + 业务服务（同一 Cargo workspace）
     ├── ecat*/             # 51 个 ecat-* 框架 crate
-    ├── services/          # 业务微服务（workspace 成员）
-    │   ├── user/          # user-service：用户资料 / 注册，入口 src/main.rs
-    │   ├── booking/       # booking-service：热门目的地日期，入口 src/main.rs
-    │   └── shared/        # 公共代码（JWT 密钥、Redis 限流中间件等）
+    ├── user/              # user-service：用户资料 / 注册，入口 src/main.rs
+    ├── booking/           # booking-service：热门目的地日期，入口 src/main.rs
+    ├── shared/            # 公共代码（JWT 密钥、Redis 限流中间件等）
     ├── config/            # 框架配置示例
     └── examples/          # 框架示例项目
 ```
