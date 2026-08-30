@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.3.0] — 2026-08-31
+
+### Added
+- 管理端报表中心：admin-service 新增 `GET /api/admin/reports/sales`（按日聚合订单数/已支付数/GMV，区间补零，上限 366 天）与 `GET /api/admin/reports/payments`（按支付渠道汇总流水与金额）；前端报表页支持近 7/30/90 天预设筛选，双数据表展示
+- 一键安装：`scripts/install.sh`（环境检查 → 构建启动全部服务 → OpenSearch 索引初始化 → 健康巡检 → 输出访问地址与默认账号）；根 / e-cat（中英）/ admin / client README 增加一键安装与安装/使用说明，12 语种 i18n README 同步
+
+### Changed
+- 业务服务整合进 ecat 主 crate：`src/business/`（9 个业务模块）+ `src/bin/`（9 个服务入口），移除独立 services/ 目录层，文档与 CI 命令统一为 `cargo -p ecat --bins`
+- 功能图新增"报表中心"卡片（底部重排为 数据看板 / 报表中心 / CDN 三卡）；删除全部文档的项目结构图（SVG）与孤儿资源
+- 修复 6 个共享 DB 数据漂移集成测试用例
+
 ## [1.2.0] — 2026-08-30
 
 ### Added
