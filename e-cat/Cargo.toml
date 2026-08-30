@@ -57,17 +57,7 @@ members = [
     "examples/databases",
     "examples/middleware",
     "examples/websocket",
-    # open-travel 业务服务（在 e-cat 仓库内做业务功能开发）
-    "user",
-    "booking",
-    "admin",
-    "search",
-    "line",
-    "order",
-    "flight",
-    "hotel",
-    "payment",
-    "shared",
+    # open-travel 业务已整合进 ecat 主 crate（ecat/src/business）
 ]
 resolver = "2"
 

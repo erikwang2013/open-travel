@@ -6,7 +6,7 @@ description = "Aggregate crate: batteries-included entry point for e-cat"
 license.workspace = true
 
 [features]
-default = ["http", "grpc"]
+default = ["http", "grpc", "middleware", "auth", "circuit-breaker", "tracing", "redis"]
 http = ["dep:ecat-transport-http"]
 grpc = ["dep:ecat-transport-grpc"]
 middleware = ["dep:ecat-middleware"]
@@ -36,9 +36,61 @@ ecat-circuit-breaker = { workspace = true, optional = true }
 ecat-registry-consul = { workspace = true, optional = true }
 ecat-config-remote = { workspace = true, optional = true }
 ecat-data-redis = { workspace = true, optional = true }
-tokio = { workspace = true, features = ["rt", "macros", "signal"] }
+tokio = { workspace = true, features = ["rt", "macros", "signal", "rt-multi-thread", "time"] }
 tracing.workspace = true
 async-trait.workspace = true
 
+axum.workspace = true
+tower.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+base64 = "0.22"
+bcrypt = "0.15"
+hmac = "0.12"
+reqwest = { version = "0.12", default-features = false, features = ["json"] }
+sha2.workspace = true
+ecat-security = { path = "../ecat-security" }
+ecat-data = { path = "../ecat-data" }
+ecat-data-sqlx = { path = "../ecat-data-sqlx" }
+ecat-data-opensearch = { path = "../ecat-data-opensearch" }
+ecat-mq = { path = "../ecat-mq" }
+ecat-mq-kafka = { path = "../ecat-mq-kafka" }
 [dev-dependencies]
 tokio = { workspace = true, features = ["macros", "rt"] }
+
+# open-travel 业务服务入口（业务代码在 src/business/，入口仅是薄壳）
+[[bin]]
+name = "user-service"
+path = "src/bin/user-service.rs"
+
+[[bin]]
+name = "booking-service"
+path = "src/bin/booking-service.rs"
+
+[[bin]]
+name = "admin-service"
+path = "src/bin/admin-service.rs"
+
+[[bin]]
+name = "search-service"
+path = "src/bin/search-service.rs"
+
+[[bin]]
+name = "line-service"
+path = "src/bin/line-service.rs"
+
+[[bin]]
+name = "order-service"
+path = "src/bin/order-service.rs"
+
+[[bin]]
+name = "flight-service"
+path = "src/bin/flight-service.rs"
+
+[[bin]]
+name = "hotel-service"
+path = "src/bin/hotel-service.rs"
+
+[[bin]]
+name = "payment-service"
+path = "src/bin/payment-service.rs"

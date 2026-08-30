@@ -14,8 +14,8 @@ COPY e-cat ./e-cat
 # cargo libgit2 抓 git 依赖在此环境挂起（无进展），改用系统 git CLI 抓取
 ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
 RUN cargo build --release --manifest-path e-cat/Cargo.toml \
-    -p user-service -p booking-service -p admin-service -p search-service -p line-service -p order-service \
-    -p flight-service -p hotel-service -p payment-service
+    -p ecat --bin user-service --bin booking-service --bin admin-service --bin search-service --bin line-service \
+    --bin order-service --bin flight-service --bin hotel-service --bin payment-service
 
 FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y --no-install-recommends \

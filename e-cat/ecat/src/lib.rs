@@ -1,7 +1,10 @@
 // Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
+extern crate self as ecat;
+
 mod hook;
 mod reexports;
 mod signal;
+pub mod business;
 
 pub use hook::LifecycleHook;
 // --no-default-features 时 glob 为空，allow 掉 unused import 告警。

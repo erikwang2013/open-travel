@@ -149,7 +149,7 @@ Any string works as a custom agent type.
 - ALWAYS verify build succeeds before committing
 
 ```bash
-cd e-cat && cargo check -p user-service -p booking-service
+cd e-cat && cargo check -p ecat --bins
 ```
 
 ## 推送与发布
