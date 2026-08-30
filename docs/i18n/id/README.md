@@ -59,7 +59,11 @@ open-travel/
 ├── apps/                  # Direktori klien multi-platform
 │   ├── flutter/           # Flutter: iOS / Android / Web / Desktop (i18n 12+ bahasa)
 │   └── harmonyos/         # Klien native HarmonyOS
-├── e-cat/                 # Framework mikroservis Rust e-cat (51 crates)
+├── e-cat/                 # Framework e-cat + layanan bisnis (satu Cargo workspace)
+│   ├── ecat*/             # 51 crate framework ecat-*
+│   ├── ecat/              # Crate utama: fasad + modul bisnis (src/business/) + entri layanan (src/bin/)
+│   ├── config/            # Contoh konfigurasi framework
+│   └── examples/          # Contoh proyek framework
 ├── docs/                  # Perencanaan proyek, diagram (SVG), QR code pembayaran
 ├── config/                # Konfigurasi lingkungan dan deployment
 └── README.md
@@ -83,9 +87,15 @@ cargo check -p ecat --bins   # pemeriksaan kompilasi layanan bisnis
 | Layanan | Port | Deskripsi |
 |---|---|---|
 | user-service | 8001 | Pendaftaran / login / profil pengguna |
-| booking-service | 8002 | Tanggal destinasi populer + daftar / detail atraksi |
+| booking-service | 8002 | Tanggal destinasi populer + daftar / detail atraksi + ulasan |
 | admin-service | 8003 | Admin: login + CRUD destinasi / atraksi |
-| Gateway Nginx | 8082→80 | Routing prefiks `/api/user/`, `/api/booking/`, `/api/admin/` |
+| search-service | 8004 | Pencarian multibahasa |
+| line-service | 8005 | Lini perjalanan |
+| order-service | 8006 | Pesanan |
+| flight-service | 8007 | Penerbangan |
+| hotel-service | 8008 | Hotel |
+| payment-service | 8009 | Pembayaran |
+| Gateway Nginx | 8082→80 | Routing prefiks `/api/user/`, `/api/booking/`, `/api/admin/`, `/api/search`, `/api/lines`, `/api/orders`, `/api/flights`, `/api/hotels`, `/api/payments` |
 | MySQL | 3308→3306 | Sumber data |
 | Redis | 6381→6379 | Cache / pembatasan kecepatan |
 | OpenSearch | 9201→9200 | Pencarian multibahasa |

@@ -129,6 +129,13 @@ curl -H "X-Api-Version: v1" -H "Authorization: Bearer <JWT>" http://localhost:80
 | Nginx 网关 | 8082 → 80 |
 | user-service | 8001 → 8001 |
 | booking-service | 8002 → 8002 |
+| admin-service | 8003 → 8003 |
+| search-service | 8004 → 8004 |
+| line-service | 8005 → 8005 |
+| order-service | 8006 → 8006 |
+| flight-service | 8007 → 8007 |
+| hotel-service | 8008 → 8008 |
+| payment-service | 8009 → 8009 |
 | MySQL | 3308 → 3306 |
 | Redis | 6381 → 6379 |
 | OpenSearch | 9201 → 9200 |

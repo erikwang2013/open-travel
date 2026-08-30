@@ -61,7 +61,11 @@ open-travel/
 ├── apps/                  # Directorio de aplicaciones cliente
 │   ├── flutter/           # Flutter: iOS / Android / Web / Desktop (i18n en 12+ idiomas)
 │   └── harmonyos/         # Cliente nativo HarmonyOS
-├── e-cat/                 # Framework Rust de microservicios e-cat (51 crates)
+├── e-cat/                 # Framework e-cat + servicios de negocio (un único Cargo workspace)
+│   ├── ecat*/             # 51 crates del framework ecat-*
+│   ├── ecat/              # Crate principal: fachada + módulos de negocio (src/business/) + entradas de servicios (src/bin/)
+│   ├── config/            # Ejemplos de configuración del framework
+│   └── examples/          # Ejemplos de proyectos del framework
 ├── docs/                  # Planificación del proyecto, diagramas (SVG), códigos QR de pago
 ├── config/                # Configuración de entorno e implementación
 └── README.md
@@ -85,9 +89,15 @@ cargo check -p ecat --bins   # verificación de compilación de los servicios de
 | Servicio | Puerto | Descripción |
 |---|---|---|
 | user-service | 8001 | Registro / inicio de sesión / perfil de usuario |
-| booking-service | 8002 | Fechas de destinos populares + lista / detalle de atracciones |
+| booking-service | 8002 | Fechas de destinos populares + lista / detalle de atracciones + reseñas |
 | admin-service | 8003 | Administración: inicio de sesión + CRUD de destinos / atracciones |
-| Puerta de enlace Nginx | 8082→80 | Enrutamiento por prefijos `/api/user/`, `/api/booking/`, `/api/admin/` |
+| search-service | 8004 | Búsqueda multilingüe |
+| line-service | 8005 | Líneas turísticas |
+| order-service | 8006 | Pedidos |
+| flight-service | 8007 | Vuelos |
+| hotel-service | 8008 | Hoteles |
+| payment-service | 8009 | Pagos |
+| Puerta de enlace Nginx | 8082→80 | Enrutamiento por prefijos `/api/user/`, `/api/booking/`, `/api/admin/`, `/api/search`, `/api/lines`, `/api/orders`, `/api/flights`, `/api/hotels`, `/api/payments` |
 | MySQL | 3308→3306 | Fuente de datos |
 | Redis | 6381→6379 | Caché / limitación de velocidad |
 | OpenSearch | 9201→9200 | Búsqueda multilingüe |

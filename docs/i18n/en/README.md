@@ -59,7 +59,11 @@ open-travel/
 ├── apps/                  # Multi-platform client directory
 │   ├── flutter/           # Flutter: iOS / Android / Web / Desktop (12+ language i18n)
 │   └── harmonyos/         # HarmonyOS native client
-├── e-cat/                 # e-cat Rust microservice framework (51 crates)
+├── e-cat/                 # e-cat framework + business services (single Cargo workspace)
+│   ├── ecat*/             # 51 ecat-* framework crates
+│   ├── ecat/              # Main framework crate: facade + business modules (src/business/) + service entries (src/bin/)
+│   ├── config/            # Framework config examples
+│   └── examples/          # Framework examples
 ├── docs/                  # Project planning, architecture diagrams (SVG), payment QR codes
 ├── config/                # Environment and deployment configuration
 └── README.md
@@ -83,9 +87,15 @@ cargo check -p ecat --bins   # compile check for business services
 | Service | Port | Description |
 |---|---|---|
 | user-service | 8001 | User registration / login / profile |
-| booking-service | 8002 | Popular destination dates + attraction list / detail |
+| booking-service | 8002 | Popular destination dates + attraction list / detail + reviews |
 | admin-service | 8003 | Admin: login + destination / attraction CRUD |
-| Nginx gateway | 8082→80 | Routes `/api/user/`, `/api/booking/`, `/api/admin/` prefixes |
+| search-service | 8004 | Multilingual search |
+| line-service | 8005 | Travel lines |
+| order-service | 8006 | Orders |
+| flight-service | 8007 | Flights |
+| hotel-service | 8008 | Hotels |
+| payment-service | 8009 | Payments |
+| Nginx gateway | 8082→80 | Routes `/api/user/`, `/api/booking/`, `/api/admin/`, `/api/search`, `/api/lines`, `/api/orders`, `/api/flights`, `/api/hotels`, `/api/payments` prefixes |
 | MySQL | 3308→3306 | Data source |
 | Redis | 6381→6379 | Cache / rate limiting |
 | OpenSearch | 9201→9200 | Multilingual search |

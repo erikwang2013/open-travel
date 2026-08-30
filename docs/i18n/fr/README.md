@@ -59,7 +59,11 @@ open-travel/
 ├── apps/                  # Répertoire des clients
 │   ├── flutter/           # Flutter : iOS / Android / Web / Desktop (i18n en 12+ langues)
 │   └── harmonyos/         # Client natif HarmonyOS
-├── e-cat/                 # Framework de microservices Rust e-cat (51 crates)
+├── e-cat/                 # Framework e-cat + services métier (un seul Cargo workspace)
+│   ├── ecat*/             # 51 crates du framework ecat-*
+│   ├── ecat/              # Crate principale : façade + modules métier (src/business/) + entrées des services (src/bin/)
+│   ├── config/            # Exemples de configuration du framework
+│   └── examples/          # Exemples de projets du framework
 ├── docs/                  # Planification du projet, diagrammes (SVG), QR codes de paiement
 ├── config/                # Configuration de l'environnement et du déploiement
 └── README.md
@@ -83,9 +87,15 @@ cargo check -p ecat --bins   # vérification de compilation des services métier
 | Service | Port | Description |
 |---|---|---|
 | user-service | 8001 | Inscription / connexion / profil utilisateur |
-| booking-service | 8002 | Dates des destinations populaires + liste / détail des attractions |
+| booking-service | 8002 | Dates des destinations populaires + liste / détail des attractions + avis |
 | admin-service | 8003 | Admin : connexion + CRUD destinations / attractions |
-| Passerelle Nginx | 8082→80 | Routage par préfixe `/api/user/`, `/api/booking/`, `/api/admin/` |
+| search-service | 8004 | Recherche multilingue |
+| line-service | 8005 | Circuits touristiques |
+| order-service | 8006 | Commandes |
+| flight-service | 8007 | Vols |
+| hotel-service | 8008 | Hôtels |
+| payment-service | 8009 | Paiements |
+| Passerelle Nginx | 8082→80 | Routage par préfixe `/api/user/`, `/api/booking/`, `/api/admin/`, `/api/search`, `/api/lines`, `/api/orders`, `/api/flights`, `/api/hotels`, `/api/payments` |
 | MySQL | 3308→3306 | Source de données |
 | Redis | 6381→6379 | Cache / limitation de débit |
 | OpenSearch | 9201→9200 | Recherche multilingue |

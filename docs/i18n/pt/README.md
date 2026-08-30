@@ -61,7 +61,11 @@ open-travel/
 ├── apps/                  # Diretório de aplicativos cliente
 │   ├── flutter/           # Flutter: iOS / Android / Web / Desktop (i18n em 12+ idiomas)
 │   └── harmonyos/         # Cliente nativo HarmonyOS
-├── e-cat/                 # Framework Rust de microsserviços e-cat (51 crates)
+├── e-cat/                 # Framework e-cat + serviços de negócio (um único Cargo workspace)
+│   ├── ecat*/             # 51 crates do framework ecat-*
+│   ├── ecat/              # Crate principal: fachada + módulos de negócio (src/business/) + entradas de serviços (src/bin/)
+│   ├── config/            # Exemplos de configuração do framework
+│   └── examples/          # Exemplos de projetos do framework
 ├── docs/                  # Planejamento do projeto, diagramas (SVG), códigos QR de pagamento
 ├── config/                # Configuração de ambiente e implantação
 └── README.md
@@ -85,9 +89,15 @@ cargo check -p ecat --bins   # verificação de compilação dos serviços de ne
 | Serviço | Porta | Descrição |
 |---|---|---|
 | user-service | 8001 | Registro / login / perfil do usuário |
-| booking-service | 8002 | Datas de destinos populares + lista / detalhe de atrações |
+| booking-service | 8002 | Datas de destinos populares + lista / detalhe de atrações + avaliações |
 | admin-service | 8003 | Admin: login + CRUD de destinos / atrações |
-| Gateway Nginx | 8082→80 | Roteamento por prefixos `/api/user/`, `/api/booking/`, `/api/admin/` |
+| search-service | 8004 | Pesquisa multilíngue |
+| line-service | 8005 | Roteiros turísticos |
+| order-service | 8006 | Pedidos |
+| flight-service | 8007 | Voos |
+| hotel-service | 8008 | Hotéis |
+| payment-service | 8009 | Pagamentos |
+| Gateway Nginx | 8082→80 | Roteamento por prefixos `/api/user/`, `/api/booking/`, `/api/admin/`, `/api/search`, `/api/lines`, `/api/orders`, `/api/flights`, `/api/hotels`, `/api/payments` |
 | MySQL | 3308→3306 | Fonte de dados |
 | Redis | 6381→6379 | Cache / limitação de taxa |
 | OpenSearch | 9201→9200 | Busca multilíngue |

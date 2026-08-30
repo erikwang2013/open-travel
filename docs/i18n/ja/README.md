@@ -59,7 +59,11 @@ open-travel/
 ├── apps/                  # マルチプラットフォームクライアントディレクトリ
 │   ├── flutter/           # Flutter：iOS / Android / Web / Desktop（12+ 言語 i18n）
 │   └── harmonyos/         # HarmonyOS ネイティブクライアント
-├── e-cat/                 # e-cat Rust マイクロサービスフレームワーク（51 crates）
+├── e-cat/                 # e-cat フレームワーク + 業務サービス（同一 Cargo workspace）
+│   ├── ecat*/             # 51 個の ecat-* フレームワーク crate
+│   ├── ecat/              # メイン crate：ファサード + 業務モジュール（src/business/）+ サービス入口（src/bin/）
+│   ├── config/            # フレームワーク設定例
+│   └── examples/          # フレームワークのサンプルプロジェクト
 ├── docs/                  # プロジェクト計画、アーキテクチャ図（SVG）、決済用 QR コード
 ├── config/                # 環境設定とデプロイ設定
 └── README.md
@@ -83,9 +87,15 @@ cargo check -p ecat --bins   # 業務サービスのコンパイルチェック
 | サービス | ポート | 説明 |
 |---|---|---|
 | user-service | 8001 | ユーザー登録 / ログイン / プロフィール |
-| booking-service | 8002 | 人気目的地の日付 + 観光スポット一覧 / 詳細 |
+| booking-service | 8002 | 人気目的地の日付 + 観光スポット一覧 / 詳細 + レビュー |
 | admin-service | 8003 | 管理：ログイン + 目的地 / 観光スポット CRUD |
-| Nginx ゲートウェイ | 8082→80 | `/api/user/`、`/api/booking/`、`/api/admin/` プレフィックスで振り分け |
+| search-service | 8004 | 多言語検索 |
+| line-service | 8005 | ツアーライン |
+| order-service | 8006 | 注文 |
+| flight-service | 8007 | 航空券 |
+| hotel-service | 8008 | ホテル |
+| payment-service | 8009 | 決済 |
+| Nginx ゲートウェイ | 8082→80 | `/api/user/`、`/api/booking/`、`/api/admin/`、`/api/search`、`/api/lines`、`/api/orders`、`/api/flights`、`/api/hotels`、`/api/payments` プレフィックスで振り分け |
 | MySQL | 3308→3306 | データソース |
 | Redis | 6381→6379 | キャッシュ / レート制限 |
 | OpenSearch | 9201→9200 | 多言語検索 |

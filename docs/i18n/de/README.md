@@ -59,7 +59,11 @@ open-travel/
 ├── apps/                  # Verzeichnis der Clienten
 │   ├── flutter/           # Flutter: iOS / Android / Web / Desktop (i18n in 12+ Sprachen)
 │   └── harmonyos/         # Nativer HarmonyOS-Client
-├── e-cat/                 # Rust-Mikroservice-Framework e-cat (51 Crates)
+├── e-cat/                 # e-cat-Framework + Geschäftsdienste (ein Cargo-Workspace)
+│   ├── ecat*/             # 51 ecat-*-Framework-Crates
+│   ├── ecat/              # Haupt-Crate: Fassade + Geschäftsmodule (src/business/) + Service-Einstiege (src/bin/)
+│   ├── config/            # Framework-Konfigurationsbeispiele
+│   └── examples/          # Framework-Beispielprojekte
 ├── docs/                  # Projektplanung, Diagramme (SVG), Zahlungs-QR-Codes
 ├── config/                # Umgebungs- und Deployment-Konfiguration
 └── README.md
@@ -83,9 +87,15 @@ cargo check -p ecat --bins   # Kompilierprüfung der Geschäftsdienste
 | Dienst | Port | Beschreibung |
 |---|---|---|
 | user-service | 8001 | Benutzerregistrierung / Anmeldung / Profil |
-| booking-service | 8002 | Datumsangaben beliebter Reiseziele + Sehenswürdigkeiten-Liste / -Detail |
+| booking-service | 8002 | Datumsangaben beliebter Reiseziele + Sehenswürdigkeiten-Liste / -Detail + Bewertungen |
 | admin-service | 8003 | Admin: Anmeldung + CRUD für Reiseziele / Sehenswürdigkeiten |
-| Nginx-Gateway | 8082→80 | Routing nach Präfixen `/api/user/`, `/api/booking/`, `/api/admin/` |
+| search-service | 8004 | Mehrsprachige Suche |
+| line-service | 8005 | Reiselinien |
+| order-service | 8006 | Bestellungen |
+| flight-service | 8007 | Flüge |
+| hotel-service | 8008 | Hotels |
+| payment-service | 8009 | Zahlungen |
+| Nginx-Gateway | 8082→80 | Routing nach Präfixen `/api/user/`, `/api/booking/`, `/api/admin/`, `/api/search`, `/api/lines`, `/api/orders`, `/api/flights`, `/api/hotels`, `/api/payments` |
 | MySQL | 3308→3306 | Datenquelle |
 | Redis | 6381→6379 | Cache / Rate-Limiting |
 | OpenSearch | 9201→9200 | Mehrsprachige Suche |

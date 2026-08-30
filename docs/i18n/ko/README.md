@@ -59,7 +59,11 @@ open-travel/
 ├── apps/                  # 멀티 플랫폼 클라이언트 디렉터리
 │   ├── flutter/           # Flutter: iOS / Android / Web / Desktop(12+ 언어 i18n)
 │   └── harmonyos/         # HarmonyOS 네이티브 클라이언트
-├── e-cat/                 # e-cat Rust 마이크로서비스 프레임워크(51 crates)
+├── e-cat/                 # e-cat 프레임워크 + 비즈니스 서비스(단일 Cargo workspace)
+│   ├── ecat*/             # 51개 ecat-* 프레임워크 crate
+│   ├── ecat/              # 메인 프레임워크 crate: 파사드 + 비즈니스 모듈 (src/business/) + 서비스 엔트리 (src/bin/)
+│   ├── config/            # 프레임워크 설정 예제
+│   └── examples/          # 프레임워크 예제 프로젝트
 ├── docs/                  # 프로젝트 계획, 아키텍처 다이어그램(SVG), 결제 QR 코드
 ├── config/                # 환경 및 배포 구성
 └── README.md
@@ -83,9 +87,15 @@ cargo check -p ecat --bins   # 비즈니스 서비스 컴파일 확인
 | 서비스 | 포트 | 설명 |
 |---|---|---|
 | user-service | 8001 | 사용자 가입 / 로그인 / 프로필 |
-| booking-service | 8002 | 인기 목적지 날짜 + 관광지 목록 / 상세 |
+| booking-service | 8002 | 인기 목적지 날짜 + 관광지 목록 / 상세 + 리뷰 |
 | admin-service | 8003 | 관리자: 로그인 + 목적지 / 관광지 CRUD |
-| Nginx 게이트웨이 | 8082→80 | `/api/user/`, `/api/booking/`, `/api/admin/` 프리픽스 라우팅 |
+| search-service | 8004 | 다국어 검색 |
+| line-service | 8005 | 여행 라인 |
+| order-service | 8006 | 주문 |
+| flight-service | 8007 | 항공권 |
+| hotel-service | 8008 | 호텔 |
+| payment-service | 8009 | 결제 |
+| Nginx 게이트웨이 | 8082→80 | `/api/user/`, `/api/booking/`, `/api/admin/`, `/api/search`, `/api/lines`, `/api/orders`, `/api/flights`, `/api/hotels`, `/api/payments` 프리픽스 라우팅 |
 | MySQL | 3308→3306 | 데이터 소스 |
 | Redis | 6381→6379 | 캐시 / 속도 제한 |
 | OpenSearch | 9201→9200 | 다국어 검색 |

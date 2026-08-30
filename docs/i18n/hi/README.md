@@ -61,7 +61,11 @@ open-travel/
 ├── apps/                  # मल्टी-प्लेटफ़ॉर्म क्लाइंट निर्देशिका
 │   ├── flutter/           # Flutter: iOS / Android / Web / Desktop (12+ भाषाओं में i18n)
 │   └── harmonyos/         # HarmonyOS नेटिव क्लाइंट
-├── e-cat/                 # e-cat Rust माइक्रोसर्विस फ्रेमवर्क (51 crates)
+├── e-cat/                 # e-cat फ्रेमवर्क + बिजनेस सेवाएं (एक ही Cargo workspace)
+│   ├── ecat*/             # 51 ecat-* फ्रेमवर्क क्रेट
+│   ├── ecat/              # मुख्य फ्रेमवर्क क्रेट: फेकाडे + बिजनेस मॉड्यूल (src/business/) + सर्विस एंट्री (src/bin/)
+│   ├── config/            # फ्रेमवर्क कॉन्फ़िग उदाहरण
+│   └── examples/          # फ्रेमवर्क उदाहरण प्रोजेक्ट
 ├── docs/                  # परियोजना योजना, आरेख (SVG), भुगतान QR कोड
 ├── config/                # पर्यावरण और डिप्लॉयमेंट कॉन्फ़िगरेशन
 └── README.md
@@ -85,9 +89,15 @@ cargo check -p ecat --bins   # व्यावसायिक सेवाओं
 | सेवा | पोर्ट | विवरण |
 |---|---|---|
 | user-service | 8001 | उपयोगकर्ता पंजीकरण / लॉगिन / प्रोफ़ाइल |
-| booking-service | 8002 | लोकप्रिय गंतव्य तिथियाँ + आकर्षण सूची / विवरण |
+| booking-service | 8002 | लोकप्रिय गंतव्य तिथियाँ + आकर्षण सूची / विवरण + समीक्षाएं |
 | admin-service | 8003 | व्यवस्थापन: लॉगिन + गंतव्य / आकर्षण CRUD |
-| Nginx गेटवे | 8082→80 | `/api/user/`, `/api/booking/`, `/api/admin/` प्रीफिक्स रूटिंग |
+| search-service | 8004 | बहुभाषी खोज |
+| line-service | 8005 | यात्रा लाइनें |
+| order-service | 8006 | ऑर्डर |
+| flight-service | 8007 | उड़ानें |
+| hotel-service | 8008 | होटल |
+| payment-service | 8009 | भुगतान |
+| Nginx गेटवे | 8082→80 | `/api/user/`, `/api/booking/`, `/api/admin/`, `/api/search`, `/api/lines`, `/api/orders`, `/api/flights`, `/api/hotels`, `/api/payments` प्रीफिक्स रूटिंग |
 | MySQL | 3308→3306 | डेटा स्रोत |
 | Redis | 6381→6379 | कैश / रेट लिमिटिंग |
 | OpenSearch | 9201→9200 | बहुभाषी खोज |

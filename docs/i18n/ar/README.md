@@ -59,7 +59,11 @@ open-travel/
 ├── apps/                  # دليل العملاء متعددي المنصات
 │   ├── flutter/           # Flutter: iOS / Android / Web / Desktop (تدويل لأكثر من 12 لغة)
 │   └── harmonyos/         # عميل HarmonyOS الأصلي
-├── e-cat/                 # إطار عمل ميكروسيرفيس e-cat بلغة Rust (51 crate)
+├── e-cat/                 # إطار عمل e-cat + خدمات الأعمال (مساحة عمل Cargo واحدة)
+│   ├── ecat*/             # 51 كريت إطار العمل ecat-*
+│   ├── ecat/              # كريت الإطار الرئيسي: الواجهة + وحدات الأعمال (src/business/) + مداخل الخدمات (src/bin/)
+│   ├── config/            # أمثلة إعدادات الإطار
+│   └── examples/          # أمثلة مشاريع الإطار
 ├── docs/                  # تخطيط المشروع، المخططات (SVG)، رموز QR للدفع
 ├── config/                # إعدادات البيئة والنشر
 └── README.md
@@ -83,9 +87,15 @@ cargo check -p ecat --bins   # التحقق من تجميع خدمات الأع�
 | الخدمة | المنفذ | الوصف |
 |---|---|---|
 | user-service | 8001 | تسجيل / دخول / ملف المستخدم |
-| booking-service | 8002 | تواريخ الوجهات الشائعة + قائمة / تفاصيل المعالم |
+| booking-service | 8002 | تواريخ الوجهات الشائعة + قائمة / تفاصيل المعالم + التقييمات |
 | admin-service | 8003 | الإدارة: تسجيل الدخول + إدارة الوجهات / المعالم |
-| بوابة Nginx | 8082→80 | توجيه حسب البادئات `/api/user/` و`/api/booking/` و`/api/admin/` |
+| search-service | 8004 | بحث متعدد اللغات |
+| line-service | 8005 | خطوط السفر |
+| order-service | 8006 | الطلبات |
+| flight-service | 8007 | الرحلات الجوية |
+| hotel-service | 8008 | الفنادق |
+| payment-service | 8009 | المدفوعات |
+| بوابة Nginx | 8082→80 | توجيه حسب البادئات `/api/user/` و`/api/booking/` و`/api/admin/` و`/api/search` و`/api/lines` و`/api/orders` و`/api/flights` و`/api/hotels` و`/api/payments` |
 | MySQL | 3308→3306 | مصدر البيانات |
 | Redis | 6381→6379 | التخزين المؤقت / الحد من المعدل |
 | OpenSearch | 9201→9200 | البحث متعدد اللغات |
