@@ -97,6 +97,13 @@ fn order_body(line_id: u64, line_date_id: u64, qty: u64) -> Value {
     json!({"order_type": 1, "product_id": line_id, "line_date_id": line_date_id, "quantity": qty})
 }
 
+/// 触碰库存的用例全部串行：pick_line_date 取同一行（LIMIT 1），并发会互相踩余位。
+static LOCK: std::sync::OnceLock<tokio::sync::Mutex<()>> = std::sync::OnceLock::new();
+
+async fn lock() -> tokio::sync::MutexGuard<'static, ()> {
+    LOCK.get_or_init(|| tokio::sync::Mutex::new(())).lock().await
+}
+
 #[tokio::test]
 async fn create_order_requires_jwt() {
     // JwtAuthLayer 直接拒绝（非 JSON 信封），只断言状态码
@@ -121,6 +128,7 @@ async fn unsupported_order_type_returns_400() {
 #[tokio::test]
 async fn create_order_success_decrements_seats() {
     let Some(db) = connect_primary().await else { return };
+    let _g = lock().await;
     let (ld_id, line_id, price) = pick_line_date(&db, 10).await;
     let (status, body) = call(
         router(state_with(db.clone())),
@@ -146,6 +154,7 @@ async fn create_order_success_decrements_seats() {
 #[tokio::test]
 async fn insufficient_stock_returns_409() {
     let Some(db) = connect_primary().await else { return };
+    let _g = lock().await;
     let (ld_id, line_id, _) = pick_line_date(&db, 1).await;
     let (status, body) = call(
         router(state_with(db.clone())),
@@ -168,6 +177,7 @@ async fn insufficient_stock_returns_409() {
 #[tokio::test]
 async fn concurrent_orders_cannot_oversell() {
     let Some(db) = connect_primary().await else { return };
+    let _g = lock().await;
     let (ld_id, line_id, _) = pick_line_date(&db, 1).await;
     let r = router(state_with(db.clone()));
     let token = sign("1");
@@ -189,6 +199,7 @@ async fn concurrent_orders_cannot_oversell() {
 #[tokio::test]
 async fn cancel_success_restores_seats() {
     let Some(db) = connect_primary().await else { return };
+    let _g = lock().await;
     let (ld_id, line_id, _) = pick_line_date(&db, 10).await;
     let r = router(state_with(db.clone()));
     let token = sign("1");
@@ -207,6 +218,7 @@ async fn cancel_success_restores_seats() {
 #[tokio::test]
 async fn cancel_non_pending_returns_400() {
     let Some(db) = connect_primary().await else { return };
+    let _g = lock().await;
     let (ld_id, line_id, _) = pick_line_date(&db, 10).await;
     let r = router(state_with(db.clone()));
     let token = sign("1");
@@ -226,6 +238,7 @@ async fn cancel_non_pending_returns_400() {
 #[tokio::test]
 async fn list_returns_only_own_orders() {
     let Some(db) = connect_primary().await else { return };
+    let _g = lock().await;
     let (ld_id, line_id, _) = pick_line_date(&db, 10).await;
     let r = router(state_with(db.clone()));
     let (_, _) = call(r.clone(), "POST", "/api/orders", Some(&sign("1")), Some(order_body(line_id, ld_id, 1))).await;
@@ -246,6 +259,7 @@ async fn list_returns_only_own_orders() {
 #[tokio::test]
 async fn detail_of_other_user_returns_404() {
     let Some(db) = connect_primary().await else { return };
+    let _g = lock().await;
     let (ld_id, line_id, _) = pick_line_date(&db, 10).await;
     let r = router(state_with(db.clone()));
     let (_, body) = call(r.clone(), "POST", "/api/orders", Some(&sign("1")), Some(order_body(line_id, ld_id, 1))).await;
@@ -260,7 +274,15 @@ async fn detail_of_other_user_returns_404() {
 #[tokio::test]
 async fn expired_pending_order_is_cancelled_and_stock_restored() {
     let Some(db) = connect_primary().await else { return };
+    let _g = lock().await;
     let (ld_id, line_id, _) = pick_line_date(&db, 10).await;
+    // 清掉本行跨运行遗留的 pending 订单：它们过期后会被本用例的惰性清理取消并回补余位
+    db.execute_with(
+        "DELETE FROM travel_orders WHERE status = 0 AND JSON_EXTRACT(product_snapshot, '$.line_date_id') = ?",
+        &[json!(ld_id)],
+    )
+    .await
+    .unwrap();
     let r = router(state_with(db.clone()));
     let token = sign("1");
     let (_, body) = call(r.clone(), "POST", "/api/orders", Some(&token), Some(order_body(line_id, ld_id, 2))).await;
@@ -286,6 +308,7 @@ async fn expired_pending_order_is_cancelled_and_stock_restored() {
 #[tokio::test]
 async fn redis_stock_key_released_on_cancel() {
     let Some(db) = connect_primary().await else { return };
+    let _g = lock().await;
     let Ok(cache) = RedisCache::connect(&std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://localhost:6381".into())).await else { return };
     let cache = Arc::new(cache);
     let (ld_id, line_id, _) = pick_line_date(&db, 10).await;
@@ -351,6 +374,7 @@ async fn new_pending_order(db: &SqlxClient, r: &Router, user: &str) -> u64 {
 #[tokio::test]
 async fn pay_success_marks_order_paid() {
     let Some(db) = connect_primary().await else { return };
+    let _g = lock().await;
     let r = router(state_with(db.clone()));
     let order_id = new_pending_order(&db, &r, "1").await;
     let (status, body) = pay_success_call(r, order_id, Some("dev-internal-secret")).await;
@@ -366,6 +390,7 @@ async fn pay_success_marks_order_paid() {
 #[tokio::test]
 async fn pay_success_idempotent() {
     let Some(db) = connect_primary().await else { return };
+    let _g = lock().await;
     let r = router(state_with(db.clone()));
     let order_id = new_pending_order(&db, &r, "1").await;
     let (s1, b1) = pay_success_call(r.clone(), order_id, Some("dev-internal-secret")).await;
@@ -378,6 +403,7 @@ async fn pay_success_idempotent() {
 #[tokio::test]
 async fn pay_success_without_token_401() {
     let Some(db) = connect_primary().await else { return };
+    let _g = lock().await;
     let r = router(state_with(db.clone()));
     let order_id = new_pending_order(&db, &r, "1").await;
     let (status, _) = pay_success_call(r, order_id, None).await;
@@ -387,6 +413,7 @@ async fn pay_success_without_token_401() {
 #[tokio::test]
 async fn pay_success_cancelled_order_409() {
     let Some(db) = connect_primary().await else { return };
+    let _g = lock().await;
     let r = router(state_with(db.clone()));
     let order_id = new_pending_order(&db, &r, "1").await;
     let (_, _) = call(r.clone(), "POST", &format!("/api/orders/{order_id}/cancel"), Some(&sign("1")), None).await;

@@ -12,7 +12,7 @@ mod service;
 use axum::extract::{Path, Query, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use ecat_data::Cache;
+use ecat_data::{Cache, RdbmsClient};
 use ecat_data_redis::RedisCache;
 use service::*;
 use ecat::business::shared::connect_primary;
@@ -151,6 +151,13 @@ async fn line_detail_returns_localized_itinerary_with_real_db() {
 #[tokio::test]
 async fn line_dates_returns_sorted_future_dates_with_seats_with_real_db() {
     let Some(db) = connect_primary().await else { return; };
+    // 自复位断言行余位（order 测试的 pick_line_date 会改写 id=1 班期）
+    db.execute_with(
+        "UPDATE travel_line_dates SET seats_left = 12 WHERE line_id = 10020001 AND depart_date = '2026-09-10'",
+        &[],
+    )
+    .await
+    .unwrap();
     let (status, body) = body_json(line_dates(
         State(AppState { db: Some(db), replica: None, cache: None }),
         Path(10020001u64),

@@ -12,7 +12,7 @@ mod service;
 use axum::extract::{Path, Query, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use ecat_data::Cache;
+use ecat_data::{Cache, RdbmsClient};
 use ecat_data_redis::RedisCache;
 use service::*;
 use ecat::business::shared::connect_primary;
@@ -92,6 +92,8 @@ async fn detail_returns_404_without_datasource() {
 #[tokio::test]
 async fn search_sorts_by_price_asc_with_real_db() {
     let Some(db) = connect_primary().await else { return; };
+    // 自复位断言行余位（历史遗留订单会消耗，sold_out 断言依赖它）
+    db.execute_with("UPDATE travel_flights SET seats_left = 12 WHERE id = 40001001", &[]).await.unwrap();
     let (status, body) = body_json(flights_search(
         State(AppState { db: Some(db), replica: None, cache: None }),
         Query(q("HND", "HKG", None, None)),
@@ -197,6 +199,8 @@ async fn search_paginates_with_real_db() {
 #[tokio::test]
 async fn detail_returns_flight_and_404_with_real_db() {
     let Some(db) = connect_primary().await else { return; };
+    // 自复位断言行余位（历史遗留 order_type=2 订单会消耗）
+    db.execute_with("UPDATE travel_flights SET seats_left = 12 WHERE id = 40001001", &[]).await.unwrap();
     let (status, body) = body_json(flight_detail(
         State(AppState { db: Some(db.clone()), replica: None, cache: None }),
         Path(40001001u64),
