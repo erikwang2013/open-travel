@@ -73,6 +73,17 @@ open-travel/
 
 > বিস্তারিত প্রযুক্তিগত পরিকল্পনা দেখুন [docs/travel-project-planning.md](../../travel-project-planning.md)।
 
+## ওয়ান-ক্লিক ইনস্টল
+
+প্রয়োজনীয়তা: Docker + Docker Compose (v2)। (Rust টুলচেইন শুধুমাত্র সোর্স থেকে বিল্ড করার সময় প্রয়োজন।)
+
+```bash
+git clone <repo-url> && cd open-travel
+./scripts/install.sh
+```
+
+স্ক্রিপ্টটি স্বয়ংক্রিয়ভাবে: পরিবেশ পরীক্ষা → সব সার্ভিস বিল্ড ও চালু (MySQL / Redis / OpenSearch / Kafka / ৯টি মাইক্রোসার্ভিস / Nginx গেটওয়ে) → সার্চ ইনডেক্স ইনিশিয়ালাইজ → স্বাস্থ্য পরীক্ষা, শেষে অ্যাক্সেস URL ও ডিফল্ট অ্যাডমিন অ্যাকাউন্ট `admin@travel.local` / `Admin@123` প্রিন্ট করে।
+
 ## দ্রুত শুরু
 
 ```bash

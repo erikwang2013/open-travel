@@ -73,6 +73,17 @@ open-travel/
 
 > Lihat perencanaan teknis terperinci di [docs/travel-project-planning.md](../../travel-project-planning.md).
 
+## Instalasi Sekali Klik
+
+Persyaratan: Docker + Docker Compose (v2). (Toolchain Rust hanya diperlukan untuk membangun dari sumber.)
+
+```bash
+git clone <repo-url> && cd open-travel
+./scripts/install.sh
+```
+
+Skrip ini secara otomatis: memeriksa lingkungan → membangun dan menjalankan semua layanan (MySQL / Redis / OpenSearch / Kafka / 9 layanan mikro / gateway Nginx) → menginisialisasi indeks pencarian → pemeriksaan kesehatan, lalu mencetak URL akses dan akun admin default `admin@travel.local` / `Admin@123`.
+
 ## Mulai Cepat
 
 ```bash

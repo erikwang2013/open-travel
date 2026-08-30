@@ -73,6 +73,17 @@ open-travel/
 
 > التخطيط الفني التفصيلي في [docs/travel-project-planning.md](../../travel-project-planning.md).
 
+## تثبيت بنقرة واحدة
+
+المتطلبات: Docker + Docker Compose (v2). (سلسلة أدوات Rust مطلوبة فقط عند البناء من المصدر.)
+
+```bash
+git clone <repo-url> && cd open-travel
+./scripts/install.sh
+```
+
+يقوم السكربت تلقائيًا بـ: فحص البيئة ← بناء وتشغيل جميع الخدمات (MySQL / Redis / OpenSearch / Kafka / 9 خدمات مصغرة / بوابة Nginx) ← تهيئة فهارس البحث ← فحص الصحة، ثم طباعة عنوان الوصول وحساب المدير الافتراضي `admin@travel.local` / `Admin@123`.
+
 ## بدء سريع
 
 ```bash

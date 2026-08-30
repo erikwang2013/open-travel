@@ -56,6 +56,19 @@ All services expose `GET /health` (liveness) and `GET /ready` (readiness, report
 
 > See the [API Reference](../docs/api.md) for request/response examples, auth, and rate-limit details.
 
+## One-Click Install
+
+Requirements: Docker + Docker Compose (v2). (The Rust toolchain is only needed when building from source.)
+
+```bash
+git clone <repo-url> && cd open-travel
+./scripts/install.sh
+```
+
+The script automatically: checks the environment → builds and starts all services (MySQL / Redis / OpenSearch / Kafka / 9 microservices / Nginx gateway) → initializes search indexes → runs a health check, then prints the access URL and the default admin account.
+
+> Usage: check liveness at http://localhost:8082/health; log into the admin console with `admin@travel.local` / `Admin@123`; start the client from `apps/client/flutter` with `flutter run -d chrome`.
+
 ## Quick Start
 
 ### Prerequisites

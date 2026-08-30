@@ -73,6 +73,17 @@ open-travel/
 
 > 詳細な技術計画は [docs/travel-project-planning.md](../../travel-project-planning.md) を参照してください。
 
+## ワンクリックインストール
+
+環境要件：Docker + Docker Compose（v2）。（Rust ツールチェーンはソースからのビルド時のみ必要です。）
+
+```bash
+git clone <repo-url> && cd open-travel
+./scripts/install.sh
+```
+
+スクリプトは自動で：環境チェック → 全サービスの構築・起動（MySQL / Redis / OpenSearch / Kafka / 9 つのマイクロサービス / Nginx ゲートウェイ）→ 検索インデックスの初期化 → ヘルスチェックを行い、最後にアクセス URL とデフォルト管理者アカウント `admin@travel.local` / `Admin@123` を表示します。
+
 ## クイックスタート
 
 ```bash

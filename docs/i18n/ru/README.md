@@ -73,6 +73,17 @@ open-travel/
 
 > Подробное техническое планирование: [docs/travel-project-planning.md](../../travel-project-planning.md).
 
+## Установка в один клик
+
+Требования: Docker + Docker Compose (v2). (Rust toolchain нужен только для сборки из исходников.)
+
+```bash
+git clone <repo-url> && cd open-travel
+./scripts/install.sh
+```
+
+Скрипт автоматически: проверяет окружение → собирает и запускает все сервисы (MySQL / Redis / OpenSearch / Kafka / 9 микросервисов / шлюз Nginx) → инициализирует поисковые индексы → выполняет проверку здоровья, после чего выводит URL доступа и учётную запись администратора по умолчанию `admin@travel.local` / `Admin@123`.
+
 ## Быстрый старт
 
 ```bash

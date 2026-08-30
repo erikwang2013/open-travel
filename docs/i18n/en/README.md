@@ -73,6 +73,17 @@ open-travel/
 
 > See [docs/travel-project-planning.md](../../travel-project-planning.md) for detailed technical planning.
 
+## One-Click Install
+
+Requirements: Docker + Docker Compose (v2). (The Rust toolchain is only needed when building from source.)
+
+```bash
+git clone <repo-url> && cd open-travel
+./scripts/install.sh
+```
+
+The script automatically: checks the environment → builds and starts all services (MySQL / Redis / OpenSearch / Kafka / 9 microservices / Nginx gateway) → initializes search indexes → runs a health check, then prints the access URL and default admin account `admin@travel.local` / `Admin@123`.
+
 ## Quick Start
 
 ```bash

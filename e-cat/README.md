@@ -56,6 +56,19 @@ open-travel/
 
 > 接口详情（请求/响应示例、鉴权与限流说明）见 [API 参考](../docs/api.md)。
 
+## 一键安装
+
+环境要求：Docker + Docker Compose（v2）。（Rust 工具链仅源码构建需要）
+
+```bash
+git clone <仓库地址> && cd open-travel
+./scripts/install.sh
+```
+
+脚本自动：检查环境 → 构建并启动全部服务（MySQL/Redis/OpenSearch/Kafka/9 个微服务/Nginx 网关）→ 初始化搜索索引 → 健康巡检，完成后打印访问地址与默认管理账号。
+
+> 使用说明：访问 http://localhost:8082/health 探活；管理端登录 `admin@travel.local` / `Admin@123`；客户端（`apps/client/flutter`）用 `flutter run -d chrome` 启动。
+
 ## 快速开始
 
 ### 前提条件

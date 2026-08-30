@@ -75,6 +75,17 @@ open-travel/
 
 > विस्तृत तकनीकी योजना के लिए देखें [docs/travel-project-planning.md](../../travel-project-planning.md)।
 
+## वन-क्लिक इंस्टॉल
+
+आवश्यकताएँ: Docker + Docker Compose (v2)। (Rust टूलचेन केवल सोर्स से बिल्ड करने के लिए आवश्यक है।)
+
+```bash
+git clone <repo-url> && cd open-travel
+./scripts/install.sh
+```
+
+स्क्रिप्ट स्वचालित रूप से: पर्यावरण की जाँच → सभी सेवाएँ बिल्ड व शुरू करना (MySQL / Redis / OpenSearch / Kafka / 9 माइक्रोसर्विस / Nginx गेटवे) → सर्च इंडेक्स इनिशियलाइज़ → स्वास्थ्य जाँच, फिर एक्सेस URL और डिफ़ॉल्ट एडमिन खाता `admin@travel.local` / `Admin@123` प्रिंट करती है।
+
 ## त्वरित आरंभ
 
 ```bash

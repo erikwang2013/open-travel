@@ -19,6 +19,19 @@ Open Travel 是一个全球旅游平台 monorepo，采用 **e-cat（一只猫）
 | **国际化** | 12+ 语种 ARB 语言包，RTL 支持，OpenSearch 多语言分词 |
 | **支付** | 微信支付、支付宝 |
 
+## 一键安装
+
+环境要求：Docker + Docker Compose（v2）。（Rust 工具链仅源码构建需要）
+
+```bash
+git clone <仓库地址> && cd open-travel
+./scripts/install.sh
+```
+
+脚本自动：检查环境 → 构建并启动全部服务（MySQL/Redis/OpenSearch/Kafka/9 个微服务/Nginx 网关）→ 初始化搜索索引 → 健康巡检，完成后打印访问地址与默认管理账号。
+
+> 使用说明：访问 http://localhost:8082/health 探活；管理端登录 `admin@travel.local` / `Admin@123`；客户端（`apps/client/flutter`）用 `flutter run -d chrome` 启动。
+
 ## 快速开始
 
 > 以下使用说明聚焦后端（Rust 微服务）；客户端（apps/）构建方式见各子目录。

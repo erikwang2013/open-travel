@@ -87,20 +87,29 @@
   <text x="820" y="400" text-anchor="middle" class="t-s">邮件 · 短信 · 站内信</text>
 
   <!-- 底部技术栈 -->
-  <rect x="185" y="450" width="210" height="150" class="card"/>
-  <rect x="185" y="450" width="210" height="4" class="accent"/>
-  <text x="290" y="492" text-anchor="middle" class="t-m">管理端看板</text>
-  <text x="290" y="512" text-anchor="middle" class="t-eng">Admin Dashboard</text>
-  <line x1="197" y1="524" x2="383" y2="524" stroke="#d0d7de" stroke-width="1"/>
-  <text x="290" y="548" text-anchor="middle" class="t-s">订单量 · GMV · 转化率</text>
-  <text x="290" y="570" text-anchor="middle" class="t-s">Top 目的地与线路 · 图表</text>
-  <rect x="605" y="450" width="210" height="150" class="card"/>
-  <rect x="605" y="450" width="210" height="4" class="accent"/>
-  <text x="710" y="492" text-anchor="middle" class="t-m">CDN 云商管理</text>
-  <text x="710" y="512" text-anchor="middle" class="t-eng">CDN Provider Management</text>
-  <line x1="617" y1="524" x2="803" y2="524" stroke="#d0d7de" stroke-width="1"/>
-  <text x="710" y="548" text-anchor="middle" class="t-s">八云插件 · 启停开关</text>
-  <text x="710" y="570" text-anchor="middle" class="t-s">配置表单 · 命令预览</text>
+  <rect x="40" y="450" width="210" height="150" class="card"/>
+  <rect x="40" y="450" width="210" height="4" class="accent"/>
+  <text x="145" y="492" text-anchor="middle" class="t-m">数据看板</text>
+  <text x="145" y="512" text-anchor="middle" class="t-eng">Data Dashboard</text>
+  <line x1="52" y1="524" x2="238" y2="524" stroke="#d0d7de" stroke-width="1"/>
+  <text x="145" y="548" text-anchor="middle" class="t-s">订单量 · GMV · 转化率</text>
+  <text x="145" y="570" text-anchor="middle" class="t-s">Top 目的地与线路 · 图表</text>
+
+  <rect x="395" y="450" width="210" height="150" class="card"/>
+  <rect x="395" y="450" width="210" height="4" class="accent"/>
+  <text x="500" y="492" text-anchor="middle" class="t-m">报表中心</text>
+  <text x="500" y="512" text-anchor="middle" class="t-eng">Reports Center</text>
+  <line x1="407" y1="524" x2="593" y2="524" stroke="#d0d7de" stroke-width="1"/>
+  <text x="500" y="548" text-anchor="middle" class="t-s">销售日报 · 支付渠道汇总</text>
+  <text x="500" y="570" text-anchor="middle" class="t-s">日期范围筛选</text>
+
+  <rect x="750" y="450" width="210" height="150" class="card"/>
+  <rect x="750" y="450" width="210" height="4" class="accent"/>
+  <text x="820" y="492" text-anchor="middle" class="t-m">CDN 云商管理</text>
+  <text x="820" y="512" text-anchor="middle" class="t-eng">CDN Provider Management</text>
+  <line x1="762" y1="524" x2="948" y2="524" stroke="#d0d7de" stroke-width="1"/>
+  <text x="820" y="548" text-anchor="middle" class="t-s">八云插件 · 启停开关</text>
+  <text x="820" y="570" text-anchor="middle" class="t-s">配置表单 · 命令预览</text>
   <rect x="40" y="620" width="920" height="80" class="panel"/>
   <text x="60" y="500" class="t-h">核心能力栈</text>
   <text x="60" y="528" class="t-s">e-cat (Rust) · Flutter · HarmonyOS · MySQL · Redis · OpenSearch · Kafka · 微信支付 · 支付宝</text>
