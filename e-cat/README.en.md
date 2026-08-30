@@ -15,7 +15,7 @@ Open Travel is a global travel platform monorepo. The backend is built on **e-ca
 | Dimension | Description |
 | :--- | :--- |
 | **Backend** | e-cat (Rust): HTTP/axum + gRPC/tonic, 51-crate microservice ecosystem |
-| **Services** | user-service (:8001), booking-service (:8002), under `e-cat/ecat/src/business/` |
+| **Services** | user-service (:8001) through payment-service (:8009) — 9 services; business logic in `e-cat/ecat/src/business/`, service entries in `e-cat/ecat/src/bin/` |
 | **Gateway** | Nginx (`config/nginx.conf`), prefix-based routing |
 | **Clients** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS) |
 | **Data** | MySQL + Redis cache + OpenSearch multilingual search |
@@ -42,10 +42,17 @@ open-travel/
 | Service | Port | Description |
 |---------|------|-------------|
 | user-service | 8001 | `POST /api/user/register`, `POST /api/user/login` (public), `GET /api/user/profile` (JWT required) |
-| booking-service | 8002 | `GET /api/booking/dates?region_id=N` (public) |
-| Nginx gateway | 8082→80 | Prefix routing: `/api/user/` and `/api/booking/` |
+| booking-service | 8002 | `GET /api/booking/dates?region_id=N` (public), `/api/reviews/` reviews |
+| admin-service | 8003 | Admin: login + destination/attraction CRUD (`/api/admin/`) |
+| search-service | 8004 | Multilingual search (`/api/search`) |
+| line-service | 8005 | Travel lines (`/api/lines`) |
+| order-service | 8006 | Orders (`/api/orders`) |
+| flight-service | 8007 | Flights (`/api/flights`) |
+| hotel-service | 8008 | Hotels (`/api/hotels`) |
+| payment-service | 8009 | Payments (`/api/payments`) |
+| Nginx gateway | 8082→80 | Prefix routing: `/api/user/`, `/api/booking/`, `/api/admin/`, `/api/search`, `/api/lines`, `/api/orders`, `/api/flights`, `/api/hotels`, `/api/payments` |
 
-Both services expose `GET /health` (liveness) and `GET /ready` (readiness, reports degraded data-source state).
+All services expose `GET /health` (liveness) and `GET /ready` (readiness, reports degraded data-source state).
 
 > See the [API Reference](../docs/api.md) for request/response examples, auth, and rate-limit details.
 
@@ -60,18 +67,20 @@ Both services expose `GET /health` (liveness) and `GET /ready` (readiness, repor
 
 ```bash
 cd e-cat
-cargo check -p user-service -p booking-service   # compile-check the business services
+cargo check -p ecat --bin user-service --bin booking-service --bin admin-service \
+  --bin search-service --bin line-service --bin order-service --bin flight-service \
+  --bin hotel-service --bin payment-service   # compile-check the business services
 ```
 
-Run locally in development mode (listening on `0.0.0.0:8001` / `0.0.0.0:8002`):
+Run locally in development mode (listening on `0.0.0.0:8001` – `0.0.0.0:8009`):
 
 ```bash
 cd e-cat
-cargo run -p user-service &
-cargo run -p booking-service
+cargo run -p ecat --bin user-service &
+cargo run -p ecat --bin booking-service
 ```
 
-Build Docker images (`e-cat/Dockerfile`, builds from `e-cat/Cargo.toml` with `-p`):
+Build Docker images (`e-cat/Dockerfile`, builds the nine services with `-p ecat --bin`, binaries at `/usr/local/bin/` in the image):
 
 ```bash
 docker build -f e-cat/Dockerfile -t travel-services .
@@ -130,7 +139,7 @@ curl -H "X-Api-Version: v1" -H "Authorization: Bearer <JWT>" http://localhost:80
 
 ```bash
 cd e-cat
-cargo test -p user-service -p booking-service   # business services
+cargo test -p ecat --bins                        # business services
 cargo test --workspace                          # full workspace
 ```
 

@@ -77,7 +77,7 @@ open-travel/
 
 ```bash
 cd e-cat
-cargo check -p user-service -p booking-service -p admin-service   # Kompilierprüfung der Geschäftsdienste
+cargo check -p ecat --bins   # Kompilierprüfung der Geschäftsdienste
 ```
 
 | Dienst | Port | Beschreibung |

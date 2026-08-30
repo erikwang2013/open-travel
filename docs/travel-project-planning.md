@@ -84,7 +84,7 @@ open-travel/
 ### 3.2 服务骨架（Rust / axum 示例）
 
 ```rust
-// e-cat/services/booking/src/main.rs
+// e-cat/ecat/src/bin/booking-service.rs
 use ecat::App;
 use ecat_auth::jwt::JwtAuthLayer;
 use ecat_middleware::{RateLimitLayer, SecurityLayer, TracingLayer, CircuitBreaker};

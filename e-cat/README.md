@@ -15,7 +15,7 @@ Open Travel 是一个全球旅游平台 monorepo。后端基于 **e-cat（一只
 | 维度 | 说明 |
 | :--- | :--- |
 | **后端** | e-cat（Rust）：HTTP/axum + gRPC/tonic，51 crates 微服务生态 |
-| **业务服务** | user-service（:8001）、booking-service（:8002），位于 `e-cat/ecat/src/business/` |
+| **业务服务** | user-service（:8001）～ payment-service（:8009）九个服务；业务逻辑在 `e-cat/ecat/src/business/`，服务入口在 `e-cat/ecat/src/bin/` |
 | **网关** | Nginx（`config/nginx.conf`），按 URL 前缀分流 |
 | **多端客户端** | `apps/client/flutter`（iOS / Android / Web / Desktop）、`apps/client/harmonyos`（鸿蒙） |
 | **数据源** | MySQL + Redis 缓存 + OpenSearch 多语言搜索 |
@@ -42,10 +42,17 @@ open-travel/
 | 服务 | 端口 | 说明 |
 |------|------|------|
 | user-service | 8001 | `POST /api/user/register`、`POST /api/user/login`（公开）、`GET /api/user/profile`（需 JWT） |
-| booking-service | 8002 | `GET /api/booking/dates?region_id=N`（公开接口） |
-| Nginx 网关 | 8082→80 | 按 `/api/user/` 与 `/api/booking/` 前缀分流 |
+| booking-service | 8002 | `GET /api/booking/dates?region_id=N`（公开接口）、`/api/reviews/` 评价 |
+| admin-service | 8003 | 管理端：登录 + 目的地/景区 CRUD（`/api/admin/`） |
+| search-service | 8004 | 多语种搜索（`/api/search`） |
+| line-service | 8005 | 旅游线路（`/api/lines`） |
+| order-service | 8006 | 订单（`/api/orders`） |
+| flight-service | 8007 | 机票（`/api/flights`） |
+| hotel-service | 8008 | 酒店（`/api/hotels`） |
+| payment-service | 8009 | 支付（`/api/payments`） |
+| Nginx 网关 | 8082→80 | 按 `/api/user/`、`/api/booking/`、`/api/admin/`、`/api/search`、`/api/lines`、`/api/orders`、`/api/flights`、`/api/hotels`、`/api/payments` 前缀分流 |
 
-两个服务均提供 `GET /health`（存活）与 `GET /ready`（就绪，报告数据源降级状态）。
+所有服务均提供 `GET /health`（存活）与 `GET /ready`（就绪，报告数据源降级状态）。
 
 > 接口详情（请求/响应示例、鉴权与限流说明）见 [API 参考](../docs/api.md)。
 
@@ -60,18 +67,20 @@ open-travel/
 
 ```bash
 cd e-cat
-cargo check -p user-service -p booking-service   # 编译检查业务服务
+cargo check -p ecat --bin user-service --bin booking-service --bin admin-service \
+  --bin search-service --bin line-service --bin order-service --bin flight-service \
+  --bin hotel-service --bin payment-service   # 编译检查业务服务
 ```
 
-本地开发模式运行（各自监听 `0.0.0.0:8001` / `0.0.0.0:8002`）：
+本地开发模式运行（各自监听 `0.0.0.0:8001` ～ `0.0.0.0:8009`）：
 
 ```bash
 cd e-cat
-cargo run -p user-service &
-cargo run -p booking-service
+cargo run -p ecat --bin user-service &
+cargo run -p ecat --bin booking-service
 ```
 
-构建 Docker 镜像（`e-cat/Dockerfile`，从 `e-cat/Cargo.toml` 按 `-p` 构建）：
+构建 Docker 镜像（`e-cat/Dockerfile`，按 `-p ecat --bin` 构建九个服务，镜像内产物位于 `/usr/local/bin/`）：
 
 ```bash
 docker build -f e-cat/Dockerfile -t travel-services .
@@ -130,7 +139,7 @@ curl -H "X-Api-Version: v1" -H "Authorization: Bearer <JWT>" http://localhost:80
 
 ```bash
 cd e-cat
-cargo test -p user-service -p booking-service   # 业务服务
+cargo test -p ecat --bins                        # 业务服务
 cargo test --workspace                          # 全 workspace
 ```
 

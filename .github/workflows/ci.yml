@@ -14,8 +14,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo check -p user-service -p booking-service
-      - run: cargo test -p user-service -p booking-service
+      - run: cargo check -p ecat --bins
+      - run: cargo test -p ecat --bins
 
   flutter:
     runs-on: ubuntu-latest

@@ -79,7 +79,7 @@ open-travel/
 
 ```bash
 cd e-cat
-cargo check -p user-service -p booking-service -p admin-service   # verificación de compilación de los servicios de negocio
+cargo check -p ecat --bins   # verificación de compilación de los servicios de negocio
 ```
 
 | Servicio | Puerto | Descripción |

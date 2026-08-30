@@ -32,7 +32,9 @@ Open Travel 是一个全球旅游平台 monorepo，采用 **e-cat（一只猫）
 
 ```bash
 cd e-cat
-cargo check -p user-service -p booking-service -p admin-service   # 编译检查业务服务
+cargo check -p ecat --bin user-service --bin booking-service --bin admin-service \
+  --bin search-service --bin line-service --bin order-service --bin flight-service \
+  --bin hotel-service --bin payment-service   # 编译检查业务服务
 
 docker compose -f config/docker-compose.yml up -d   # 启动数据源 + 服务 + 网关
 ```
@@ -44,9 +46,15 @@ docker compose -f config/docker-compose.yml up -d   # 启动数据源 + 服务 +
 | 服务 | 端口 | 说明 |
 |------|------|------|
 | user-service | 8001 | 用户注册 / 登录 / 资料 |
-| booking-service | 8002 | 热门目的地日期 + 景区列表/详情 |
+| booking-service | 8002 | 热门目的地日期 + 景区列表/详情 + 评价 |
 | admin-service | 8003 | 管理端：登录 + 目的地/景区 CRUD |
-| Nginx 网关 | 8082→80 | 按 `/api/user/`、`/api/booking/`、`/api/admin/` 前缀分流 |
+| search-service | 8004 | 多语种搜索 |
+| line-service | 8005 | 旅游线路 |
+| order-service | 8006 | 订单 |
+| flight-service | 8007 | 机票 |
+| hotel-service | 8008 | 酒店 |
+| payment-service | 8009 | 支付 |
+| Nginx 网关 | 8082→80 | 按 `/api/user/`、`/api/booking/`、`/api/admin/`、`/api/search`、`/api/lines`、`/api/orders`、`/api/flights`、`/api/hotels`、`/api/payments` 前缀分流 |
 | MySQL | 3308→3306 | 数据源（宿主端口冲突，临时映射） |
 | Redis | 6381→6379 | 缓存 / 限流 |
 | OpenSearch | 9201→9200 | 多语言搜索 |
@@ -127,7 +135,11 @@ open-travel/
 │   │   ├── flutter/       # Flutter：iOS / Android / Web / Desktop（12+ 语种 i18n）
 │   │   └── harmonyos/     # 鸿蒙原生客户端
 │   └── admin/             # Flutter Web 管理端
-├── e-cat/                 # e-cat Rust 微服务框架（51 crates）
+├── e-cat/                 # e-cat 框架 + 业务服务（同一 Cargo workspace）
+│   ├── ecat*/             # 51 个 ecat-* 框架 crate
+│   ├── ecat/              # 主框架 crate：门面 + 业务模块（src/business/）+ 服务入口（src/bin/）
+│   ├── config/            # 框架配置示例
+│   └── examples/          # 框架示例项目
 ├── docs/                  # 项目规划、架构图（SVG）、支付二维码
 ├── config/                # 环境与部署配置
 └── README.md

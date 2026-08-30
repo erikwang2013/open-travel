@@ -77,7 +77,7 @@ open-travel/
 
 ```bash
 cd e-cat
-cargo check -p user-service -p booking-service -p admin-service   # التحقق من تجميع خدمات الأعمال
+cargo check -p ecat --bins   # التحقق من تجميع خدمات الأعمال
 ```
 
 | الخدمة | المنفذ | الوصف |

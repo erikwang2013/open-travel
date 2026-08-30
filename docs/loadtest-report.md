@@ -58,7 +58,7 @@ ALTER TABLE travel_orders
 
 ### 遗留项（ponytail: 数据量小时不处理，表增长后执行）
 
-1. **travel_flights 日期过滤用了 `CAST(depart_at AS DATE) = ?`**（e-cat/services/flight/src/main.rs:157），函数包裹列使 depart_at 无法走索引，航班量大时该过滤会退化为扫 idx_route 前缀后过滤。建议改为范围查询 `depart_at >= ? AND depart_at < DATE_ADD(?, INTERVAL 1 DAY)`，仅需改 handler 一处。
+1. **travel_flights 日期过滤用了 `CAST(depart_at AS DATE) = ?`**（e-cat/ecat/src/bin/flight-service.rs），函数包裹列使 depart_at 无法走索引，航班量大时该过滤会退化为扫 idx_route 前缀后过滤。建议改为范围查询 `depart_at >= ? AND depart_at < DATE_ADD(?, INTERVAL 1 DAY)`，仅需改 handler 一处。
 2. travel_hotels 搜索 ORDER BY star DESC 有 filesort；如需彻底消除可加 (city_code, status, star) 复合索引，当前 5 行数据无收益。
 
 ## 缓存治理

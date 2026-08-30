@@ -77,7 +77,7 @@ open-travel/
 
 ```bash
 cd e-cat
-cargo check -p user-service -p booking-service -p admin-service   # বিজনেস সার্ভিসের কম্পাইল চেক
+cargo check -p ecat --bins   # বিজনেস সার্ভিসের কম্পাইল চেক
 ```
 
 | সার্ভিস | পোর্ট | বিবরণ |

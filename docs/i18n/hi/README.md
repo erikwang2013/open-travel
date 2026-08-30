@@ -79,7 +79,7 @@ open-travel/
 
 ```bash
 cd e-cat
-cargo check -p user-service -p booking-service -p admin-service   # व्यावसायिक सेवाओं की कंपाइल जाँच
+cargo check -p ecat --bins   # व्यावसायिक सेवाओं की कंपाइल जाँच
 ```
 
 | सेवा | पोर्ट | विवरण |

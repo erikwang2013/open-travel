@@ -50,11 +50,11 @@ Open Travel 是面向全球用户的旅游平台 monorepo，覆盖**景点、景
 
 ### 3.1 服务与接口
 
-- **user-service**（`e-cat/services/user`）：注册 / 登录 / 资料查询，JWT 认证
+- **user-service**（`e-cat/ecat/src/bin/user-service.rs`，业务模块 `e-cat/ecat/src/business/user`）：注册 / 登录 / 资料查询，JWT 认证
   - `POST /api/user/register` — 公开；邮箱格式 + 密码 ≥6 位校验，bcrypt cost 12，重复邮箱返回 409
   - `POST /api/user/login` — 公开；统一 401 防账号枚举，签发 JWT（24h）
   - `GET /api/user/profile` — 需 JWT，返回 id / email / lang
-- **booking-service**（`e-cat/services/booking`）：
+- **booking-service**（`e-cat/ecat/src/bin/booking-service.rs`，业务模块 `e-cat/ecat/src/business/booking`）：
   - `GET /api/booking/dates?region_id=N` — 公开；Redis 缓存 `hot_destinations:{id}`（TTL 300s）→ MySQL 回源（`travel_destinations`）→ 占位数据兜底
 - 两服务均提供 `/health`、`/ready`；所有业务请求强制 `X-Api-Version: v1`（缺失返回 400）
 - 中间件链：`Tracing → CircuitBreaker → Security → RateLimit(Redis 固定窗口 100 次/60s，超限 429)`；仅 profile 挂 JWT
