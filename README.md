@@ -1,6 +1,7 @@
 # Open Travel — 全球旅游平台
 
-<p align="center"><img src="docs/mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><img src="docs/mascot.svg" alt="Dora 小途 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><sub>吉祥物「小途」猫造型基于 <a href="https://github.com/jdecked/twemoji">Twemoji</a>（CC-BY 4.0）修改 · 呼应 e-cat（一只猫）框架</sub></p>
 
 [English](docs/i18n/en/README.md) | [日本語](docs/i18n/ja/README.md) | [한국어](docs/i18n/ko/README.md) | [Русский](docs/i18n/ru/README.md) | [Deutsch](docs/i18n/de/README.md) | [Français](docs/i18n/fr/README.md) | [Español](docs/i18n/es/README.md) | [Português](docs/i18n/pt/README.md) | [हिन्दी](docs/i18n/hi/README.md) | [العربية](docs/i18n/ar/README.md) | [বাংলা](docs/i18n/bn/README.md) | [Bahasa Indonesia](docs/i18n/id/README.md)
 
