@@ -6,7 +6,7 @@ const cabinLabels = {0: '经济舱', 1: '商务舱', 2: '头等舱'};
 
 class Flight {
   Flight.fromJson(Map<String, dynamic> j)
-      : id = j['id'] as int,
+      : id = (j['id_str'] ?? j['id'].toString()) as String,
         airline = (j['airline'] ?? '') as String,
         flightNo = (j['flight_no'] ?? '') as String,
         fromCode = (j['from_code'] ?? '') as String,
@@ -18,7 +18,7 @@ class Flight {
         seatsLeft = (j['seats_left'] ?? 0) as int,
         status = (j['status'] ?? 0) as int;
 
-  final int id;
+  final String id;
   final String airline;
   final String flightNo;
   final String fromCode;

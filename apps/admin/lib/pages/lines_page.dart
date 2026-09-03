@@ -15,7 +15,7 @@ const lineLangLabels = {
 };
 
 class Line {
-  final int id;
+  final String id;
   final Map<String, String> titles;
   final int destinationId;
   final int days;
@@ -27,7 +27,7 @@ class Line {
   final String coverUrl;
 
   Line.fromJson(Map<String, dynamic> j)
-      : id = j['id'] as int,
+      : id = (j['id_str'] ?? j['id'].toString()) as String,
         titles = {
           for (final l in lineLangs) l: (j['title_$l'] ?? '') as String,
         },
@@ -74,7 +74,8 @@ class _LinesPageState extends State<LinesPage> {
       final names = <int, String>{};
       for (final e in data['list'] as List) {
         final d = Destination.fromJson(e as Map<String, dynamic>);
-        names[d.id] = d.nameZh.isEmpty ? d.nameEn : d.nameZh;
+        // 展示键与 line.destinationId（int FK）对齐；雪花大 id 精度损失仅影响名称展示回退
+        names[int.tryParse(d.id) ?? 0] = d.nameZh.isEmpty ? d.nameEn : d.nameZh;
       }
       if (mounted) setState(() => _destNames = names);
     } catch (_) {
@@ -220,7 +221,7 @@ class _LinesPageState extends State<LinesPage> {
                         ],
                         rows: _list
                             .map((l) => DataRow(cells: [
-                                  DataCell(Text('${l.id}')),
+                                  DataCell(Text(l.id)),
                                   DataCell(Text(
                                       '${l.titleEn}\n${l.titleZh}')),
                                   DataCell(Text(_destNames[l.destinationId] ??

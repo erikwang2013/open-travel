@@ -35,6 +35,7 @@ fn col_str(row: &Row, col: &str) -> String {
 fn user_from_row(row: &Row) -> Value {
     json!({
         "id": col_u64(row, "id"),
+        "id_str": col_u64(row, "id").to_string(),
         "email": col_str(row, "email"),
         "lang": col_str(row, "lang"),
         "status": col_u64(row, "status"),

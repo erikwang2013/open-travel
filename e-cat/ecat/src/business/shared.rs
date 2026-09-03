@@ -112,6 +112,21 @@ pub fn jwt_secret() -> String {
     }
 }
 
+/// 雪花 ID 生成器初始化：worker id 取 ECAT_WORKER_ID（缺省 0）。
+/// 单机多服务每个进程须配不同 id（config/docker-compose.yml）。idgen_rs 全局单例且
+/// init 幂等（首调生效），重复调用无害；未 init 时 next_id() panic，各 run() 必须首行调用。
+pub fn init_id_gen() {
+    let worker_id = std::env::var("ECAT_WORKER_ID")
+        .ok()
+        .and_then(|v| v.parse::<u16>().ok())
+        .unwrap_or(0);
+    assert!(
+        worker_id < 64,
+        "ECAT_WORKER_ID 超出 6-bit worker 域（0..63），当前 {worker_id}；超界会静默别名导致跨进程 PK 碰撞"
+    );
+    idgen_rs::id_helper::init_with_capacity(worker_id, 64, 10_000);
+}
+
 /// e-cat 中间件的 Error 非 Infallible，无法满足 axum Router::layer 的 Into<Infallible>
 /// 约束；map_err 到不可构造的 NoError（From 实现 unreachable，实际永不执行）。
 #[derive(Debug)]

@@ -45,6 +45,7 @@ fn col_str(row: &Row, col: &str) -> String {
 fn flight_from_row(row: &Row) -> Value {
     json!({
         "id": col_u64(row, "id"),
+        "id_str": col_u64(row, "id").to_string(),
         "airline": col_str(row, "airline"),
         "flight_no": col_str(row, "flight_no"),
         "from_code": col_str(row, "from_code"),
@@ -197,6 +198,10 @@ pub(crate) async fn create_flight(
             vals.push(v);
         }
     }
+    // 主键去 AUTO_INCREMENT 后显式生成雪花 id（pick 白名单不含 id，body 无法覆盖）
+    let new_id = idgen_rs::id_helper::next_id();
+    cols.insert(0, "id".into());
+    vals.insert(0, json!(new_id));
     let sql = format!(
         "INSERT INTO travel_flights ({}) VALUES ({})",
         cols.join(","),
@@ -206,22 +211,7 @@ pub(crate) async fn create_flight(
         tracing::warn!(error = %e, "flight insert failed");
         return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
     }
-    // 取回新行 id：航班号+出发时间配对查询（管理端低频写，重复时刻取最新一条）
-    let rows = db
-        .query_with(
-            "SELECT id FROM travel_flights WHERE flight_no = ? AND depart_at = ? ORDER BY id DESC LIMIT 1",
-            &[json!(obj.get("flight_no").and_then(Value::as_str).unwrap_or("")), json!(depart_at)],
-        )
-        .await
-        .ok()
-        .and_then(|r| r.into_iter().next());
-    let Some(row) = rows else {
-        return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
-    };
-    let Some(id) = row.get("id").and_then(|v| v.as_u64()) else {
-        return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
-    };
-    match fetch_flight(&db, id).await {
+    match fetch_flight(&db, new_id).await {
         Some(f) => (StatusCode::OK, ApiResponse::ok(f)).into_response(),
         None => db_unavailable(),
     }

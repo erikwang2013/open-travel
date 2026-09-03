@@ -25,7 +25,7 @@ use ecat_security::SecurityLayer;
 use ecat_tracing::TracingLayer;
 use ecat_transport_http::HttpServer;
 use serde::Serialize;
-use ecat::business::shared::{connect_primary, jwt_secret, no_error, RedisRateLimitLayer};
+use ecat::business::shared::{connect_primary, init_id_gen, jwt_secret, no_error, RedisRateLimitLayer};
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
@@ -170,6 +170,7 @@ pub(crate) fn api_router(state: AppState) -> Router {
 }
 
 pub async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    init_id_gen();
     let jwt = JwtAuthLayer::new(jwt_secret()).expect("valid jwt secret");
     let order_url =
         std::env::var("ORDER_SERVICE_URL").unwrap_or_else(|_| "http://ecat-order:8006".into());

@@ -58,7 +58,8 @@ class _AttractionFormPageState extends State<AttractionFormPage> {
           .toList();
       setState(() {
         _dests = list;
-        _selectedDest = widget.attraction?.destinationId ?? (list.isEmpty ? null : list.first.id);
+        _selectedDest = widget.attraction?.destinationId ??
+            (list.isEmpty ? null : int.tryParse(list.first.id));
       });
     } catch (_) {
       // 目的地加载失败不阻塞表单，提交时校验
@@ -146,7 +147,8 @@ class _AttractionFormPageState extends State<AttractionFormPage> {
                   labelText: '所属目的地 *', border: OutlineInputBorder()),
               items: _dests
                   .map((d) => DropdownMenuItem(
-                      value: d.id,
+                      // FK 提交仍须 JSON number；>2^53 的雪花值 web 端精度损失为既有限制（E4）
+                      value: int.tryParse(d.id) ?? 0,
                       child: Text('${d.nameEn} / ${d.nameZh} (ID ${d.id})')))
                   .toList(),
               onChanged: (v) => setState(() => _selectedDest = v),

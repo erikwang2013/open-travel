@@ -58,6 +58,7 @@ fn payment_from_row(row: &Row) -> Value {
     let paid_at = col_str(row, "paid_at");
     json!({
         "id": col_u64(row, "id"),
+        "id_str": col_u64(row, "id").to_string(),
         "order_id": col_u64(row, "order_id"),
         "email": col_str(row, "email"),
         "channel_code": col_str(row, "channel_code"),

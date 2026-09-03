@@ -199,25 +199,24 @@ pub(crate) async fn create_payment(
         ts,
         TXN_SEQ.fetch_add(1, Ordering::Relaxed)
     );
+    // 主键去 AUTO_INCREMENT 后显式生成雪花 id
+    let payment_id = idgen_rs::id_helper::next_id();
     if let Err(e) = db
         .execute_with(
-            "INSERT INTO travel_payments (order_id, channel_code, amount_cents, status, txn_no) \
-             VALUES (?, ?, ?, 0, ?)",
-            &[json!(body.order_id), json!(body.channel_code), json!(amount_cents), json!(txn_no)],
+            "INSERT INTO travel_payments (id, order_id, channel_code, amount_cents, status, txn_no) \
+             VALUES (?, ?, ?, ?, 0, ?)",
+            &[json!(payment_id), json!(body.order_id), json!(body.channel_code), json!(amount_cents), json!(txn_no)],
         )
         .await
     {
         tracing::warn!(error = %e, "payment insert failed");
         return err(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error");
     }
-    // 5. 读回新流水
+    // 5. 读回新流水（按生成的 id 精确回查，无竞态）
     let rows = match db
         .query_with(
-            &format!(
-                "SELECT {PAYMENT_COLS} FROM travel_payments WHERE order_id = ? \
-                 ORDER BY id DESC LIMIT 1"
-            ),
-            &[json!(body.order_id)],
+            &format!("SELECT {PAYMENT_COLS} FROM travel_payments WHERE id = ?"),
+            &[json!(payment_id)],
         )
         .await
     {

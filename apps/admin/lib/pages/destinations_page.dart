@@ -4,7 +4,7 @@ import '../api.dart';
 import 'destination_form.dart';
 
 class Destination {
-  final int id;
+  final String id;
   final String nameEn;
   final String nameZh;
   final String nameJa;
@@ -18,7 +18,7 @@ class Destination {
   final int regionId;
 
   Destination.fromJson(Map<String, dynamic> j)
-      : id = j['id'] as int,
+      : id = (j['id_str'] ?? j['id'].toString()) as String,
         nameEn = (j['name_en'] ?? '') as String,
         nameZh = (j['name_zh'] ?? '') as String,
         nameJa = (j['name_ja'] ?? '') as String,
@@ -184,7 +184,7 @@ class _DestinationsPageState extends State<DestinationsPage> {
                         ],
                         rows: _list
                             .map((d) => DataRow(cells: [
-                                  DataCell(Text('${d.id}')),
+                                  DataCell(Text(d.id)),
                                   DataCell(Text(
                                       '${d.nameEn}\n${d.nameZh}${d.nameJa.isEmpty ? '' : ' / ${d.nameJa}'}')),
                                   DataCell(Text(d.category)),

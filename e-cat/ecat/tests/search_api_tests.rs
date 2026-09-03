@@ -27,11 +27,20 @@ async fn body_json(resp: impl IntoResponse) -> (StatusCode, serde_json::Value) {
 }
 
 /// 本机 MySQL（docker compose 映射 3308）；连不上返回 None，测试跳过。
+/// 雪花生成器进程内仅初始化一次（Once 防并发测试线程同时 init 撞 idgen_rs 内部 OnceLock）。
+static IDGEN_INIT: std::sync::Once = std::sync::Once::new();
+fn ensure_id_gen() {
+    IDGEN_INIT.call_once(|| ecat::business::shared::init_id_gen());
+}
+
 async fn test_db() -> Option<Arc<SqlxClient>> {
     let url = std::env::var("DATABASE_URL")
         .unwrap_or_else(|_| "mysql://root:travel_dev@localhost:3308/travel".into());
     match SqlxClient::connect(&url).await {
-        Ok(db) => Some(Arc::new(db)),
+        Ok(db) => {
+            ensure_id_gen();
+            Some(Arc::new(db))
+        }
         Err(e) => {
             eprintln!("db unavailable, skipping real-db test: {e}");
             None
@@ -185,8 +194,8 @@ async fn hotwords_aggregates_recent_keywords_with_real_db() {
     let kw = format!("hotwords_test_{}", std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs());
     db.query_with(
-        "INSERT INTO travel_searches (keyword, lang, result_count) VALUES (?, 'en', 0)",
-        &[serde_json::json!(kw)],
+        "INSERT INTO travel_searches (id, keyword, lang, result_count) VALUES (?, ?, 'en', 0)",
+        &[serde_json::json!(idgen_rs::id_helper::next_id()), serde_json::json!(kw)],
     ).await.unwrap();
     let (status, body) = body_json(hotwords(
         State(AppState { db: Some(db.clone()), replica: None, cache: None, os: None }),

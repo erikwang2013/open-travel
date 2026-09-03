@@ -203,11 +203,20 @@ async fn update_profile_db_unavailable_503() {
 }
 
 /// 本机 MySQL（docker compose 映射 3308）；连不上返回 None，测试跳过。
+/// 雪花生成器进程内仅初始化一次（Once 防并发测试线程同时 init 撞 idgen_rs 内部 OnceLock）。
+static IDGEN_INIT: std::sync::Once = std::sync::Once::new();
+fn ensure_id_gen() {
+    IDGEN_INIT.call_once(|| ecat::business::shared::init_id_gen());
+}
+
 async fn user_real_db() -> Option<SqlxClient> {
     let url = std::env::var("TEST_DATABASE_URL")
         .unwrap_or_else(|_| "mysql://root:travel_dev@localhost:3308/travel".into());
     match SqlxClient::connect(&url).await {
-        Ok(db) => Some(db),
+        Ok(db) => {
+            ensure_id_gen();
+            Some(db)
+        }
         Err(e) => {
             eprintln!("skip real-db test (mysql unreachable): {e}");
             None
@@ -222,8 +231,8 @@ async fn update_profile_updates_nickname_and_lang() {
     let hash = bcrypt::hash("secret123", bcrypt::DEFAULT_COST).unwrap();
     let _ = db
         .execute_with(
-            "INSERT INTO travel_users (email, password_hash) VALUES (?, ?)",
-            &[json!(email), json!(hash)],
+            "INSERT INTO travel_users (id, email, password_hash) VALUES (?, ?, ?)",
+            &[json!(idgen_rs::id_helper::next_id()), json!(email), json!(hash)],
         )
         .await;
     let rows = db
@@ -268,8 +277,8 @@ async fn disabled_user_jwt_request_403() {
     let email = format!("disabled-{}@example.com", std::process::id());
     let _ = db
         .execute_with(
-            "INSERT INTO travel_users (email, password_hash, status) VALUES (?, 'x', 1)",
-            &[json!(email)],
+            "INSERT INTO travel_users (id, email, password_hash, status) VALUES (?, ?, 'x', 1)",
+            &[json!(idgen_rs::id_helper::next_id()), json!(email)],
         )
         .await;
     let rows = db.query_with("SELECT id FROM travel_users WHERE email = ?", &[json!(email)]).await.unwrap();
@@ -304,4 +313,53 @@ async fn ready_reports_degraded_without_datasources() {
     let (status, body) = body_json(ready(State(state())).await).await;
     assert_eq!(status, StatusCode::OK);
     assert_eq!(body["data"], false);
+}
+
+/// 雪花 ID 迁移针对性验证（真实 DB）：连续两次 register 真实建行，断言
+/// (a) 返回并落库的 id 非零、且两者一致；(b) 两次 id 严格递增；
+/// (c) id > 2^40 落在雪花区间（自增 id 全库也到不了该量级，种子 id 仅 1..5）。
+#[tokio::test]
+async fn register_assigns_nonzero_increasing_snowflake_ids() {
+    let Some(db) = user_real_db().await else { return };
+    ensure_id_gen();
+    let pid = std::process::id();
+    let state = AppState {
+        db: Some(Arc::new(db)),
+        cache: None,
+        mq: None,
+        jwt: JwtAuthLayer::new(jwt_secret()).unwrap(),
+    };
+    let mut ids = Vec::new();
+    let mut emails = Vec::new();
+    for i in 0..2u64 {
+        let email = format!("snowflake-{pid}-{i}@example.com");
+        let resp = register(
+            State(state.clone()),
+            Json(RegisterReq { email: email.clone(), password: "secret123".into(), lang: None }),
+        )
+        .await;
+        let (status, body) = body_json(resp).await;
+        assert_eq!(status, StatusCode::OK, "{body}");
+        let id = body["data"]["user_id"].as_u64().expect("register must return user_id");
+        assert!(id > 0, "returned id must be nonzero: {id}");
+        assert!(id > 1u64 << 40, "id {id} must be snowflake-range (>2^40), not auto-increment");
+        let rows = state.db.as_ref().unwrap().query_with(
+            "SELECT id FROM travel_users WHERE email = ?",
+            &[json!(email)],
+        ).await.unwrap();
+        let stored = rows.first().and_then(|r| r.get("id")).and_then(|v| v.as_u64())
+            .expect("row must be stored with snowflake id");
+        assert_eq!(stored, id, "stored id must equal returned id");
+        ids.push(id);
+        emails.push(email);
+    }
+    assert!(ids[1] > ids[0], "two inserts must be strictly increasing: {} then {}", ids[0], ids[1]);
+    for (id, email) in ids.into_iter().zip(emails) {
+        let _ = state.db.as_ref().unwrap()
+            .execute_with("DELETE FROM travel_users WHERE id = ?", &[json!(id)])
+            .await;
+        let _ = state.db.as_ref().unwrap()
+            .execute_with("DELETE FROM travel_users WHERE email = ?", &[json!(email)])
+            .await;
+    }
 }

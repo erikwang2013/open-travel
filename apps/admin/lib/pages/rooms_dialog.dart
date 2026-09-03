@@ -5,7 +5,7 @@ import 'hotels_page.dart';
 
 class Room {
   Room.fromJson(Map<String, dynamic> j)
-      : id = j['id'] as int,
+      : id = (j['id_str'] ?? j['id'].toString()) as String,
         typeEn = (j['room_type_en'] ?? '') as String,
         typeZh = (j['room_type_zh'] ?? '') as String,
         typeJa = (j['room_type_ja'] ?? '') as String,
@@ -13,7 +13,7 @@ class Room {
         breakfast = (j['breakfast'] ?? 0) as int,
         inventory = (j['inventory'] ?? 0) as int;
 
-  final int id;
+  final String id;
   final String typeEn;
   final String typeZh;
   final String typeJa;

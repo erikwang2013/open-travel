@@ -7,7 +7,7 @@ const orderStatusLabels = {0: '待支付', 1: '已支付', 2: '已确认', 3: '�
 
 class Order {
   Order.fromJson(Map<String, dynamic> j)
-      : id = j['id'] as int,
+      : id = (j['id_str'] ?? j['id'].toString()) as String,
         email = (j['email'] ?? '') as String,
         orderType = (j['order_type'] ?? 0) as int,
         productId = (j['product_id'] ?? 0) as int,
@@ -16,7 +16,7 @@ class Order {
         snapshot = (j['snapshot'] is Map) ? (j['snapshot'] as Map).cast<String, dynamic>() : <String, dynamic>{},
         createdAt = (j['created_at'] ?? '') as String;
 
-  final int id;
+  final String id;
   final String email;
   final int orderType;
   final int productId;

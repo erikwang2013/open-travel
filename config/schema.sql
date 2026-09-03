@@ -7,7 +7,7 @@ USE travel;
 
 -- 用户表
 CREATE TABLE IF NOT EXISTS travel_users (
-  id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '用户ID',
+  id            BIGINT UNSIGNED PRIMARY KEY COMMENT '用户ID',
   email         VARCHAR(255) NOT NULL UNIQUE COMMENT '邮箱（登录账号）',
   password_hash VARCHAR(255) NOT NULL COMMENT '密码哈希（bcrypt）',
   lang          VARCHAR(8)   NOT NULL DEFAULT 'en' COMMENT '界面语言（en/zh/ja）',
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS travel_users (
 
 -- 目的地表
 CREATE TABLE IF NOT EXISTS travel_destinations (
-  id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '目的地ID',
+  id          BIGINT UNSIGNED PRIMARY KEY COMMENT '目的地ID',
   name_en     VARCHAR(255) NOT NULL COMMENT '英文名',
   name_zh     VARCHAR(255) NOT NULL COMMENT '中文名',
   name_ja     VARCHAR(255) NOT NULL COMMENT '日文名',
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS travel_destinations (
 
 -- 预订表
 CREATE TABLE IF NOT EXISTS travel_bookings (
-  id             BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '预订ID',
+  id             BIGINT UNSIGNED PRIMARY KEY COMMENT '预订ID',
   user_id        BIGINT UNSIGNED NOT NULL COMMENT '用户ID',
   destination_id BIGINT UNSIGNED NOT NULL COMMENT '目的地ID',
   check_in       DATE NOT NULL COMMENT '入住日期',
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS travel_bookings (
 
 -- 订单表
 CREATE TABLE IF NOT EXISTS travel_orders (
-  id             BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '订单ID',
+  id             BIGINT UNSIGNED PRIMARY KEY COMMENT '订单ID',
   user_id        BIGINT UNSIGNED NOT NULL COMMENT '用户ID',
   destination_id BIGINT UNSIGNED NOT NULL COMMENT '目的地ID',
   booking_id     BIGINT UNSIGNED NOT NULL COMMENT '关联预订ID',
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS travel_orders (
 
 -- 评论表
 CREATE TABLE IF NOT EXISTS travel_reviews (
-  id             BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '评论ID',
+  id             BIGINT UNSIGNED PRIMARY KEY COMMENT '评论ID',
   user_id        BIGINT UNSIGNED NOT NULL COMMENT '用户ID',
   destination_id BIGINT UNSIGNED NOT NULL COMMENT '目的地ID',
   rating         TINYINT NOT NULL COMMENT '评分（1-5）',
@@ -71,12 +71,13 @@ CREATE TABLE IF NOT EXISTS travel_reviews (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='目的地评论表';
 
 -- 示例种子数据（空数据卷首次初始化时写入；已初始化的库手动执行或忽略）
-INSERT INTO travel_destinations (name_en, name_zh, name_ja, description, latitude, longitude, category, region_id) VALUES
-('Tokyo','东京','東京','{"en":"Capital of Japan","zh":"日本首都"}',35.6762,139.6503,'city',1),
-('Hong Kong','香港','香港','{"en":"Asia world city","zh":"亚洲国际都会"}',22.3193,114.1694,'city',1),
-('Paris','巴黎','パリ','{"en":"City of Light","zh":"光之城"}',48.8566,2.3522,'city',2),
-('London','伦敦','ロンドン','{"en":"Historic capital of UK","zh":"英国首都"}',51.5074,-0.1278,'city',2),
-('New York','纽约','ニューヨーク','{"en":"The Big Apple","zh":"大苹果城"}',40.7128,-74.0060,'city',3);
+-- id 显式指定（主键已去 AUTO_INCREMENT）；id 域 1..5 与雪花 id（约 2^47 起、随基准 2020-02-20 单调增大）无交集
+INSERT INTO travel_destinations (id, name_en, name_zh, name_ja, description, latitude, longitude, category, region_id) VALUES
+(1,'Tokyo','东京','東京','{"en":"Capital of Japan","zh":"日本首都"}',35.6762,139.6503,'city',1),
+(2,'Hong Kong','香港','香港','{"en":"Asia world city","zh":"亚洲国际都会"}',22.3193,114.1694,'city',1),
+(3,'Paris','巴黎','パリ','{"en":"City of Light","zh":"光之城"}',48.8566,2.3522,'city',2),
+(4,'London','伦敦','ロンドン','{"en":"Historic capital of UK","zh":"英国首都"}',51.5074,-0.1278,'city',2),
+(5,'New York','纽约','ニューヨーク','{"en":"The Big Apple","zh":"大苹果城"}',40.7128,-74.0060,'city',3);
 
 -- ===== Phase 2 增量（P2-01）=====
 -- 仅空数据卷首启时执行；已初始化的运行库在 scripts 或手动执行同样 DDL
@@ -87,7 +88,7 @@ ALTER TABLE travel_destinations
 
 -- 景点表（13 语种名称与客户端 ARB 语种一致）
 CREATE TABLE IF NOT EXISTS travel_attractions (
-  id             BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  id             BIGINT UNSIGNED PRIMARY KEY,
   destination_id BIGINT UNSIGNED NOT NULL,
   name_en        VARCHAR(255) NOT NULL DEFAULT '',
   name_zh        VARCHAR(255) NOT NULL DEFAULT '',
@@ -117,7 +118,7 @@ CREATE TABLE IF NOT EXISTS travel_attractions (
 -- ===== Phase 2 增量（P2-06 / P2-14）=====
 -- 管理员表（P2-06 admin-service 登录）
 CREATE TABLE IF NOT EXISTS travel_admins (
-  id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '管理员ID',
+  id            BIGINT UNSIGNED PRIMARY KEY COMMENT '管理员ID',
   email         VARCHAR(191) NOT NULL UNIQUE COMMENT '邮箱（登录账号）',
   password_hash VARCHAR(255) NOT NULL COMMENT '密码哈希（bcrypt）',
   name          VARCHAR(100) NOT NULL DEFAULT '' COMMENT '姓名',
@@ -130,13 +131,14 @@ CREATE TABLE IF NOT EXISTS travel_admins (
 ALTER TABLE travel_users ADD COLUMN nickname VARCHAR(100) NOT NULL DEFAULT '' COMMENT '昵称' AFTER lang;
 
 -- 种子管理员（开发环境，密码 Admin@123；勿在生产使用）
-INSERT IGNORE INTO travel_admins (email, password_hash, name) VALUES
-('admin@travel.local', '$2b$12$mEe1EEwFS0wOGDsTpdT1HO54VYP8Lr17ci2IEYoOg43MApvlkwWGi', 'Administrator');
+-- id 显式指定（主键已去 AUTO_INCREMENT）；INSERT IGNORE 幂等语义不变（email 唯一键兜底）
+INSERT IGNORE INTO travel_admins (id, email, password_hash, name) VALUES
+(1, 'admin@travel.local', '$2b$12$mEe1EEwFS0wOGDsTpdT1HO54VYP8Lr17ci2IEYoOg43MApvlkwWGi', 'Administrator');
 
 -- ===== Phase 3 增量（P3-01 / P3-04 / P3-07）=====
 -- 线路主表（P3-04）：多语种标题 + 多日行程（JSON）+ 固定班期表见 travel_line_dates
 CREATE TABLE IF NOT EXISTS travel_lines (
-  id             BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '线路ID',
+  id             BIGINT UNSIGNED PRIMARY KEY COMMENT '线路ID',
   title_en       VARCHAR(255) NOT NULL COMMENT '英文标题',
   title_zh       VARCHAR(255) NOT NULL COMMENT '中文标题',
   title_ja       VARCHAR(255) NOT NULL COMMENT '日文标题',
@@ -158,7 +160,7 @@ CREATE TABLE IF NOT EXISTS travel_lines (
 
 -- 线路出发日历（P3-06）：日期 + 价格 + 余位（余位随订单预占/取消联动）
 CREATE TABLE IF NOT EXISTS travel_line_dates (
-  id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '班期ID',
+  id           BIGINT UNSIGNED PRIMARY KEY COMMENT '班期ID',
   line_id      BIGINT UNSIGNED NOT NULL COMMENT '线路ID',
   depart_date  DATE NOT NULL COMMENT '出发日期',
   price_cents  BIGINT NOT NULL COMMENT '当日价（分）',
@@ -171,7 +173,7 @@ CREATE TABLE IF NOT EXISTS travel_line_dates (
 
 -- 搜索热词表（P3-01）：检索日志落库，热词按周期聚合（P5-03）
 CREATE TABLE IF NOT EXISTS travel_searches (
-  id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '检索ID',
+  id           BIGINT UNSIGNED PRIMARY KEY COMMENT '检索ID',
   keyword      VARCHAR(255) NOT NULL COMMENT '检索关键词',
   lang         VARCHAR(8) NOT NULL DEFAULT 'en' COMMENT '检索语言',
   result_count INT NOT NULL DEFAULT 0 COMMENT '命中数',
@@ -199,7 +201,7 @@ UPDATE travel_bookings SET status = CASE status WHEN 1 THEN 2 WHEN 2 THEN 3 WHEN
 
 -- P4-05 支付流水（补建）：每笔支付一条，回调按 txn_no 幂等
 CREATE TABLE IF NOT EXISTS travel_payments (
-  id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '流水ID',
+  id            BIGINT UNSIGNED PRIMARY KEY COMMENT '流水ID',
   order_id      BIGINT UNSIGNED NOT NULL COMMENT '订单ID',
   channel_code  VARCHAR(32)  NOT NULL DEFAULT 'card' COMMENT '渠道代码（stripe/alipay/paypay/...）',
   amount_cents  BIGINT       NOT NULL COMMENT '支付金额（分）',
@@ -213,7 +215,7 @@ CREATE TABLE IF NOT EXISTS travel_payments (
 
 -- P4-01 航班表：舱位分价格，余票随下单预占扣减（同 travel_line_dates）
 CREATE TABLE IF NOT EXISTS travel_flights (
-  id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '航班ID',
+  id          BIGINT UNSIGNED PRIMARY KEY COMMENT '航班ID',
   airline     VARCHAR(64)  NOT NULL COMMENT '航司',
   flight_no   VARCHAR(16)  NOT NULL COMMENT '航班号',
   from_code   CHAR(3)      NOT NULL COMMENT '出发机场 IATA',
@@ -230,7 +232,7 @@ CREATE TABLE IF NOT EXISTS travel_flights (
 
 -- P4-03 酒店表：多语种名称 + 星级 + 城市
 CREATE TABLE IF NOT EXISTS travel_hotels (
-  id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '酒店ID',
+  id          BIGINT UNSIGNED PRIMARY KEY COMMENT '酒店ID',
   name_en     VARCHAR(128) NOT NULL COMMENT '英文名',
   name_zh     VARCHAR(128) NOT NULL COMMENT '中文名',
   name_ja     VARCHAR(128) NOT NULL DEFAULT '' COMMENT '日文名',
@@ -246,7 +248,7 @@ CREATE TABLE IF NOT EXISTS travel_hotels (
 
 -- P4-03 房型表：一间房一个库存，价格随日期浮动（本期固定价格）
 CREATE TABLE IF NOT EXISTS travel_hotel_rooms (
-  id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '房型ID',
+  id            BIGINT UNSIGNED PRIMARY KEY COMMENT '房型ID',
   hotel_id      BIGINT UNSIGNED NOT NULL COMMENT '酒店ID',
   room_type_en  VARCHAR(128) NOT NULL COMMENT '英文房型',
   room_type_zh  VARCHAR(128) NOT NULL COMMENT '中文房型',
@@ -268,7 +270,7 @@ PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 -- P4-15 支付渠道注册表：按语言/国家路由本国渠道，管理端可开关
 CREATE TABLE IF NOT EXISTS travel_payment_channels (
-  id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '渠道ID',
+  id              BIGINT UNSIGNED PRIMARY KEY COMMENT '渠道ID',
   channel_code    VARCHAR(32)  NOT NULL COMMENT '渠道代码',
   name            VARCHAR(255) NOT NULL COMMENT '渠道名（多语种 JSON）',
   type            TINYINT      NOT NULL DEFAULT 0 COMMENT '0国际卡/1本地钱包/2加密',
@@ -317,3 +319,23 @@ INSERT IGNORE INTO travel_reviews (id, user_id, attraction_id, destination_id, r
 (1, 1, 100000, 2, 5, 'Amazing views from the top!', 'en'),
 (2, 1, 100000, 2, 4, 'Great experience, a bit crowded.', 'en'),
 (3, 1, 100000, 2, 5, 'Beautiful at sunset.', 'en');
+
+-- ===== Phase 7 增量（雪花 ID 迁移）=====
+-- 主键去 AUTO_INCREMENT：业务代码已显式生成雪花 id 写入（漏带 id 即硬错误）。
+-- 新装库由上方 CREATE TABLE 直接生效；已初始化的运行库需手动执行同样 DDL，
+-- 主库与从库（travel-mysql-replica 为无复制静态快照）两端都要打。MODIFY 幂等，可重复执行。
+ALTER TABLE travel_users MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '用户ID';
+ALTER TABLE travel_destinations MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '目的地ID';
+ALTER TABLE travel_bookings MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '预订ID';
+ALTER TABLE travel_orders MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '订单ID';
+ALTER TABLE travel_reviews MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '评论ID';
+ALTER TABLE travel_attractions MODIFY id BIGINT UNSIGNED NOT NULL;
+ALTER TABLE travel_admins MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '管理员ID';
+ALTER TABLE travel_lines MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '线路ID';
+ALTER TABLE travel_line_dates MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '班期ID';
+ALTER TABLE travel_searches MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '检索ID';
+ALTER TABLE travel_payments MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '流水ID';
+ALTER TABLE travel_flights MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '航班ID';
+ALTER TABLE travel_hotels MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '酒店ID';
+ALTER TABLE travel_hotel_rooms MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '房型ID';
+ALTER TABLE travel_payment_channels MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '渠道ID';

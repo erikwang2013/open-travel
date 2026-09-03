@@ -364,14 +364,17 @@ pub(crate) async fn create_order(
         return err(StatusCode::CONFLICT, 409, "insufficient stock");
     }
 
-    // 4. 插入订单：amount = price × qty，destination_id 仅线路有意义（航班/酒店记 0）
+    // 4. 插入订单：amount = price × qty，destination_id 仅线路有意义（航班/酒店记 0）。
+    //    主键去 AUTO_INCREMENT 后显式生成雪花 id
+    let order_id = idgen_rs::id_helper::next_id();
     let insert = db
         .execute_with(
             "INSERT INTO travel_orders \
-             (user_id, order_type, product_id, product_snapshot, destination_id, \
+             (id, user_id, order_type, product_id, product_snapshot, destination_id, \
               booking_id, status, amount_cents, expire_at) \
-             VALUES (?, ?, ?, ?, ?, 0, 0, ?, DATE_ADD(NOW(), INTERVAL 15 MINUTE))",
+             VALUES (?, ?, ?, ?, ?, ?, 0, 0, ?, DATE_ADD(NOW(), INTERVAL 15 MINUTE))",
             &[
+                json!(order_id),
                 json!(user_id),
                 json!(body.order_type),
                 json!(body.product_id),
@@ -388,11 +391,11 @@ pub(crate) async fn create_order(
         return err(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error");
     }
 
-    // 6. 读回订单（last insert 行）
+    // 6. 读回订单（按生成的 id 精确回查，修复原并发下可能取回他人订单的竞态）
     let fetched = match db
         .query_with(
-            &format!("SELECT {ORDER_COLS} FROM travel_orders WHERE user_id = ? ORDER BY id DESC LIMIT 1"),
-            &[json!(user_id)],
+            &format!("SELECT {ORDER_COLS} FROM travel_orders WHERE id = ?"),
+            &[json!(order_id)],
         )
         .await
     {

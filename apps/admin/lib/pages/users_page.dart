@@ -4,13 +4,13 @@ import '../api.dart';
 
 class User {
   User.fromJson(Map<String, dynamic> j)
-      : id = j['id'] as int,
+      : id = (j['id_str'] ?? j['id'].toString()) as String,
         email = (j['email'] ?? '') as String,
         lang = (j['lang'] ?? '') as String,
         status = (j['status'] ?? 0) as int,
         createdAt = (j['created_at'] ?? '') as String;
 
-  final int id;
+  final String id;
   final String email;
   final String lang;
   final int status; // 0 正常 / 1 禁用
@@ -103,7 +103,7 @@ class _UsersPageState extends State<UsersPage> {
                         ],
                         rows: _list
                             .map((u) => DataRow(cells: [
-                                  DataCell(Text('${u.id}')),
+                                  DataCell(Text(u.id)),
                                   DataCell(Text(u.email)),
                                   DataCell(Text(u.lang)),
                                   DataCell(Text(u.createdAt)),

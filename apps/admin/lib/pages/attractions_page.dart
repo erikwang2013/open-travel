@@ -4,7 +4,7 @@ import '../api.dart';
 import 'attraction_form.dart';
 
 class Attraction {
-  final int id;
+  final String id;
   final int destinationId;
   final Map<String, String> names;
   final String description;
@@ -15,7 +15,7 @@ class Attraction {
   final String coverUrl;
 
   Attraction.fromJson(Map<String, dynamic> j)
-      : id = j['id'] as int,
+      : id = (j['id_str'] ?? j['id'].toString()) as String,
         destinationId = (j['destination_id'] ?? 0) as int,
         names = {
           for (final lang in langs)
@@ -178,7 +178,7 @@ class _AttractionsPageState extends State<AttractionsPage> {
                         ],
                         rows: _list
                             .map((a) => DataRow(cells: [
-                                  DataCell(Text('${a.id}')),
+                                  DataCell(Text(a.id)),
                                   DataCell(Text('${a.nameEn}\n${a.nameZh}')),
                                   DataCell(Text('${a.destinationId}')),
                                   DataCell(Text('¥${(a.priceCents / 100).toStringAsFixed(2)}')),

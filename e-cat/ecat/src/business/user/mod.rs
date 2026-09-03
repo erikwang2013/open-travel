@@ -31,7 +31,7 @@ use ecat_transport_http::HttpServer;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use ecat_mq_kafka::KafkaMq;
-use ecat::business::shared::{connect_kafka, connect_primary, jwt_secret, no_error, publish_audit, RedisRateLimitLayer};
+use ecat::business::shared::{connect_kafka, connect_primary, init_id_gen, jwt_secret, no_error, publish_audit, RedisRateLimitLayer};
 use std::sync::Arc;
 use tower::ServiceBuilder;
 
@@ -177,11 +177,13 @@ pub(crate) async fn register(
     };
 
     let lang = body.lang.as_deref().unwrap_or("en");
-    // 预查已排除重复；INSERT 仍失败按重复处理（唯一索引兜底，竞态安全）
+    // 主键去 AUTO_INCREMENT 后显式生成雪花 id；预查已排除重复，
+    // INSERT 仍失败按重复处理（唯一索引兜底，竞态安全）
+    let user_id = idgen_rs::id_helper::next_id();
     match db
         .execute_with(
-            "INSERT INTO travel_users (email, password_hash, lang) VALUES (?, ?, ?)",
-            &[json!(email), json!(hash), json!(lang)],
+            "INSERT INTO travel_users (id, email, password_hash, lang) VALUES (?, ?, ?, ?)",
+            &[json!(user_id), json!(email), json!(hash), json!(lang)],
         )
         .await
     {
@@ -191,20 +193,6 @@ pub(crate) async fn register(
             return err(StatusCode::CONFLICT, 409, "email already registered");
         }
     }
-
-    let rows = match db
-        .query_with("SELECT id FROM travel_users WHERE email = ?", &[json!(email)])
-        .await
-    {
-        Ok(rows) => rows,
-        Err(e) => {
-            tracing::warn!(error = %e, "register fetch id failed");
-            return err(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error");
-        }
-    };
-    let Some(user_id) = rows.first().and_then(|r| r.get("id")).and_then(|v| v.as_u64()) else {
-        return err(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error");
-    };
     if let Some(mq) = &state.mq {
         publish_audit(mq, "user.register", user_id, json!({ "lang": lang })).await;
     }
@@ -440,6 +428,7 @@ async fn connect_cache() -> Option<Arc<RedisCache>> {
 }
 
 pub async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    init_id_gen();
     let jwt = JwtAuthLayer::new(jwt_secret()).expect("valid jwt secret");
     let state = AppState {
         db: connect_primary().await,

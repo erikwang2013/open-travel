@@ -149,6 +149,7 @@ pub(crate) fn valid_date(s: &str) -> bool {
 fn line_from_row(row: &Row) -> Value {
     json!({
         "id": col_u64(row, "id"),
+        "id_str": col_u64(row, "id").to_string(),
         "title_en": col_str(row, "title_en"),
         "title_zh": col_str(row, "title_zh"),
         "title_ja": col_str(row, "title_ja"),
@@ -168,6 +169,7 @@ fn line_from_row(row: &Row) -> Value {
 pub(crate) fn date_from_row(row: &Row) -> Value {
     json!({
         "id": col_u64(row, "id"),
+        "id_str": col_u64(row, "id").to_string(),
         "line_id": col_u64(row, "line_id"),
         "depart_date": col_str(row, "depart_date"),
         "price_cents": col_u64(row, "price_cents"),
@@ -314,6 +316,10 @@ pub(crate) async fn create_line(
         cols.push(c);
         vals.push(v);
     }
+    // 主键去 AUTO_INCREMENT 后显式生成雪花 id（pick 白名单不含 id，body 无法覆盖）
+    let new_id = idgen_rs::id_helper::next_id();
+    cols.insert(0, "id".into());
+    vals.insert(0, json!(new_id));
     let sql = format!(
         "INSERT INTO travel_lines ({}) VALUES ({})",
         cols.join(","),
@@ -323,21 +329,7 @@ pub(crate) async fn create_line(
         tracing::warn!(error = %e, "line insert failed");
         return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
     }
-    let rows = db
-        .query_with(
-            "SELECT id FROM travel_lines WHERE destination_id = ? AND title_zh = ? ORDER BY id DESC LIMIT 1",
-            &[json!(dest_id), json!(title_zh)],
-        )
-        .await
-        .ok()
-        .and_then(|r| r.into_iter().next());
-    let Some(row) = rows else {
-        return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
-    };
-    let Some(id) = row.get("id").and_then(|v| v.as_u64()) else {
-        return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
-    };
-    match fetch_line(&db, id).await {
+    match fetch_line(&db, new_id).await {
         Some(line) => (StatusCode::OK, ApiResponse::ok(line)).into_response(),
         None => db_unavailable(),
     }

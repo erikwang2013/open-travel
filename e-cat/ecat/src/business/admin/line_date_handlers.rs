@@ -89,9 +89,11 @@ pub(crate) async fn create_line_date(
             vals.push(v);
         }
     }
-    let mut insert_cols = vec!["line_id".to_string()];
+    // 主键去 AUTO_INCREMENT 后显式生成雪花 id（pick 白名单不含 id，body 无法覆盖）
+    let new_id = idgen_rs::id_helper::next_id();
+    let mut insert_cols = vec!["id".to_string(), "line_id".to_string()];
     insert_cols.extend(cols);
-    let mut insert_vals = vec![json!(line_id)];
+    let mut insert_vals = vec![json!(new_id), json!(line_id)];
     insert_vals.extend(vals);
     let sql = format!(
         "INSERT INTO travel_line_dates ({}) VALUES ({})",
@@ -106,21 +108,7 @@ pub(crate) async fn create_line_date(
         tracing::warn!(error = %e, "line date insert failed");
         return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
     }
-    let rows = db
-        .query_with(
-            "SELECT id FROM travel_line_dates WHERE line_id = ? AND depart_date = ?",
-            &[json!(line_id), json!(depart_date)],
-        )
-        .await
-        .ok()
-        .and_then(|r| r.into_iter().next());
-    let Some(row) = rows else {
-        return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
-    };
-    let Some(id) = row.get("id").and_then(|v| v.as_u64()) else {
-        return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
-    };
-    match fetch_date(&db, line_id, id).await {
+    match fetch_date(&db, line_id, new_id).await {
         Some(d) => (StatusCode::OK, ApiResponse::ok(d)).into_response(),
         None => db_unavailable(),
     }

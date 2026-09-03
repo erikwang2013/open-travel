@@ -54,11 +54,20 @@ fn unique_name(prefix: &str) -> String {
 }
 
 /// 本机 MySQL（docker compose 映射 3308）；连不上返回 None，测试跳过。
+/// 雪花生成器进程内仅初始化一次（Once 防并发测试线程同时 init 撞 idgen_rs 内部 OnceLock）。
+static IDGEN_INIT: std::sync::Once = std::sync::Once::new();
+fn ensure_id_gen() {
+    IDGEN_INIT.call_once(|| ecat::business::shared::init_id_gen());
+}
+
 async fn real_db() -> Option<SqlxClient> {
     let url = std::env::var("TEST_DATABASE_URL")
         .unwrap_or_else(|_| "mysql://root:travel_dev@localhost:3308/travel".into());
     match SqlxClient::connect(&url).await {
-        Ok(db) => Some(db),
+        Ok(db) => {
+            ensure_id_gen();
+            Some(db)
+        }
         Err(e) => {
             eprintln!("skip real-db test (mysql unreachable): {e}");
             None
@@ -66,17 +75,16 @@ async fn real_db() -> Option<SqlxClient> {
     }
 }
 
-/// 直接 SQL 建测试用户，返回 (id, email)
+/// 直接 SQL 建测试用户，返回 (id, email)。主键已去 AUTO_INCREMENT：显式生成雪花 id。
 async fn insert_test_user(db: &SqlxClient) -> (u64, String) {
     let email = format!("p4-user-{}@example.com", unique_name(""));
+    let id = idgen_rs::id_helper::next_id();
     let _ = db
         .execute_with(
-            "INSERT INTO travel_users (email, password_hash) VALUES (?, 'x')",
-            &[json!(email)],
+            "INSERT INTO travel_users (id, email, password_hash) VALUES (?, ?, 'x')",
+            &[json!(id), json!(email)],
         )
         .await;
-    let rows = db.query_with("SELECT id FROM travel_users WHERE email = ?", &[json!(email)]).await.unwrap();
-    let id = rows.first().and_then(|r| r.get("id")).and_then(|v| v.as_u64()).unwrap();
     (id, email)
 }
 
@@ -89,25 +97,19 @@ async fn orders_list_filter_and_pagination() {
     let (uid, email) = insert_test_user(&st.db.clone().unwrap().as_ref()).await;
     let mut ids = Vec::new();
     for status in [0, 1] {
+        let oid = idgen_rs::id_helper::next_id();
         let affected = st
             .db
             .as_ref()
             .unwrap()
             .execute_with(
-                "INSERT INTO travel_orders (user_id, order_type, product_id, product_snapshot, \
-                 destination_id, booking_id, status, amount_cents) VALUES (?, 1, 1, ?, 1, 0, ?, ?)",
-                &[json!(uid), json!("{\"title\":\"t\",\"quantity\":1}"), json!(status), json!(100)],
+                "INSERT INTO travel_orders (id, user_id, order_type, product_id, product_snapshot, \
+                 destination_id, booking_id, status, amount_cents) VALUES (?, ?, 1, 1, ?, 1, 0, ?, ?)",
+                &[json!(oid), json!(uid), json!("{\"title\":\"t\",\"quantity\":1}"), json!(status), json!(100)],
             )
             .await;
         assert!(affected.is_ok(), "insert order failed");
-        let rows = st
-            .db
-            .as_ref()
-            .unwrap()
-            .query_with("SELECT id FROM travel_orders WHERE user_id = ? ORDER BY id DESC LIMIT 1", &[json!(uid)])
-            .await
-            .unwrap();
-        ids.push(rows.first().unwrap().get("id").unwrap().as_u64().unwrap());
+        ids.push(oid);
     }
 
     // keyword 匹配 email：命中 2 条
@@ -173,6 +175,9 @@ async fn orders_detail_and_refund_restores_stock() {
     ).await).await;
     assert_eq!(status, StatusCode::OK, "{body}");
     let dest_id = body["data"]["id"].as_u64().unwrap();
+    // 规格 E：id_str 与数值 id 十进制一致（雪花 id >2^53，JS 侧数值解析会舍入，靠 id_str 保真）
+    assert_eq!(body["data"]["id_str"], dest_id.to_string(), "{body}");
+    assert!(dest_id > 1u64 << 40, "创建响应的 id 应为雪花大 id: {dest_id}");
     let (status, body) = body_json(create_line(
         State(st.clone()),
         admin_guard(),
@@ -180,6 +185,7 @@ async fn orders_detail_and_refund_restores_stock() {
     ).await).await;
     assert_eq!(status, StatusCode::OK, "{body}");
     let line_id = body["data"]["id"].as_u64().unwrap();
+    assert_eq!(body["data"]["id_str"], line_id.to_string(), "{body}");
     let (status, body) = body_json(create_line_date(
         State(st.clone()),
         admin_guard(),
@@ -188,6 +194,7 @@ async fn orders_detail_and_refund_restores_stock() {
     ).await).await;
     assert_eq!(status, StatusCode::OK, "{body}");
     let date_id = body["data"]["id"].as_u64().unwrap();
+    assert_eq!(body["data"]["id_str"], date_id.to_string(), "{body}");
 
     // 模拟下单：余位 8 → 6，建已支付订单 + 支付流水
     let snap = json!({
@@ -201,21 +208,20 @@ async fn orders_detail_and_refund_restores_stock() {
             &[json!(date_id)],
         )
         .await;
+    let order_id = idgen_rs::id_helper::next_id();
     let _ = db
         .execute_with(
-            "INSERT INTO travel_orders (user_id, order_type, product_id, product_snapshot, \
-             destination_id, booking_id, status, amount_cents) VALUES (?, 1, ?, ?, ?, 0, 1, 20000)",
-            &[json!(uid), json!(line_id), json!(snap.to_string()), json!(dest_id)],
+            "INSERT INTO travel_orders (id, user_id, order_type, product_id, product_snapshot, \
+             destination_id, booking_id, status, amount_cents) VALUES (?, ?, 1, ?, ?, ?, 0, 1, 20000)",
+            &[json!(order_id), json!(uid), json!(line_id), json!(snap.to_string()), json!(dest_id)],
         )
         .await;
-    let rows = db.query_with("SELECT id FROM travel_orders WHERE user_id = ? ORDER BY id DESC LIMIT 1", &[json!(uid)]).await.unwrap();
-    let order_id = rows.first().unwrap().get("id").unwrap().as_u64().unwrap();
     let txn = unique_name("txn");
     let _ = db
         .execute_with(
-            "INSERT INTO travel_payments (order_id, channel_code, amount_cents, status, txn_no, paid_at) \
-             VALUES (?, 'card', 20000, 1, ?, NOW())",
-            &[json!(order_id), json!(txn)],
+            "INSERT INTO travel_payments (id, order_id, channel_code, amount_cents, status, txn_no, paid_at) \
+             VALUES (?, ?, 'card', 20000, 1, ?, NOW())",
+            &[json!(idgen_rs::id_helper::next_id()), json!(order_id), json!(txn)],
         )
         .await;
 
@@ -226,6 +232,10 @@ async fn orders_detail_and_refund_restores_stock() {
     assert_eq!(body["data"]["snapshot"]["quantity"], 2);
     assert_eq!(body["data"]["payments"].as_array().unwrap().len(), 1);
     assert_eq!(body["data"]["payments"][0]["status"], 1);
+    // 规格 E：详情订单与嵌套支付流水对象的 id_str 均须与数值 id 一致
+    assert_eq!(body["data"]["id_str"], order_id.to_string(), "{body}");
+    let pay = &body["data"]["payments"][0];
+    assert_eq!(pay["id_str"], pay["id"].as_u64().unwrap().to_string(), "{body}");
 
     // 退款：订单 1→4、支付流水 1→3、余位 6→8
     let (status, body) = body_json(refund_order(State(st.clone()), admin_guard(), Path(order_id)).await).await;
@@ -242,15 +252,14 @@ async fn orders_detail_and_refund_restores_stock() {
     let (status, body) = body_json(refund_order(State(st.clone()), admin_guard(), Path(order_id)).await).await;
     assert_eq!(status, StatusCode::CONFLICT, "{body}");
     // 待支付订单退款 → 409
+    let pending_id = idgen_rs::id_helper::next_id();
     let _ = db
         .execute_with(
-            "INSERT INTO travel_orders (user_id, order_type, product_id, product_snapshot, \
-             destination_id, booking_id, status, amount_cents) VALUES (?, 1, ?, ?, ?, 0, 0, 100)",
-            &[json!(uid), json!(line_id), json!(snap.to_string()), json!(dest_id)],
+            "INSERT INTO travel_orders (id, user_id, order_type, product_id, product_snapshot, \
+             destination_id, booking_id, status, amount_cents) VALUES (?, ?, 1, ?, ?, ?, 0, 0, 100)",
+            &[json!(pending_id), json!(uid), json!(line_id), json!(snap.to_string()), json!(dest_id)],
         )
         .await;
-    let rows = db.query_with("SELECT id FROM travel_orders WHERE user_id = ? ORDER BY id DESC LIMIT 1", &[json!(uid)]).await.unwrap();
-    let pending_id = rows.first().unwrap().get("id").unwrap().as_u64().unwrap();
     let (status, body) = body_json(refund_order(State(st.clone()), admin_guard(), Path(pending_id)).await).await;
     assert_eq!(status, StatusCode::CONFLICT, "{body}");
     assert_eq!(body["message"], "only paid or confirmed orders can be refunded");
@@ -292,6 +301,10 @@ async fn users_list_and_status_toggle() {
     assert_eq!(item["email"], email);
     assert!(item.get("password_hash").is_none(), "绝不返回 password_hash: {body}");
     assert!(item.get("status").is_some());
+    // 规格 E：用户行对象 id_str 与数值 id 一致
+    let item_id = item["id"].as_u64().unwrap();
+    assert_eq!(item["id_str"], item_id.to_string(), "{body}");
+    assert_eq!(item_id, uid, "列表返回的 id 应与插入 id 一致: {body}");
 
     // 禁用 → 状态回读 1
     let (status, body) = body_json(update_user_status(
@@ -377,6 +390,7 @@ async fn flights_crud_full_flow() {
     ).await).await;
     assert_eq!(status, StatusCode::OK, "create flight failed: {body}");
     let flight_id = body["data"]["id"].as_u64().unwrap();
+    assert_eq!(body["data"]["id_str"], flight_id.to_string(), "{body}");
     assert_eq!(body["data"]["from_code"], "HND");
     assert_eq!(body["data"]["depart_at"], "2026-12-01 09:00:00");
     assert_eq!(body["data"]["price_cents"], 158000);
@@ -474,6 +488,7 @@ async fn hotels_rooms_crud_with_409() {
     ).await).await;
     assert_eq!(status, StatusCode::OK, "create hotel failed: {body}");
     let hotel_id = body["data"]["id"].as_u64().unwrap();
+    assert_eq!(body["data"]["id_str"], hotel_id.to_string(), "{body}");
     assert_eq!(body["data"]["city_code"], "TYO");
     assert_eq!(body["data"]["star"], 4);
     assert_eq!(body["data"]["latitude"], 35.6909);
@@ -532,6 +547,7 @@ async fn hotels_rooms_crud_with_409() {
     ).await).await;
     assert_eq!(status, StatusCode::OK, "create room failed: {body}");
     let room_id = body["data"]["id"].as_u64().unwrap();
+    assert_eq!(body["data"]["id_str"], room_id.to_string(), "{body}");
     assert_eq!(body["data"]["breakfast"], 1);
     let (status, body) = body_json(list_rooms(State(st.clone()), admin_guard(), Path(hotel_id)).await).await;
     assert_eq!(status, StatusCode::OK);
@@ -593,9 +609,9 @@ async fn payments_list_and_channels_toggle() {
     let txn = format!("txn-test-p4-{}", SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis());
     // 合成流水（order_id=0 无对应订单，LEFT JOIN 下 email 为空）
     st.db.as_ref().unwrap().execute_with(
-        "INSERT INTO travel_payments (order_id, channel_code, amount_cents, status, txn_no, created_at) \
-         VALUES (0, 'stripe', 100, 1, ?, NOW())",
-        &[json!(txn)],
+        "INSERT INTO travel_payments (id, order_id, channel_code, amount_cents, status, txn_no, created_at) \
+         VALUES (?, 0, 'stripe', 100, 1, ?, NOW())",
+        &[json!(idgen_rs::id_helper::next_id()), json!(txn)],
     ).await.unwrap();
 
     // 列表：channel 过滤命中，字段完整

@@ -56,6 +56,7 @@ fn order_from_row(row: &Row) -> Value {
     let expire = col_str(row, "expire_at");
     json!({
         "id": col_u64(row, "id"),
+        "id_str": col_u64(row, "id").to_string(),
         "user_id": col_u64(row, "user_id"),
         "email": col_str(row, "email"),
         "order_type": col_u64(row, "order_type"),
@@ -72,6 +73,7 @@ fn payment_from_row(row: &Row) -> Value {
     let paid_at = col_str(row, "paid_at");
     json!({
         "id": col_u64(row, "id"),
+        "id_str": col_u64(row, "id").to_string(),
         "channel_code": col_str(row, "channel_code"),
         "amount_cents": col_u64(row, "amount_cents"),
         "status": col_u64(row, "status"),

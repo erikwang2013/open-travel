@@ -4,7 +4,7 @@ import '../api.dart';
 import 'lines_page.dart';
 
 class LineDate {
-  final int id;
+  final String id;
   final int lineId;
   final String departDate;
   final int priceCents;
@@ -12,7 +12,7 @@ class LineDate {
   final int status;
 
   LineDate.fromJson(Map<String, dynamic> j)
-      : id = j['id'] as int,
+      : id = (j['id_str'] ?? j['id'].toString()) as String,
         lineId = (j['line_id'] ?? 0) as int,
         departDate = (j['depart_date'] ?? '') as String,
         priceCents = (j['price_cents'] ?? 0) as int,

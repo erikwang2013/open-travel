@@ -7,7 +7,7 @@ const channelTypeLabels = {0: '国际卡', 1: '本地钱包', 2: '加密'};
 
 class Payment {
   Payment.fromJson(Map<String, dynamic> j)
-      : id = j['id'] as int,
+      : id = (j['id_str'] ?? j['id'].toString()) as String,
         orderId = (j['order_id'] ?? 0) as int,
         email = (j['email'] ?? '') as String,
         channelCode = (j['channel_code'] ?? '') as String,
@@ -16,7 +16,7 @@ class Payment {
         txnNo = (j['txn_no'] ?? '') as String,
         createdAt = (j['created_at'] ?? '') as String;
 
-  final int id;
+  final String id;
   final int orderId;
   final String email;
   final String channelCode;

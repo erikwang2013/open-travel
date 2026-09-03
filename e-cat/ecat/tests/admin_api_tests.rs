@@ -73,11 +73,20 @@ fn b64url_decode(s: &str) -> Vec<u8> {
 }
 
 /// 本机 MySQL（docker compose 映射 3308）；连不上返回 None，测试跳过真实路径。
+/// 雪花生成器进程内仅初始化一次（Once 防并发测试线程同时 init 撞 idgen_rs 内部 OnceLock）。
+static IDGEN_INIT: std::sync::Once = std::sync::Once::new();
+fn ensure_id_gen() {
+    IDGEN_INIT.call_once(|| ecat::business::shared::init_id_gen());
+}
+
 async fn real_db() -> Option<SqlxClient> {
     let url = std::env::var("TEST_DATABASE_URL")
         .unwrap_or_else(|_| "mysql://root:travel_dev@localhost:3308/travel".into());
     match SqlxClient::connect(&url).await {
-        Ok(db) => Some(db),
+        Ok(db) => {
+            ensure_id_gen();
+            Some(db)
+        }
         Err(e) => {
             eprintln!("skip real-db test (mysql unreachable): {e}");
             None

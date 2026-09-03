@@ -129,6 +129,9 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel?charset=utf8mb4
+      # 雪花 ID worker id：9 个服务进程各配唯一值（同 id 跨进程同毫秒会序列碰撞）。
+      # 映射：user=1 booking=2 admin=3 search=4 line=5 order=6 flight=7 hotel=8 payment=9
+      ECAT_WORKER_ID: "1"
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
       KAFKA_BROKERS: kafka:9092
@@ -176,6 +179,8 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel?charset=utf8mb4
+      # 雪花 ID worker id（唯一映射见 ecat-user）
+      ECAT_WORKER_ID: "2"
       # 从库连接（读写分离只读路径；缺省时服务降级为仅主库）
       REPLICA_DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql-replica:3306/travel?charset=utf8mb4
       REDIS_URL: redis://redis:6379
@@ -198,6 +203,8 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel?charset=utf8mb4
+      # 雪花 ID worker id（唯一映射见 ecat-user）
+      ECAT_WORKER_ID: "3"
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
       KAFKA_BROKERS: kafka:9092
@@ -221,6 +228,8 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel?charset=utf8mb4
+      # 雪花 ID worker id（唯一映射见 ecat-user）
+      ECAT_WORKER_ID: "4"
       REPLICA_DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql-replica:3306/travel?charset=utf8mb4
       REDIS_URL: redis://redis:6379
       OPENSEARCH_URL: http://opensearch:9200
@@ -243,6 +252,8 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel?charset=utf8mb4
+      # 雪花 ID worker id（唯一映射见 ecat-user）
+      ECAT_WORKER_ID: "5"
       REPLICA_DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql-replica:3306/travel?charset=utf8mb4
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
@@ -266,6 +277,8 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel?charset=utf8mb4
+      # 雪花 ID worker id（唯一映射见 ecat-user）
+      ECAT_WORKER_ID: "6"
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
       KAFKA_BROKERS: kafka:9092
@@ -287,6 +300,8 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel?charset=utf8mb4
+      # 雪花 ID worker id（唯一映射见 ecat-user）
+      ECAT_WORKER_ID: "7"
       REPLICA_DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql-replica:3306/travel?charset=utf8mb4
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
@@ -308,6 +323,8 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel?charset=utf8mb4
+      # 雪花 ID worker id（唯一映射见 ecat-user）
+      ECAT_WORKER_ID: "8"
       REPLICA_DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql-replica:3306/travel?charset=utf8mb4
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
@@ -331,6 +348,8 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-travel_dev}@mysql:3306/travel?charset=utf8mb4
+      # 雪花 ID worker id（唯一映射见 ecat-user）
+      ECAT_WORKER_ID: "9"
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
       KAFKA_BROKERS: kafka:9092

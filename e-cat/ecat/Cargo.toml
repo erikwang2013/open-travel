@@ -55,6 +55,7 @@ ecat-data-sqlx = { path = "../ecat-data-sqlx" }
 ecat-data-opensearch = { path = "../ecat-data-opensearch" }
 ecat-mq = { path = "../ecat-mq" }
 ecat-mq-kafka = { path = "../ecat-mq-kafka" }
+idgen_rs = "0.2.0"
 [dev-dependencies]
 tokio = { workspace = true, features = ["macros", "rt"] }
 

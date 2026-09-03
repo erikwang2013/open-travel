@@ -176,11 +176,14 @@ pub(crate) async fn create_review(
     } else {
         json!(comment)
     };
+    // 主键去 AUTO_INCREMENT 后显式生成雪花 id
+    let review_id = idgen_rs::id_helper::next_id();
     if let Err(e) = db
         .query_with(
-            "INSERT INTO travel_reviews (user_id, attraction_id, destination_id, rating, content, lang) \
-             VALUES (?, ?, ?, ?, ?, 'en')",
+            "INSERT INTO travel_reviews (id, user_id, attraction_id, destination_id, rating, content, lang) \
+             VALUES (?, ?, ?, ?, ?, ?, 'en')",
             &[
+                json!(review_id),
                 json!(user_id),
                 json!(body.attraction_id),
                 json!(col_u64(dest_row, "destination_id")),
@@ -198,9 +201,9 @@ pub(crate) async fn create_review(
             &format!(
                 "SELECT {REVIEW_COLS} FROM travel_reviews r \
                  LEFT JOIN travel_users u ON u.id = r.user_id \
-                 WHERE r.attraction_id = ? AND r.user_id = ? ORDER BY r.id DESC LIMIT 1"
+                 WHERE r.id = ?"
             ),
-            &[json!(body.attraction_id), json!(user_id)],
+            &[json!(review_id)],
         )
         .await
     {

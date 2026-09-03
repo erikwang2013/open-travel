@@ -59,6 +59,7 @@ fn col_f64(row: &Row, col: &str) -> f64 {
 fn hotel_from_row(row: &Row) -> Value {
     json!({
         "id": col_u64(row, "id"),
+        "id_str": col_u64(row, "id").to_string(),
         "name_en": col_str(row, "name_en"),
         "name_zh": col_str(row, "name_zh"),
         "name_ja": col_str(row, "name_ja"),
@@ -74,6 +75,7 @@ fn hotel_from_row(row: &Row) -> Value {
 fn room_from_row(row: &Row) -> Value {
     json!({
         "id": col_u64(row, "id"),
+        "id_str": col_u64(row, "id").to_string(),
         "hotel_id": col_u64(row, "hotel_id"),
         "room_type_en": col_str(row, "room_type_en"),
         "room_type_zh": col_str(row, "room_type_zh"),
@@ -213,6 +215,10 @@ pub(crate) async fn create_hotel(
             vals.push(v);
         }
     }
+    // 主键去 AUTO_INCREMENT 后显式生成雪花 id（pick 白名单不含 id，body 无法覆盖）
+    let new_id = idgen_rs::id_helper::next_id();
+    cols.insert(0, "id".into());
+    vals.insert(0, json!(new_id));
     let sql = format!(
         "INSERT INTO travel_hotels ({}) VALUES ({})",
         cols.join(","),
@@ -222,24 +228,7 @@ pub(crate) async fn create_hotel(
         tracing::warn!(error = %e, "hotel insert failed");
         return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
     }
-    // 取回新行 id：名称配对查询（管理端低频写，名称碰撞时取最新一条）
-    let name_en = obj.get("name_en").and_then(Value::as_str).unwrap_or("");
-    let name_zh = obj.get("name_zh").and_then(Value::as_str).unwrap_or("");
-    let rows = db
-        .query_with(
-            "SELECT id FROM travel_hotels WHERE name_en = ? AND name_zh = ? ORDER BY id DESC LIMIT 1",
-            &[json!(name_en), json!(name_zh)],
-        )
-        .await
-        .ok()
-        .and_then(|r| r.into_iter().next());
-    let Some(row) = rows else {
-        return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
-    };
-    let Some(id) = row.get("id").and_then(|v| v.as_u64()) else {
-        return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
-    };
-    match fetch_hotel(&db, id).await {
+    match fetch_hotel(&db, new_id).await {
         Some(h) => (StatusCode::OK, ApiResponse::ok(h)).into_response(),
         None => db_unavailable(),
     }
@@ -423,9 +412,11 @@ pub(crate) async fn create_room(
             vals.push(v);
         }
     }
-    let mut insert_cols = vec!["hotel_id".to_string()];
+    // 主键去 AUTO_INCREMENT 后显式生成雪花 id（pick 白名单不含 id，body 无法覆盖）
+    let new_id = idgen_rs::id_helper::next_id();
+    let mut insert_cols = vec!["id".to_string(), "hotel_id".to_string()];
     insert_cols.extend(cols);
-    let mut insert_vals = vec![json!(hotel_id)];
+    let mut insert_vals = vec![json!(new_id), json!(hotel_id)];
     insert_vals.extend(vals);
     let sql = format!(
         "INSERT INTO travel_hotel_rooms ({}) VALUES ({})",
@@ -436,21 +427,7 @@ pub(crate) async fn create_room(
         tracing::warn!(error = %e, "room insert failed");
         return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
     }
-    let rows = db
-        .query_with(
-            "SELECT id FROM travel_hotel_rooms WHERE hotel_id = ? AND room_type_en = ? ORDER BY id DESC LIMIT 1",
-            &[json!(hotel_id), json!(room_type_en)],
-        )
-        .await
-        .ok()
-        .and_then(|r| r.into_iter().next());
-    let Some(row) = rows else {
-        return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
-    };
-    let Some(id) = row.get("id").and_then(|v| v.as_u64()) else {
-        return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
-    };
-    match fetch_room(&db, hotel_id, id).await {
+    match fetch_room(&db, hotel_id, new_id).await {
         Some(r) => (StatusCode::OK, ApiResponse::ok(r)).into_response(),
         None => db_unavailable(),
     }

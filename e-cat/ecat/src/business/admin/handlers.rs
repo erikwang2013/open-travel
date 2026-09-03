@@ -76,7 +76,15 @@ fn row_to_json(row: &Row, cols: &[&str]) -> Value {
     let vals = row.values();
     let mut m = Map::new();
     for (i, c) in cols.iter().enumerate() {
-        m.insert(col_alias(c).to_string(), vals.get(i).cloned().unwrap_or(Value::Null));
+        let key = col_alias(c).to_string();
+        let v = vals.get(i).cloned().unwrap_or(Value::Null);
+        m.insert(key.clone(), v);
+        // id_str：雪花 id > JS 2^53，Flutter web 数值往返会舍入，须附字符串形式
+        if key == "id" {
+            if let Some(n) = m.get("id").and_then(|x| x.as_u64()) {
+                m.insert("id_str".into(), json!(n.to_string()));
+            }
+        }
     }
     // description 契约上是 JSON 对象：sqlx Any 驱动把 TEXT 列按 Blob 返回
     // base64（CAST 无效），此处兜底解码并还原为 JSON
@@ -222,6 +230,10 @@ pub(crate) async fn create_destination(
             vals.push(v);
         }
     }
+    // 主键去 AUTO_INCREMENT 后显式生成雪花 id（pick 白名单不含 id，body 无法覆盖）
+    let new_id = idgen_rs::id_helper::next_id();
+    cols.insert(0, "id".into());
+    vals.insert(0, json!(new_id));
     let Some(db) = state.db.clone() else { return db_unavailable() };
     let sql = format!(
         "INSERT INTO travel_destinations ({}) VALUES ({})",
@@ -232,22 +244,7 @@ pub(crate) async fn create_destination(
         tracing::warn!(error = %e, "dest insert failed");
         return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
     }
-    // 取回新行 id：名称配对查询（管理端低频写，名称碰撞时取最新一条，可接受）
-    let rows = db
-        .query_with(
-            "SELECT id FROM travel_destinations WHERE name_en = ? AND name_zh = ? ORDER BY id DESC LIMIT 1",
-            &[json!(name_en), json!(name_zh)],
-        )
-        .await
-        .ok()
-        .and_then(|r| r.into_iter().next());
-    let Some(row) = rows else {
-        return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
-    };
-    let Some(id) = row.get("id").and_then(|v| v.as_u64()) else {
-        return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
-    };
-    match fetch_dest(&db, id).await {
+    match fetch_dest(&db, new_id).await {
         Some(dest) => (StatusCode::OK, ApiResponse::ok(dest)).into_response(),
         None => db_unavailable(),
     }
@@ -437,6 +434,10 @@ pub(crate) async fn create_attraction(
             vals.push(Value::String(String::new()));
         }
     }
+    // 主键去 AUTO_INCREMENT 后显式生成雪花 id（pick 白名单不含 id，body 无法覆盖）
+    let new_id = idgen_rs::id_helper::next_id();
+    cols.insert(0, "id".into());
+    vals.insert(0, json!(new_id));
     let Some(db) = state.db.clone() else { return db_unavailable() };
     let sql = format!(
         "INSERT INTO travel_attractions ({}) VALUES ({})",
@@ -447,21 +448,7 @@ pub(crate) async fn create_attraction(
         tracing::warn!(error = %e, "attr insert failed");
         return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
     }
-    let rows = db
-        .query_with(
-            "SELECT id FROM travel_attractions WHERE name_en = ? AND destination_id = ? ORDER BY id DESC LIMIT 1",
-            &[json!(name_en), json!(dest_id)],
-        )
-        .await
-        .ok()
-        .and_then(|r| r.into_iter().next());
-    let Some(row) = rows else {
-        return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
-    };
-    let Some(id) = row.get("id").and_then(|v| v.as_u64()) else {
-        return err::<Value>(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error").into_response();
-    };
-    match fetch_attr(&db, id).await {
+    match fetch_attr(&db, new_id).await {
         Some(attr) => (StatusCode::OK, ApiResponse::ok(attr)).into_response(),
         None => db_unavailable(),
     }
