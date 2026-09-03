@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.4.0] — 2026-09-04
+
+### Changed
+- 业务数据库主键 AUTO_INCREMENT → idgen_rs 雪花 ID：全库 15 张表 PK 去自增改显式雪花值（DDL 主/从库同步执行），种子 INSERT 带显式 id；`ECAT_WORKER_ID` 进程级 worker（0..63，越界启动断言防跨进程碰撞），生成器 OnceLock 幂等初始化；admin Flutter Web 增加 `id_str` 字符串 ID 兼容层（雪花 ID 超 JS 2^53，web 端以字符串承载主键）
+- API 版本迁入 URL 前缀 `/api/v1/...`（取代 1.1.0 的 `X-Api-Version` header 方案）：移除 ApiVersionLayer 版本头校验，9 服务路由、nginx 双 server 分流与 CORS 头、payment→order 内部回调、全部集成测试及 admin/client 三端同步；未知/缺失版本路径由网关返回 404，无 header 校验
+
+### Added
+- 吉祥物「小途」重设计为 e-cat 旅行猫全身像（docs/mascot.svg 全套替换）
+
 ## [1.3.0] — 2026-08-31
 
 ### Added
