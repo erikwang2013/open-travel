@@ -12,7 +12,7 @@
 | booking-service 直连 | `http://localhost:8002` | 目的地服务 |
 | admin-service 直连 | `http://localhost:8003` | 管理服务 |
 
-网关分流规则（`config/nginx.conf`）：`/api/user/*` → user-service，`/api/booking/*` → booking-service，`/api/admin/*` → admin-service；`/health`、`/ready` → user-service。
+网关分流规则（`config/nginx.conf`）：`/api/v1/user/*` → user-service，`/api/v1/booking/*` → booking-service，`/api/v1/admin/*` → admin-service；`/health`、`/ready` → user-service。
 
 ## 通用约定
 
@@ -32,19 +32,15 @@
 
 ### API 版本
 
-API 版本通过请求头 `X-Api-Version` 传递，**强制要求**：
-
-- 当前仅一个版本：`v1`
-- 所有业务请求必须携带 `X-Api-Version: v1`
-- 缺失该 header 或值不是 `v1` 时返回 `400`（如 `{"code":400,"message":"unsupported api version","data":null}`）
+API 版本在 URL 前缀：`/api/v1/...`（版本即路由）。当前仅一个版本 `v1`；无版本前缀或未知版本（如 `/api/v2/`）的路径由 nginx 返回 `404`，无 header 校验。
 
 ```bash
-curl -H "X-Api-Version: v1" http://localhost:8082/api/user/profile
+curl http://localhost:8082/api/v1/user/profile
 ```
 
 ### 鉴权（JWT）
 
-user-service 的 `/api/user/profile` 需在请求头携带 JWT：
+user-service 的 `/api/v1/user/profile` 需在请求头携带 JWT：
 
 ```
 Authorization: Bearer <JWT>
@@ -53,7 +49,7 @@ Authorization: Bearer <JWT>
 - 密钥来自 `JWT_SECRET` 环境变量（≥32 字节）；未配置时退回开发占位密钥并告警（生产必须配置）
 - 无 token / token 无效时返回 `401`
 - booking-service 的接口为公开接口，无鉴权
-- admin-service：`POST /api/admin/login` 公开；其余管理接口需携带 `Authorization: Bearer <admin JWT>`（登录签发，claims 含 `role=admin`，24 小时有效）。token 缺失 / 无效返回 `401`，非 admin role 返回 `403`
+- admin-service：`POST /api/v1/admin/login` 公开；其余管理接口需携带 `Authorization: Bearer <admin JWT>`（登录签发，claims 含 `role=admin`，24 小时有效）。token 缺失 / 无效返回 `401`，非 admin role 返回 `403`
 
 ### 限流
 
@@ -66,7 +62,7 @@ Authorization: Bearer <JWT>
 | HTTP 状态码 | 场景 |
 |------|------|
 | 200 | 成功 |
-| 400 | 请求参数错误 / `X-Api-Version` 缺失或不受支持（`code` 非 0，`message` 描述原因） |
+| 400 | 请求参数错误（`code` 非 0，`message` 描述原因） |
 | 401 | 未认证 / JWT 无效 / 登录凭据错误（统一返回，防枚举） |
 | 403 | 请求被安全中间件拦截（SQL 注入 / XSS / SSRF 等攻击模式）；admin 接口非 admin role（`admin role required`） |
 | 404 | 用户 / 目的地 / 景区不存在（各服务对应返回） |
@@ -105,7 +101,7 @@ curl http://localhost:8082/ready
 
 ### 用户服务
 
-#### `POST /api/user/register` — 用户注册
+#### `POST /api/v1/user/register` — 用户注册
 
 公开接口。请求体 JSON：
 
@@ -124,15 +120,15 @@ curl http://localhost:8082/ready
 - `503`：数据库不可用
 
 ```bash
-curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -X POST \
-  http://localhost:8082/api/user/register -d '{"email":"a@b.com","password":"secret1"}'
+curl -H "Content-Type: application/json" -X POST \
+  http://localhost:8082/api/v1/user/register -d '{"email":"a@b.com","password":"secret1"}'
 ```
 
 ```json
 { "code": 0, "message": "ok", "data": { "user_id": 1, "email": "a@b.com", "lang": "en" } }
 ```
 
-#### `POST /api/user/login` — 登录
+#### `POST /api/v1/user/login` — 登录
 
 公开接口。请求体 `{ "email": "...", "password": "..." }`。
 
@@ -141,15 +137,15 @@ curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -X POST \
 - `503`：数据库不可用
 
 ```bash
-curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -X POST \
-  http://localhost:8082/api/user/login -d '{"email":"a@b.com","password":"secret1"}'
+curl -H "Content-Type: application/json" -X POST \
+  http://localhost:8082/api/v1/user/login -d '{"email":"a@b.com","password":"secret1"}'
 ```
 
 ```json
 { "code": 0, "message": "ok", "data": { "token": "<JWT>", "user_id": 1, "email": "a@b.com" } }
 ```
 
-#### `GET /api/user/profile` — 查询用户资料
+#### `GET /api/v1/user/profile` — 查询用户资料
 
 鉴权：**需要 JWT**（`Authorization: Bearer <JWT>`，由登录接口签发）。
 
@@ -159,14 +155,14 @@ curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -X POST \
 - `503`：数据库不可用
 
 ```bash
-curl -H "X-Api-Version: v1" -H "Authorization: Bearer <JWT>" http://localhost:8082/api/user/profile
+curl -H "Authorization: Bearer <JWT>" http://localhost:8082/api/v1/user/profile
 ```
 
 ```json
 { "code": 0, "message": "ok", "data": { "user_id": 1, "email": "a@b.com", "lang": "en" } }
 ```
 
-#### `PUT /api/user/profile` — 更新用户资料
+#### `PUT /api/v1/user/profile` — 更新用户资料
 
 鉴权：**需要 JWT**（与 GET 共用同一路径）。请求体 JSON：
 
@@ -185,8 +181,8 @@ curl -H "X-Api-Version: v1" -H "Authorization: Bearer <JWT>" http://localhost:80
 - `503`：数据库不可用
 
 ```bash
-curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X PUT \
-  http://localhost:8082/api/user/profile -d '{"nickname":"alice","lang":"zh"}'
+curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X PUT \
+  http://localhost:8082/api/v1/user/profile -d '{"nickname":"alice","lang":"zh"}'
 ```
 
 ```json
@@ -195,12 +191,12 @@ curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorizatio
 
 ### 目的地服务
 
-#### `GET /api/booking/dates?region_id=N` — 热门目的地日期
+#### `GET /api/v1/booking/dates?region_id=N` — 热门目的地日期
 
 公开接口，无鉴权。查询 `region_id` 对应的热门目的地列表（仅 `status=1`，按 `sort_order ASC, id ASC` 排序），走 Redis 缓存（`hot_destinations:{region_id}`，TTL 300s）→ MySQL 回源（`travel_destinations` 表）→ 占位数据兜底，保证无数据源环境可响应。
 
 ```bash
-curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/dates?region_id=1"
+curl "http://localhost:8082/api/v1/booking/dates?region_id=1"
 ```
 
 ```json
@@ -213,7 +209,7 @@ curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/dates?region_id=1
 
 `region_id` 缺省时按 `0` 处理。
 
-#### `GET /api/booking/attractions?destination_id=N&lang=xx` — 景区列表
+#### `GET /api/v1/booking/attractions?destination_id=N&lang=xx` — 景区列表
 
 公开接口，无鉴权。`destination_id` 必填，返回该目的地的上架景区（`status=1`），按 `id` 升序。走 Redis 缓存（`travel:attractions:{destination_id}:{lang}`，TTL 300s）→ MySQL 回源（从库优先，失败回退主库）；无数据返回空数组。
 
@@ -221,7 +217,7 @@ curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/dates?region_id=1
 - `lang` 缺省按 `en` 处理；`name` 优先取 `name_{lang}` 列，为空回退 `name_en`
 
 ```bash
-curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/attractions?destination_id=1&lang=zh"
+curl "http://localhost:8082/api/v1/booking/attractions?destination_id=1&lang=zh"
 ```
 
 ```json
@@ -232,7 +228,7 @@ curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/attractions?desti
 }
 ```
 
-#### `GET /api/booking/attractions/{id}?lang=xx` — 景区详情
+#### `GET /api/v1/booking/attractions/{id}?lang=xx` — 景区详情
 
 公开接口，无鉴权。仅返回上架景区（`status=1`）。`description` 为 JSON 对象（键为语言代码），按 `lang` 取键，缺失或为空回退 `en`。
 
@@ -240,7 +236,7 @@ curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/attractions?desti
 - `reviews` 返回该景区最近 20 条真实评价（按 id 倒序），`rating_avg` 为读时 `AVG(rating)` 聚合，无评价时保留表内字段
 
 ```bash
-curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/attractions/1?lang=zh"
+curl "http://localhost:8082/api/v1/booking/attractions/1?lang=zh"
 ```
 
 ```json
@@ -251,7 +247,7 @@ curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/attractions/1?lan
 }
 ```
 
-#### `POST /api/reviews` — 提交评价
+#### `POST /api/v1/reviews` — 提交评价
 
 鉴权：**需要 JWT**（`Authorization: Bearer <JWT>`，由登录接口签发）。请求体 JSON：
 
@@ -271,28 +267,28 @@ curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/attractions/1?lan
 - 成功返回 `201`，`data` 为创建后的评价对象（含 `id` / `created_at`）
 
 ```bash
-curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X POST \
-  http://localhost:8082/api/reviews -d '{"attraction_id":1,"rating":5,"comment":"非常棒的体验"}'
+curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X POST \
+  http://localhost:8082/api/v1/reviews -d '{"attraction_id":1,"rating":5,"comment":"非常棒的体验"}'
 ```
 
-#### `GET /api/reviews?attraction_id=N&page=&page_size=` — 评价列表
+#### `GET /api/v1/reviews?attraction_id=N&page=&page_size=` — 评价列表
 
 公开接口，无鉴权。`attraction_id` 必填（缺失返回 400），按 `id` 倒序分页（`page` 默认 1，`page_size` 默认 10、上限 50）。
 
 响应 `data` 为裸数组：`[ { "id", "attraction_id", "user_id", "rating", "comment", "nickname", "created_at" } ]`。
 
 ```bash
-curl -H "X-Api-Version: v1" "http://localhost:8082/api/reviews?attraction_id=1&page=1&page_size=10"
+curl "http://localhost:8082/api/v1/reviews?attraction_id=1&page=1&page_size=10"
 ```
 
 ### 管理服务
 
-管理端接口全部需要 **admin JWT**（`POST /api/admin/login` 签发，claims 含 `role=admin`）：
+管理端接口全部需要 **admin JWT**（`POST /api/v1/admin/login` 签发，claims 含 `role=admin`）：
 
 - token 缺失 / 无效 → `401`；非 admin role → `403`（`admin role required`）
 - 限流独立统计：100 请求 / 60 秒
 
-#### `POST /api/admin/login` — 管理员登录
+#### `POST /api/v1/admin/login` — 管理员登录
 
 公开接口。请求体 `{ "email": "...", "password": "..." }`，仅 `status=1`（启用）的管理员可登录。
 
@@ -301,15 +297,15 @@ curl -H "X-Api-Version: v1" "http://localhost:8082/api/reviews?attraction_id=1&p
 - `503`：数据库不可用
 
 ```bash
-curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -X POST \
-  http://localhost:8082/api/admin/login -d '{"email":"admin@travel.local","password":"Admin@123"}'
+curl -H "Content-Type: application/json" -X POST \
+  http://localhost:8082/api/v1/admin/login -d '{"email":"admin@travel.local","password":"Admin@123"}'
 ```
 
 ```json
 { "code": 0, "message": "ok", "data": { "token": "<JWT>" } }
 ```
 
-#### `GET /api/admin/destinations` — 目的地列表
+#### `GET /api/v1/admin/destinations` — 目的地列表
 
 鉴权：需要 admin JWT。
 
@@ -323,7 +319,7 @@ curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -X POST \
 按 `sort_order ASC, id ASC` 排序。返回字段：`id`、`name_en`、`name_zh`、`name_ja`、`description`（JSON 对象）、`latitude`、`longitude`、`category`、`region_id`、`cover_url`、`status`、`sort_order`。
 
 ```bash
-curl -H "X-Api-Version: v1" -H "Authorization: Bearer <JWT>" "http://localhost:8082/api/admin/destinations?page=1&page_size=10"
+curl -H "Authorization: Bearer <JWT>" "http://localhost:8082/api/v1/admin/destinations?page=1&page_size=10"
 ```
 
 ```json
@@ -339,7 +335,7 @@ curl -H "X-Api-Version: v1" -H "Authorization: Bearer <JWT>" "http://localhost:8
 }
 ```
 
-#### `POST /api/admin/destinations` — 创建目的地
+#### `POST /api/v1/admin/destinations` — 创建目的地
 
 鉴权：需要 admin JWT。请求体为 JSON 对象，`name_en` 与 `name_zh` 必填（否则 400）。
 
@@ -348,26 +344,26 @@ curl -H "X-Api-Version: v1" -H "Authorization: Bearer <JWT>" "http://localhost:8
 - 成功返回创建后的完整目的地（含 `id`）
 
 ```bash
-curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X POST \
-  http://localhost:8082/api/admin/destinations -d '{"name_en":"Kyoto","name_zh":"京都","region_id":1,"category":"city"}'
+curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X POST \
+  http://localhost:8082/api/v1/admin/destinations -d '{"name_en":"Kyoto","name_zh":"京都","region_id":1,"category":"city"}'
 ```
 
-#### `PUT /api/admin/destinations/{id}` — 更新目的地
+#### `PUT /api/v1/admin/destinations/{id}` — 更新目的地
 
 鉴权：需要 admin JWT。请求体为 JSON 对象，至少一个可写字段（否则 400）。可写字段与创建相同，成功返回更新后的目的地。
 
 - `404`：目的地不存在
 
-#### `PUT /api/admin/destinations/{id}/status` — 上下架
+#### `PUT /api/v1/admin/destinations/{id}/status` — 上下架
 
 鉴权：需要 admin JWT。请求体 `{ "status": 0 | 1 }`（非法值 400），成功返回更新后的目的地。
 
 ```bash
-curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X PUT \
-  http://localhost:8082/api/admin/destinations/1/status -d '{"status":0}'
+curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X PUT \
+  http://localhost:8082/api/v1/admin/destinations/1/status -d '{"status":0}'
 ```
 
-#### `DELETE /api/admin/destinations/{id}` — 删除目的地
+#### `DELETE /api/v1/admin/destinations/{id}` — 删除目的地
 
 鉴权：需要 admin JWT。
 
@@ -375,13 +371,13 @@ curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorizatio
 - `404`：目的地不存在
 - 成功：`data` 为 `null`
 
-#### `GET /api/admin/attractions` — 景区列表
+#### `GET /api/v1/admin/attractions` — 景区列表
 
 鉴权：需要 admin JWT。分页参数同目的地列表（`page` / `page_size`，另支持 `destination_id` 过滤），按 `id ASC` 排序。
 
 - 返回字段：`id`、`destination_id`、13 个语种名称（`name_en/name_zh/name_ja/name_ko/name_ar/name_es/name_fr/name_de/name_pt/name_hi/name_bn/name_id/name_ru`）、`description`（JSON 对象）、`price_cents`、`status`、`open_hours`、`rating_avg`、`cover_url`
 
-#### `POST /api/admin/attractions` — 创建景区
+#### `POST /api/v1/admin/attractions` — 创建景区
 
 鉴权：需要 admin JWT。请求体为 JSON 对象。
 
@@ -389,13 +385,13 @@ curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorizatio
 - 可写字段：`destination_id`、13 个 `name_*`、`description`（JSON 对象）、`price_cents`、`status`、`open_hours`、`rating_avg`、`cover_url`；其余 `name_*` 与 `open_hours` 缺省补空串
 - 成功返回创建后的完整景区（含 `id`）
 
-#### `PUT /api/admin/attractions/{id}` — 更新景区
+#### `PUT /api/v1/admin/attractions/{id}` — 更新景区
 
 鉴权：需要 admin JWT。请求体为 JSON 对象，至少一个可写字段（否则 400）；不允许修改 `destination_id`。
 
 - `404`：景区不存在
 
-#### `DELETE /api/admin/attractions/{id}` — 删除景区
+#### `DELETE /api/v1/admin/attractions/{id}` — 删除景区
 
 鉴权：需要 admin JWT。`404`：景区不存在；成功：`data` 为 `null`。
 
@@ -403,7 +399,7 @@ curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorizatio
 
 公开接口，无需 JWT。OpenSearch 索引优先，索引不可用时回退 MySQL `LIKE` 检索；检索词写入 `travel_searches` 热词日志。
 
-#### `GET /api/search` — 多条件检索
+#### `GET /api/v1/search` — 多条件检索
 
 | 查询参数 | 必填 | 说明 |
 |------|------|------|
@@ -416,10 +412,10 @@ curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorizatio
 响应 `data`：`{ "total", "page", "page_size", "items": [ { "id", "type"("destination"\|"attraction"), "name", "price_cents", "cover_url", "description" } ] }`。
 
 ```bash
-curl -H "X-Api-Version: v1" "http://localhost:8082/api/search?q=tokyo&lang=zh"
+curl "http://localhost:8082/api/v1/search?q=tokyo&lang=zh"
 ```
 
-#### `GET /api/search/hotwords?period=day|week|all&limit=N` — 热词推荐
+#### `GET /api/v1/search/hotwords?period=day|week|all&limit=N` — 热词推荐
 
 公开接口，无鉴权。按 `travel_searches` 检索日志对 `keyword` 分组计数，倒序返回 Top N。
 
@@ -433,14 +429,14 @@ curl -H "X-Api-Version: v1" "http://localhost:8082/api/search?q=tokyo&lang=zh"
 响应 `data`：`[ { "keyword", "count" } ]`。
 
 ```bash
-curl -H "X-Api-Version: v1" "http://localhost:8082/api/search/hotwords?period=day&limit=10"
+curl "http://localhost:8082/api/v1/search/hotwords?period=day&limit=10"
 ```
 
 ### 线路服务（line-service）
 
 公开接口，无需 JWT。列表走 Redis 缓存（TTL 5 分钟），详情/日历直读 MySQL（从库优先）。
 
-#### `GET /api/lines` — 线路列表
+#### `GET /api/v1/lines` — 线路列表
 
 | 查询参数 | 必填 | 说明 |
 |------|------|------|
@@ -449,11 +445,11 @@ curl -H "X-Api-Version: v1" "http://localhost:8082/api/search/hotwords?period=da
 
 响应 `data`：`[ { "id", "title", "destination_id", "days", "price_cents", "max_pax", "cover_url" } ]`。
 
-#### `GET /api/lines/{id}` — 线路详情
+#### `GET /api/v1/lines/{id}` — 线路详情
 
 `data` 含 `itinerary`：`[ { "day", "title", "description" } ]`（按 lang 取行程标题，回退链同上）。`404`：线路不存在或已下架。
 
-#### `GET /api/lines/{id}/dates` — 出发日历与余位
+#### `GET /api/v1/lines/{id}/dates` — 出发日历与余位
 
 未来班期（`depart_date >= 今天`）按日期升序，余位实时读取（随订单预占扣减），**不缓存**。
 
@@ -461,9 +457,9 @@ curl -H "X-Api-Version: v1" "http://localhost:8082/api/search/hotwords?period=da
 
 ### 订单服务（order-service）
 
-全部接口需要 **用户 JWT**（`POST /api/user/login` 签发）。限流独立统计。
+全部接口需要 **用户 JWT**（`POST /api/v1/user/login` 签发）。限流独立统计。
 
-#### `POST /api/orders` — 下单
+#### `POST /api/v1/orders` — 下单
 
 请求体：`{ "order_type": 1, "product_id": 10020001, "line_date_id": 1, "quantity": 1 }`。
 
@@ -473,21 +469,21 @@ curl -H "X-Api-Version: v1" "http://localhost:8082/api/search/hotwords?period=da
 - `409`：余位不足（`insufficient stock`）
 
 ```bash
-curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X POST \
-  http://localhost:8082/api/orders -d '{"order_type":1,"product_id":10020001,"line_date_id":1,"quantity":1}'
+curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X POST \
+  http://localhost:8082/api/v1/orders -d '{"order_type":1,"product_id":10020001,"line_date_id":1,"quantity":1}'
 ```
 
 响应 `data`：`{ "id", "order_type", "product_id", "status", "amount_cents", "snapshot", "expire_at", "created_at" }`。
 
-#### `GET /api/orders` — 订单列表
+#### `GET /api/v1/orders` — 订单列表
 
 当前用户订单按创建时间倒序，分页参数 `page` / `page_size`。响应 `data`：`{ "items": [ ...订单对象 ], "total", "page", "page_size" }`。
 
-#### `GET /api/orders/{id}` — 订单详情
+#### `GET /api/v1/orders/{id}` — 订单详情
 
 仅限本人订单，否则 `404`。
 
-#### `POST /api/orders/{id}/cancel` — 取消订单
+#### `POST /api/v1/orders/{id}/cancel` — 取消订单
 
 仅 `status=0`（待支付）可取消；取消后释放余位（DB 回补 + Redis 预占回滚），订单置 `status=4`。其他状态 `409`。
 
@@ -495,142 +491,142 @@ curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorizatio
 
 鉴权同管理服务：需要 admin JWT（`role=admin`）。
 
-#### `GET /api/admin/lines` — 线路列表
+#### `GET /api/v1/admin/lines` — 线路列表
 
 分页参数 `page` / `page_size`（同目的地列表），`keyword` 匹配 `title_zh` / `title_en`。
 
 响应 `data`：`{ "items": [ { "id", "title_en", "title_zh", "title_ja", "title_ko", "title_ru", "destination_id", "days", "departure_date", "price_cents", "max_pax", "itinerary", "status", "cover_url" } ], "total", "page", "page_size" }`。
 
-#### `POST /api/admin/lines` — 创建线路
+#### `POST /api/v1/admin/lines` — 创建线路
 
 请求体：5 个 `title_*`（`title_en` / `title_zh` 必填，否则 400）、`destination_id`、`days`、`departure_date`、`price_cents`、`max_pax`、`cover_url`、`status`、`itinerary`。
 
 - `itinerary` 为前端数组格式 JSON 字符串：`[{"day":1,"title":{"en":"...","zh":"..."},"description":{"zh":"...","en":"..."}}]`，后端转换为存储格式 `{"days":[{day,title_en,title_zh,...,description}]}`（`description` 取 zh 优先、en 回退）
 - 兼容种子数据已有的 `{"days":[...]}` 格式（原样落库）
 
-#### `PUT /api/admin/lines/{id}` — 更新线路
+#### `PUT /api/v1/admin/lines/{id}` — 更新线路
 
 可写字段与创建相同（至少一个，否则 400）。`404`：线路不存在。
 
-#### `PUT /api/admin/lines/{id}/status` — 上下架
+#### `PUT /api/v1/admin/lines/{id}/status` — 上下架
 
 请求体 `{ "status": 0 | 1 }`（非法值 400）。
 
-#### `DELETE /api/admin/lines/{id}` — 删除线路
+#### `DELETE /api/v1/admin/lines/{id}` — 删除线路
 
 - `409`：线路仍有班期（`line has related dates, delete them first`）
 - `404`：线路不存在
 
-#### `GET /api/admin/lines/{id}/dates` — 班期列表
+#### `GET /api/v1/admin/lines/{id}/dates` — 班期列表
 
 响应 `data`：裸数组 `[ { "id", "line_id", "depart_date", "price_cents", "seats_left", "status" } ]`。
 
-#### `POST /api/admin/lines/{id}/dates` — 新增班期
+#### `POST /api/v1/admin/lines/{id}/dates` — 新增班期
 
 请求体 `{ "depart_date", "price_cents", "seats_left", "status" }`。
 
 - `409`：同线路同日班期已存在（唯一键 `uk_line_date` 兜底）
 - `404`：线路不存在
 
-#### `PUT /api/admin/lines/{id}/dates/{date_id}` — 更新班期
+#### `PUT /api/v1/admin/lines/{id}/dates/{date_id}` — 更新班期
 
 可写字段同新增（至少一个，否则 400）；更新 `depart_date` 撞唯一键返回 `409`。`404`：班期不存在。
 
-#### `DELETE /api/admin/lines/{id}/dates/{date_id}` — 删除班期
+#### `DELETE /api/v1/admin/lines/{id}/dates/{date_id}` — 删除班期
 
 `404`：班期不存在；成功：`data` 为 `null`。
 
 ### 航班服务（flight-service，P4-01/02）
 
-#### `GET /api/flights/search?from=HND&to=HKG&depart_date=YYYY-MM-DD&cabin=0&page=&page_size=` — 航班检索
+#### `GET /api/v1/flights/search?from=HND&to=HKG&depart_date=YYYY-MM-DD&cabin=0&page=&page_size=` — 航班检索
 
 公开。`from`/`to` 为 IATA 三字码，必填；`cabin` 0经济/1商务/2头等，缺省全部；`depart_date` 精确匹配当天航班（可省）。返回 `items`（`id/airline/flight_no/from_code/to_code/depart_at/arrive_at/cabin/price_cents/seats_left`）、`total`、`page`、`page_size`。`404`：该航线无航班。
 
-#### `GET /api/flights/{id}` — 航班详情
+#### `GET /api/v1/flights/{id}` — 航班详情
 
 公开。`404`：航班不存在或已下架。
 
 ### 酒店服务（hotel-service，P4-03/04）
 
-#### `GET /api/hotels/search?city=HKG&star=&page=&page_size=` — 酒店检索
+#### `GET /api/v1/hotels/search?city=HKG&star=&page=&page_size=` — 酒店检索
 
 公开。`city` 三字码必填；`star` 1-5 可省。返回 `items`（`id/name_en/name_zh/city_code/star/latitude/longitude/cover_url`）、分页信息。
 
-#### `GET /api/hotels/{id}` — 酒店详情（含房型）
+#### `GET /api/v1/hotels/{id}` — 酒店详情（含房型）
 
 公开。返回酒店信息 + `rooms` 列表（`id/room_type_en/room_type_zh/price_cents/breakfast/inventory`）。`404`：酒店不存在或已下架。
 
 ### 支付服务（payment-service，P4-05/06/15）
 
-#### `POST /api/payments` — 发起支付（用户 JWT）
+#### `POST /api/v1/payments` — 发起支付（用户 JWT）
 
-请求 `{"order_id": 123, "channel_code": "stripe"}`。校验订单属于当前用户且 `status=0`（已支付/已取消返回 400）。写支付流水（`status=0` 待支付）并返回 `{"txn_no", "amount_cents", "checkout_url"}`——沙箱环境 `checkout_url` 指向 `GET /api/payments/sandbox/{txn_no}`（模拟收银台页）。`404`：订单不存在。
+请求 `{"order_id": 123, "channel_code": "stripe"}`。校验订单属于当前用户且 `status=0`（已支付/已取消返回 400）。写支付流水（`status=0` 待支付）并返回 `{"txn_no", "amount_cents", "checkout_url"}`——沙箱环境 `checkout_url` 指向 `GET /api/v1/payments/sandbox/{txn_no}`（模拟收银台页）。`404`：订单不存在。
 
-#### `POST /api/payments/callback/{channel_code}` — 支付渠道回调（内部）
+#### `POST /api/v1/payments/callback/{channel_code}` — 支付渠道回调（内部）
 
-无 JWT，以 `X-Internal-Token`（环境变量 `INTERNAL_TOKEN`，默认 `dev-internal-secret`）防护。请求 `{"txn_no": "...", "status": 1}`（status 1 成功/2 失败）。按 `txn_no` 幂等：已处理过直接返回 `{"duplicate": true}`。成功时更新流水 `status=1/paid_at` 并调用 order-service `POST /api/orders/{id}/pay-success` 推进订单 `0→1`（内部 X-Internal-Token）。回调请求体以 `X-Signature`（HMAC-SHA256，密钥固定 `sandbox-secret`，开发环境模拟验签）签名校验，非法返回 401。
+无 JWT，以 `X-Internal-Token`（环境变量 `INTERNAL_TOKEN`，默认 `dev-internal-secret`）防护。请求 `{"txn_no": "...", "status": 1}`（status 1 成功/2 失败）。按 `txn_no` 幂等：已处理过直接返回 `{"duplicate": true}`。成功时更新流水 `status=1/paid_at` 并调用 order-service `POST /api/v1/orders/{id}/pay-success` 推进订单 `0→1`（内部 X-Internal-Token）。回调请求体以 `X-Signature`（HMAC-SHA256，密钥固定 `sandbox-secret`，开发环境模拟验签）签名校验，非法返回 401。
 
-#### `GET /api/payments/sandbox/{txn_no}` — 沙箱收银台页
+#### `GET /api/v1/payments/sandbox/{txn_no}` — 沙箱收银台页
 
 公开。展示待支付流水与「模拟支付成功/失败」按钮（开发环境用）。
 
-#### `GET /api/payments/channels?lang=zh` — 渠道列表（按语言路由）
+#### `GET /api/v1/payments/channels?lang=zh` — 渠道列表（按语言路由）
 
 公开。返回全部启用渠道，本国渠道（`languages` 含当前 lang）排前、全语言渠道（`languages=''`）兜底，同档按 `priority` 降序；`name` 取当前语言。返回 `items`（`channel_code/name/type/priority`）。
 
 ### 管理端支付（admin-service，P4-16）
 
-#### `GET /api/admin/payments?channel=&status=&page=&page_size=` — 支付流水列表（管理 JWT）
+#### `GET /api/v1/admin/payments?channel=&status=&page=&page_size=` — 支付流水列表（管理 JWT）
 
 `channel_code` 精确匹配；`status` 0待支付/1成功/2失败/3已退款，越界 400。JOIN 订单/用户返回 `email`。按 id 倒序分页。
 
-#### `GET /api/admin/payments/channels` — 渠道列表（含禁用项）
+#### `GET /api/v1/admin/payments/channels` — 渠道列表（含禁用项）
 
 全量返回，按 `priority` 升序。
 
-#### `PATCH /api/admin/payments/channels/{code}/enabled` — 渠道开关
+#### `PATCH /api/v1/admin/payments/channels/{code}/enabled` — 渠道开关
 
 请求 `{"enabled": true}`，即时生效（payment-service 路由渠道时实时读表）。`404`：渠道不存在；成功返回更新后渠道对象。
 
 ### 管理端订单/用户/航班/酒店（admin-service，P4-08/09/10/14）
 
-#### `GET /api/admin/orders?page=&page_size=` — 订单列表
+#### `GET /api/v1/admin/orders?page=&page_size=` — 订单列表
 
 全量订单倒序分页，含用户 `email` 与商品快照。
 
-#### `POST /api/admin/orders/{id}/refund` — 退款
+#### `POST /api/v1/admin/orders/{id}/refund` — 退款
 
 `status IN (1,2)` 才可退，置 `4` 并回补对应商品库存（线路回补班期余位、航班回补余票、酒店回补房态库存）。已退/其他状态 `400`；`404`：订单不存在。
 
-#### `GET /api/admin/flights` / `POST /api/admin/flights` / `PUT /api/admin/flights/{id}` / `PUT /api/admin/flights/{id}/status` — 航班管理
+#### `GET /api/v1/admin/flights` / `POST /api/v1/admin/flights` / `PUT /api/v1/admin/flights/{id}` / `PUT /api/v1/admin/flights/{id}/status` — 航班管理
 
 航班 CRUD 与上下架；新增字段 `airline/flight_no/from_code/to_code/depart_at/arrive_at/cabin/price_cents/seats_left`。
 
-#### `GET /api/admin/hotels` / `POST /api/admin/hotels` / `PUT /api/admin/hotels/{id}` / `PUT /api/admin/hotels/{id}/status` — 酒店管理
+#### `GET /api/v1/admin/hotels` / `POST /api/v1/admin/hotels` / `PUT /api/v1/admin/hotels/{id}` / `PUT /api/v1/admin/hotels/{id}/status` — 酒店管理
 
 酒店 CRUD 与上下架。
 
-#### `GET/POST /api/admin/hotels/{id}/rooms`、`PUT/DELETE /api/admin/hotels/{id}/rooms/{room_id}` — 房型管理
+#### `GET/POST /api/v1/admin/hotels/{id}/rooms`、`PUT/DELETE /api/v1/admin/hotels/{id}/rooms/{room_id}` — 房型管理
 
 房型 CRUD，字段 `room_type_en/room_type_zh/room_type_ja/price_cents/breakfast/inventory`。
 
-#### `GET /api/admin/users?page=&page_size=` — 用户列表
+#### `GET /api/v1/admin/users?page=&page_size=` — 用户列表
 
-全量用户分页，含注册时间；`PATCH /api/admin/users/{id}/status` 请求 `{"status": 0 | 1}`（非法值 400），`1` 禁用 / `0` 恢复。`404`：用户不存在。禁用用户 JWT 请求返回 `403`（user-service 所有接口生效）。
+全量用户分页，含注册时间；`PATCH /api/v1/admin/users/{id}/status` 请求 `{"status": 0 | 1}`（非法值 400），`1` 禁用 / `0` 恢复。`404`：用户不存在。禁用用户 JWT 请求返回 `403`（user-service 所有接口生效）。
 
 ### 数据看板（admin-service，P5-02）
 
 鉴权同管理服务。聚合在 MySQL 内完成，金额单位分（cents）。
 
-#### `GET /api/admin/stats/overview` — 总览
+#### `GET /api/v1/admin/stats/overview` — 总览
 
 `data`：`{ "total_orders", "paid_orders", "gmv_cents"（status>=1 求和）, "conversion_rate"（百分比，两位小数）, "status_counts": { "0".."4" } }`。
 
-#### `GET /api/admin/stats/top` — Top 目的地与线路
+#### `GET /api/v1/admin/stats/top` — Top 目的地与线路
 
 `data`：`{ "top_destinations": [ { "id", "name"（中文优先）, "orders" } ], "top_lines": [ ... ] }`，各 Top 5（按线路订单量）。
 
-#### `GET /api/admin/stats/trend` — 近 7 天订单趋势
+#### `GET /api/v1/admin/stats/trend` — 近 7 天订单趋势
 
 `data.items`：`[ { "day"（YYYY-MM-DD）, "orders" } ]`，恒定 7 行（含当日，无单日补零）。
 
@@ -638,25 +634,25 @@ curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorizatio
 
 鉴权同管理服务。**服务端不存储云凭据**：接口仅管理配置并生成 dry-run 命令预览文本，真实执行需在部署机配置对应云 CLI 凭据。
 
-#### `GET /api/admin/cdn/providers` — 提供商列表
+#### `GET /api/v1/admin/cdn/providers` — 提供商列表
 
 全量返回（含禁用项），按 `provider_code` 升序。`data.items` 字段：`provider_code`、`name`、`enabled`（bool）、`bucket`、`region`、`domain`、`endpoint`、`updated_at`。
 
-#### `PATCH /api/admin/cdn/providers/{code}/status` — 启停
+#### `PATCH /api/v1/admin/cdn/providers/{code}/status` — 启停
 
 请求体 `{ "enabled": true | false }`。`404`：提供商不存在；成功返回更新后对象。
 
-#### `PUT /api/admin/cdn/providers/{code}` — 更新配置
+#### `PUT /api/v1/admin/cdn/providers/{code}` — 更新配置
 
 请求体可选字段 `bucket` / `region` / `domain` / `endpoint`（null 跳过，空串表示清空；`region` 不允许为空）。`400`：无可更新字段 / region 为空；`404`：提供商不存在。
 
-#### `POST /api/admin/cdn/providers/{code}/plan` — dry-run 命令预览
+#### `POST /api/v1/admin/cdn/providers/{code}/plan` — dry-run 命令预览
 
 `404`：提供商不存在；`400`：bucket 未配置（`configure bucket first`）。成功返回 `{ "provider_code", "commands": ["cdn_setup.sh ...", "cdn_upload.sh ..."], "hint" }`——命令仅输出预览，本服务不执行。
 
 ### 订单扩展（order-service，P4-12）
 
-#### `POST /api/orders` — 下单（用户 JWT，支持 type 1/2/3）
+#### `POST /api/v1/orders` — 下单（用户 JWT，支持 type 1/2/3）
 
 请求 `{"order_type": 1, "product_id": 123, "line_date_id": 45, "quantity": 2}`：
 
@@ -672,11 +668,11 @@ curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -H "Authorizatio
 
 - **user-service**：`Tracing → CircuitBreaker → Security → RateLimit(Redis) → Auth(JWT)`
 - **booking-service**：`Tracing → CircuitBreaker → Security → RateLimit`
-- **admin-service**：`Tracing → CircuitBreaker → Security → RateLimit(Redis) → JWT(Auth)`（`/api/admin/login` 公开，其余业务路由挂 JWT）
+- **admin-service**：`Tracing → CircuitBreaker → Security → RateLimit(Redis) → JWT(Auth)`（`/api/v1/admin/login` 公开，其余业务路由挂 JWT）
 - **search-service / line-service**：`Tracing → CircuitBreaker → Security → RateLimit`（公开，无 JWT）
-- **order-service**：`Tracing → CircuitBreaker → Security → RateLimit → JWT(Auth)`（全部接口需用户 JWT；`POST /api/orders/{id}/pay-success` 内部接口无 JWT，以 X-Internal-Token 防护）
+- **order-service**：`Tracing → CircuitBreaker → Security → RateLimit → JWT(Auth)`（全部接口需用户 JWT；`POST /api/v1/orders/{id}/pay-success` 内部接口无 JWT，以 X-Internal-Token 防护）
 - **flight-service / hotel-service**：`Tracing → CircuitBreaker → Security → RateLimit`（公开，无 JWT）
-- **payment-service**：`Tracing → CircuitBreaker → Security → RateLimit`；`/api/payments` 需用户 JWT，`/api/payments/callback/{channel_code}` 无 JWT（X-Internal-Token + HMAC 签名防护）
+- **payment-service**：`Tracing → CircuitBreaker → Security → RateLimit`；`/api/v1/payments` 需用户 JWT，`/api/v1/payments/callback/{channel_code}` 无 JWT（X-Internal-Token + HMAC 签名防护）
 
 ## 相关文档
 

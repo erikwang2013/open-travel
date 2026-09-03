@@ -1,6 +1,6 @@
 // open-travel payment-service：支付发起 / 模拟收银台 / 渠道回调 / 流水列表 / 渠道列表（P4-06/P4-15）
 //
-// 端口 8009（网关 /api/payments/ → ecat-payment:8009）。
+// 端口 8009（网关 /api/v1/payments/ → ecat-payment:8009）。
 // travel_payments.status：0待支付 → 1成功 → 2失败（3已退款，本期不使用）。
 // 幂等：同订单发起支付已存在流水直接返回；回调按 txn_no 更新且仅接受 status=0，
 //      重复回调（已终态 1/2/3）直接返回成功不重复入账。
@@ -10,7 +10,7 @@
 //      真实渠道接入点：handlers::create_payment 内按 channel_code 分发替换。
 //
 // 中间件链（外层 → 内层）：ApiVersion → CircuitBreaker → Security → RateLimit
-// → [仅 /api/payments] JWT。JWT 与 user-service 同一密钥，claims.sub 为 user_id。
+// → [仅 /api/v1/payments] JWT。JWT 与 user-service 同一密钥，claims.sub 为 user_id。
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
@@ -44,7 +44,7 @@ pub(crate) trait OrderConfirm: Send + Sync {
     fn confirm(&self, order_id: u64, txn_no: &str) -> ConfirmFuture;
 }
 
-/// 真实实现：POST {ORDER_SERVICE_URL}/api/orders/{id}/pay-success，带 X-Internal-Token。
+/// 真实实现：POST {ORDER_SERVICE_URL}/api/v1/orders/{id}/pay-success，带 X-Internal-Token。
 pub(crate) struct HttpOrderConfirm {
     client: reqwest::Client,
     url: String,
@@ -53,13 +53,12 @@ pub(crate) struct HttpOrderConfirm {
 impl OrderConfirm for HttpOrderConfirm {
     fn confirm(&self, order_id: u64, txn_no: &str) -> ConfirmFuture {
         let client = self.client.clone();
-        let url = format!("{}/api/orders/{}/pay-success", self.url, order_id);
+        let url = format!("{}/api/v1/orders/{}/pay-success", self.url, order_id);
         let txn_no = txn_no.to_string();
         Box::pin(async move {
             let resp = client
                 .post(url)
                 .header("x-internal-token", internal_token())
-                .header("x-api-version", "v1")
                 .json(&serde_json::json!({ "txn_no": txn_no }))
                 .send()
                 .await
@@ -137,28 +136,27 @@ pub(crate) async fn ready(State(state): State<AppState>) -> Json<ApiResponse<boo
 }
 
 /// 业务路由 + 中间件链；独立成函数便于集成测试直接构造。
-/// JWT 只挂在 /api/payments（用户接口）；callback/sandbox/channels 公开。
+/// JWT 只挂在 /api/v1/payments（用户接口）；callback/sandbox/channels 公开。
 pub(crate) fn api_router(state: AppState) -> Router {
     let authed = Router::new()
         .route(
-            "/api/payments",
+            "/api/v1/payments",
             get(handlers::payment_list).post(handlers::create_payment),
         )
         .layer(ServiceBuilder::new().map_err(no_error).layer(state.jwt.clone()));
     let public = Router::new()
         .route(
-            "/api/payments/callback/{channel_code}",
+            "/api/v1/payments/callback/{channel_code}",
             axum::routing::post(handlers::payment_callback),
         )
-        .route("/api/payments/sandbox/{txn_no}", get(handlers::sandbox_page))
-        .route("/api/payments/channels", get(handlers::channel_list));
+        .route("/api/v1/payments/sandbox/{txn_no}", get(handlers::sandbox_page))
+        .route("/api/v1/payments/channels", get(handlers::channel_list));
 
     Router::new()
         .merge(public)
         .merge(authed)
         .layer(
             ServiceBuilder::new()
-                .layer(ecat::business::shared::ApiVersionLayer)
                 .map_err(no_error)
                 .layer(CircuitBreakerLayer::new())
                 .map_err(no_error)

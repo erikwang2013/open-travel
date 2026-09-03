@@ -52,7 +52,7 @@ class _AttractionFormPageState extends State<AttractionFormPage> {
 
   Future<void> _loadDests() async {
     try {
-      final data = await Api.get('/api/admin/destinations', {'page': '1', 'page_size': '500'});
+      final data = await Api.get('/api/v1/admin/destinations', {'page': '1', 'page_size': '500'});
       final list = (data['list'] as List)
           .map((e) => Destination.fromJson(e as Map<String, dynamic>))
           .toList();
@@ -112,9 +112,9 @@ class _AttractionFormPageState extends State<AttractionFormPage> {
     });
     try {
       if (widget.attraction == null) {
-        await Api.post('/api/admin/attractions', body);
+        await Api.post('/api/v1/admin/attractions', body);
       } else {
-        await Api.put('/api/admin/attractions/${widget.attraction!.id}', body);
+        await Api.put('/api/v1/admin/attractions/${widget.attraction!.id}', body);
       }
       if (mounted) Navigator.pop(context, true);
     } on ApiException catch (e) {

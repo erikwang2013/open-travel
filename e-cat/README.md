@@ -41,16 +41,16 @@ open-travel/
 
 | 服务 | 端口 | 说明 |
 |------|------|------|
-| user-service | 8001 | `POST /api/user/register`、`POST /api/user/login`（公开）、`GET /api/user/profile`（需 JWT） |
-| booking-service | 8002 | `GET /api/booking/dates?region_id=N`（公开接口）、`/api/reviews/` 评价 |
-| admin-service | 8003 | 管理端：登录 + 目的地/景区 CRUD（`/api/admin/`） |
-| search-service | 8004 | 多语种搜索（`/api/search`） |
-| line-service | 8005 | 旅游线路（`/api/lines`） |
-| order-service | 8006 | 订单（`/api/orders`） |
-| flight-service | 8007 | 机票（`/api/flights`） |
-| hotel-service | 8008 | 酒店（`/api/hotels`） |
-| payment-service | 8009 | 支付（`/api/payments`） |
-| Nginx 网关 | 8082→80 | 按 `/api/user/`、`/api/booking/`、`/api/admin/`、`/api/search`、`/api/lines`、`/api/orders`、`/api/flights`、`/api/hotels`、`/api/payments` 前缀分流 |
+| user-service | 8001 | `POST /api/v1/user/register`、`POST /api/v1/user/login`（公开）、`GET /api/v1/user/profile`（需 JWT） |
+| booking-service | 8002 | `GET /api/v1/booking/dates?region_id=N`（公开接口）、`/api/v1/reviews/` 评价 |
+| admin-service | 8003 | 管理端：登录 + 目的地/景区 CRUD（`/api/v1/admin/`） |
+| search-service | 8004 | 多语种搜索（`/api/v1/search`） |
+| line-service | 8005 | 旅游线路（`/api/v1/lines`） |
+| order-service | 8006 | 订单（`/api/v1/orders`） |
+| flight-service | 8007 | 机票（`/api/v1/flights`） |
+| hotel-service | 8008 | 酒店（`/api/v1/hotels`） |
+| payment-service | 8009 | 支付（`/api/v1/payments`） |
+| Nginx 网关 | 8082→80 | 按 `/api/v1/user/`、`/api/v1/booking/`、`/api/v1/admin/`、`/api/v1/search`、`/api/v1/lines`、`/api/v1/orders`、`/api/v1/flights`、`/api/v1/hotels`、`/api/v1/payments` 前缀分流 |
 
 所有服务均提供 `GET /health`（存活）与 `GET /ready`（就绪，报告数据源降级状态）。
 
@@ -109,30 +109,30 @@ docker compose -f config/docker-compose.yml up -d
 
 ### 验证
 
-所有业务接口需携带 `X-Api-Version: v1` 请求头（版本经 header 传递，缺失或值错误返回 400）。
+业务接口版本在 URL 前缀：`/api/v1/...`（无需版本请求头）。
 
 curl 直连服务：
 
 ```bash
 curl http://localhost:8002/health                 # OK
-curl -H "X-Api-Version: v1" "http://localhost:8002/api/booking/dates?region_id=1"
+curl "http://localhost:8002/api/v1/booking/dates?region_id=1"
 # {"code":0,"message":"ok","data":[{"region_id":1,"name_en":"placeholder-destination"}]}
-curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -X POST \
-  http://localhost:8001/api/user/register -d '{"email":"a@b.com","password":"secret1"}'
+curl -H "Content-Type: application/json" -X POST \
+  http://localhost:8001/api/v1/user/register -d '{"email":"a@b.com","password":"secret1"}'
 # {"code":0,"message":"ok","data":{"user_id":1,"email":"a@b.com","lang":"en"}}
 ```
 
 经网关（Nginx，host `8082` → 容器 `80`）：
 
 ```bash
-curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/dates?region_id=1"
+curl "http://localhost:8082/api/v1/booking/dates?region_id=1"
 curl http://localhost:8082/health
 ```
 
-带鉴权的接口（`/api/user/profile`）需在请求头携带 JWT：
+带鉴权的接口（`/api/v1/user/profile`）需在请求头携带 JWT：
 
 ```bash
-curl -H "X-Api-Version: v1" -H "Authorization: Bearer <JWT>" http://localhost:8082/api/user/profile
+curl -H "Authorization: Bearer <JWT>" http://localhost:8082/api/v1/user/profile
 ```
 
 ### 端口映射
@@ -264,7 +264,7 @@ cargo test --workspace                          # 全 workspace
 - **user-service**：`Tracing → CircuitBreaker → Security → RateLimit(Redis) → [profile 仅] Auth(JWT)`
 - **booking-service**：`Tracing → CircuitBreaker → Security → RateLimit`（dates 为公开接口，无 JWT）
 
-业务路由最外层挂 `ApiVersion` 校验（版本经 `X-Api-Version` header 传递，缺失或非 `v1` 直接 400）。
+业务路由版本在 URL 前缀 `/api/v1/`，无版本前缀路由即 404。
 
 **限流**：每服务 100 req/60s，Redis 分布式固定窗口；未认证请求也计入限流（防暴力请求耗尽资源），超限返回 429。
 

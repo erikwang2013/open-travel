@@ -165,7 +165,7 @@ async fn update_profile_missing_claims_401() {
 async fn update_profile_rejects_unsupported_lang_400() {
     let mut req = Request::builder()
         .method("PUT")
-        .uri("/api/user/profile")
+        .uri("/api/v1/user/profile")
         .body(Body::from(r#"{"lang":"xx"}"#))
         .unwrap();
     req.extensions_mut().insert(AuthClaims {
@@ -186,7 +186,7 @@ async fn update_profile_rejects_unsupported_lang_400() {
 async fn update_profile_db_unavailable_503() {
     let mut req = Request::builder()
         .method("PUT")
-        .uri("/api/user/profile")
+        .uri("/api/v1/user/profile")
         .body(Body::from(r#"{"nickname":"A","lang":"zh"}"#))
         .unwrap();
     req.extensions_mut().insert(AuthClaims {
@@ -244,7 +244,7 @@ async fn update_profile_updates_nickname_and_lang() {
     };
     let mut req = Request::builder()
         .method("PUT")
-        .uri("/api/user/profile")
+        .uri("/api/v1/user/profile")
         .body(Body::from(r#"{"nickname":"Alice","lang":"zh"}"#))
         .unwrap();
     req.extensions_mut().insert(AuthClaims {

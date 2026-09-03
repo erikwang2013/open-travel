@@ -672,11 +672,10 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     // 中间件链（外层 → 内层）：ApiVersion → CircuitBreaker → Security → RateLimit
     let api = Router::new()
-        .route("/api/search", get(search))
-        .route("/api/search/hotwords", get(hotwords))
+        .route("/api/v1/search", get(search))
+        .route("/api/v1/search/hotwords", get(hotwords))
         .layer(
             ServiceBuilder::new()
-                .layer(ecat::business::shared::ApiVersionLayer)
                 .map_err(no_error)
                 .layer(CircuitBreakerLayer::new())
                 .map_err(no_error)

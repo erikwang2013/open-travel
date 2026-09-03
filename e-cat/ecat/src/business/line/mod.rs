@@ -1,7 +1,6 @@
 // open-travel line-service：线路列表/详情（P3-05）+ 出发日历与余位（P3-06）
 //
 // 端口约定：user 8001 / booking 8002 / admin 8003 / search 8004 / 本服务 8005 / order 8006。
-// 网关已配置 /api/lines/ → ecat-line:8005，接口需 X-Api-Version: v1（ApiVersionLayer）。
 //
 // 查询链路（与 booking 一致）：
 //   1. 列表：Redis 缓存 travel:lines:{destination_id}:{lang}（TTL 300s），未命中回源
@@ -384,12 +383,11 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     //   ApiVersion → CircuitBreaker → Security → RateLimit
     // 公开接口无 JWT；限流保留防止滥用。
     let api = Router::new()
-        .route("/api/lines", get(lines_list))
-        .route("/api/lines/{id}", get(line_detail))
-        .route("/api/lines/{id}/dates", get(line_dates))
+        .route("/api/v1/lines", get(lines_list))
+        .route("/api/v1/lines/{id}", get(line_detail))
+        .route("/api/v1/lines/{id}/dates", get(line_dates))
         .layer(
             ServiceBuilder::new()
-                .layer(ecat::business::shared::ApiVersionLayer)
                 .map_err(no_error)
                 .layer(CircuitBreakerLayer::new())
                 .map_err(no_error)

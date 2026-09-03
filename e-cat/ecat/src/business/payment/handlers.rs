@@ -115,7 +115,7 @@ fn payment_from_row(row: &ecat_data::Row) -> PaymentOut {
         txn_no: txn_no.clone(),
         created_at: col_str(row, "created_at"),
         // 模拟收银台经网关（8082）访问；真实渠道接入点见 create_payment 注释
-        checkout_url: format!("http://localhost:8082/api/payments/sandbox/{txn_no}"),
+        checkout_url: format!("http://localhost:8082/api/v1/payments/sandbox/{txn_no}"),
     }
 }
 
@@ -296,7 +296,7 @@ async function hmac(body) {{
 }}
 async function pay(status) {{
   const body = JSON.stringify({{txn_no:'{txn_no}', status}});
-  const resp = await fetch('/api/payments/callback/{channel_code}', {{
+  const resp = await fetch('/api/v1/payments/callback/{channel_code}', {{
     method:'POST',
     headers:{{'content-type':'application/json','x-signature': await hmac(body)}},
     body}});

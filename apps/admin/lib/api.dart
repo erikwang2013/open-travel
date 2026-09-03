@@ -29,8 +29,7 @@ class Api {
   static Map<String, String> _headers({bool auth = true}) {
     final t = AuthService.instance.token.value;
     return {
-      'X-Api-Version': 'v1',
-      'Content-Type': 'application/json',
+            'Content-Type': 'application/json',
       if (auth && t != null) 'Authorization': 'Bearer $t',
     };
   }
@@ -76,16 +75,16 @@ class Api {
     return _unwrap(resp);
   }
 
-  static Future<dynamic> fetchCdnProviders() => get('/api/admin/cdn/providers');
+  static Future<dynamic> fetchCdnProviders() => get('/api/v1/admin/cdn/providers');
 
   static Future<dynamic> updateCdnProviderStatus(
           String providerCode, bool enabled) =>
-      patch('/api/admin/cdn/providers/$providerCode/status', {'enabled': enabled});
+      patch('/api/v1/admin/cdn/providers/$providerCode/status', {'enabled': enabled});
 
   static Future<dynamic> saveCdnProvider(
           String providerCode, Map<String, dynamic> config) =>
-      put('/api/admin/cdn/providers/$providerCode', config);
+      put('/api/v1/admin/cdn/providers/$providerCode', config);
 
   static Future<dynamic> getCdnPlan(String providerCode) =>
-      post('/api/admin/cdn/providers/$providerCode/plan', const {});
+      post('/api/v1/admin/cdn/providers/$providerCode/plan', const {});
 }

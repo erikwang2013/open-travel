@@ -11,6 +11,4 @@ class AppConfig {
     defaultValue: 'http://localhost:8082',
   );
 
-  /// 业务接口版本，经请求头 X-Api-Version 传递（URL 不含版本前缀）
-  static const String apiVersion = 'v1';
 }

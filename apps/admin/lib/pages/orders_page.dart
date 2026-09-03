@@ -53,7 +53,7 @@ class _OrdersPageState extends State<OrdersPage> {
       _error = null;
     });
     try {
-      final data = await Api.get('/api/admin/orders',
+      final data = await Api.get('/api/v1/admin/orders',
           {'page': '$_page', 'page_size': '$_pageSize'});
       setState(() {
         _list = (data['items'] as List)
@@ -94,7 +94,7 @@ class _OrdersPageState extends State<OrdersPage> {
     );
     if (ok != true) return;
     try {
-      await Api.post('/api/admin/orders/${o.id}/refund', {});
+      await Api.post('/api/v1/admin/orders/${o.id}/refund', {});
       _showSnack('已退款');
       _load();
     } on ApiException catch (e) {

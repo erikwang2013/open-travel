@@ -40,7 +40,7 @@ class _LineDatesPageState extends State<LineDatesPage> {
     _load();
   }
 
-  String get _path => '/api/admin/lines/${widget.line.id}/dates';
+  String get _path => '/api/v1/admin/lines/${widget.line.id}/dates';
 
   Future<void> _load() async {
     setState(() {

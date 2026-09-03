@@ -65,7 +65,7 @@ class _DestinationsPageState extends State<DestinationsPage> {
         'page_size': '$_pageSize',
         if (_statusFilter != null) 'status': '$_statusFilter',
       };
-      final data = await Api.get('/api/admin/destinations', q);
+      final data = await Api.get('/api/v1/admin/destinations', q);
       setState(() {
         _list = (data['list'] as List)
             .map((e) => Destination.fromJson(e as Map<String, dynamic>))
@@ -88,7 +88,7 @@ class _DestinationsPageState extends State<DestinationsPage> {
 
   Future<void> _toggleStatus(Destination d, bool on) async {
     try {
-      await Api.put('/api/admin/destinations/${d.id}/status', {'status': on ? 1 : 0});
+      await Api.put('/api/v1/admin/destinations/${d.id}/status', {'status': on ? 1 : 0});
       _load();
     } on ApiException catch (e) {
       _showSnack(e.message);
@@ -111,7 +111,7 @@ class _DestinationsPageState extends State<DestinationsPage> {
     );
     if (ok != true) return;
     try {
-      await Api.delete('/api/admin/destinations/${d.id}');
+      await Api.delete('/api/v1/admin/destinations/${d.id}');
       _showSnack('已删除');
       _load();
     } on ApiException catch (e) {

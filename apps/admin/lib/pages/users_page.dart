@@ -44,7 +44,7 @@ class _UsersPageState extends State<UsersPage> {
       _error = null;
     });
     try {
-      final data = await Api.get('/api/admin/users',
+      final data = await Api.get('/api/v1/admin/users',
           {'page': '$_page', 'page_size': '$_pageSize'});
       setState(() {
         _list = (data['items'] as List)
@@ -73,7 +73,7 @@ class _UsersPageState extends State<UsersPage> {
 
   Future<void> _toggleStatus(User u, bool enable) async {
     try {
-      await Api.put('/api/admin/users/${u.id}/status', {'status': enable ? 0 : 1});
+      await Api.put('/api/v1/admin/users/${u.id}/status', {'status': enable ? 0 : 1});
       _showSnack(enable ? '已恢复' : '已禁用');
       _load();
     } on ApiException catch (e) {

@@ -41,16 +41,16 @@ open-travel/
 
 | Service | Port | Description |
 |---------|------|-------------|
-| user-service | 8001 | `POST /api/user/register`, `POST /api/user/login` (public), `GET /api/user/profile` (JWT required) |
-| booking-service | 8002 | `GET /api/booking/dates?region_id=N` (public), `/api/reviews/` reviews |
-| admin-service | 8003 | Admin: login + destination/attraction CRUD (`/api/admin/`) |
-| search-service | 8004 | Multilingual search (`/api/search`) |
-| line-service | 8005 | Travel lines (`/api/lines`) |
-| order-service | 8006 | Orders (`/api/orders`) |
-| flight-service | 8007 | Flights (`/api/flights`) |
-| hotel-service | 8008 | Hotels (`/api/hotels`) |
-| payment-service | 8009 | Payments (`/api/payments`) |
-| Nginx gateway | 8082→80 | Prefix routing: `/api/user/`, `/api/booking/`, `/api/admin/`, `/api/search`, `/api/lines`, `/api/orders`, `/api/flights`, `/api/hotels`, `/api/payments` |
+| user-service | 8001 | `POST /api/v1/user/register`, `POST /api/v1/user/login` (public), `GET /api/v1/user/profile` (JWT required) |
+| booking-service | 8002 | `GET /api/v1/booking/dates?region_id=N` (public), `/api/v1/reviews/` reviews |
+| admin-service | 8003 | Admin: login + destination/attraction CRUD (`/api/v1/admin/`) |
+| search-service | 8004 | Multilingual search (`/api/v1/search`) |
+| line-service | 8005 | Travel lines (`/api/v1/lines`) |
+| order-service | 8006 | Orders (`/api/v1/orders`) |
+| flight-service | 8007 | Flights (`/api/v1/flights`) |
+| hotel-service | 8008 | Hotels (`/api/v1/hotels`) |
+| payment-service | 8009 | Payments (`/api/v1/payments`) |
+| Nginx gateway | 8082→80 | Prefix routing: `/api/v1/user/`, `/api/v1/booking/`, `/api/v1/admin/`, `/api/v1/search`, `/api/v1/lines`, `/api/v1/orders`, `/api/v1/flights`, `/api/v1/hotels`, `/api/v1/payments` |
 
 All services expose `GET /health` (liveness) and `GET /ready` (readiness, reports degraded data-source state).
 
@@ -109,30 +109,30 @@ docker compose -f config/docker-compose.yml up -d
 
 ### Verify
 
-All business endpoints require the `X-Api-Version: v1` request header (the API version is passed via the header; a missing or invalid value returns 400).
+Business endpoint versions live in the URL prefix: `/api/v1/...` (no version header required).
 
 Curl the services directly:
 
 ```bash
 curl http://localhost:8002/health                 # OK
-curl -H "X-Api-Version: v1" "http://localhost:8002/api/booking/dates?region_id=1"
+curl "http://localhost:8002/api/v1/booking/dates?region_id=1"
 # {"code":0,"message":"ok","data":[{"region_id":1,"name_en":"placeholder-destination"}]}
-curl -H "X-Api-Version: v1" -H "Content-Type: application/json" -X POST \
-  http://localhost:8001/api/user/register -d '{"email":"a@b.com","password":"secret1"}'
+curl -H "Content-Type: application/json" -X POST \
+  http://localhost:8001/api/v1/user/register -d '{"email":"a@b.com","password":"secret1"}'
 # {"code":0,"message":"ok","data":{"user_id":1,"email":"a@b.com","lang":"en"}}
 ```
 
 Through the gateway (Nginx, host `8082` → container `80`):
 
 ```bash
-curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/dates?region_id=1"
+curl "http://localhost:8082/api/v1/booking/dates?region_id=1"
 curl http://localhost:8082/health
 ```
 
-Authenticated endpoints (`/api/user/profile`) require a JWT in the request header:
+Authenticated endpoints (`/api/v1/user/profile`) require a JWT in the request header:
 
 ```bash
-curl -H "X-Api-Version: v1" -H "Authorization: Bearer <JWT>" http://localhost:8082/api/user/profile
+curl -H "Authorization: Bearer <JWT>" http://localhost:8082/api/v1/user/profile
 ```
 
 ### Port Mappings
@@ -262,7 +262,7 @@ Business routes mount the full middleware chain (order: outer → inner):
 - **user-service**: `Tracing → CircuitBreaker → Security → RateLimit(Redis) → [profile only] Auth(JWT)`
 - **booking-service**: `Tracing → CircuitBreaker → Security → RateLimit` (dates is a public endpoint, no JWT)
 
-Business routes mount an `ApiVersion` check outermost (version passed via the `X-Api-Version` header; missing or non-`v1` returns 400 directly).
+Business route versions live in the URL prefix `/api/v1/`; paths without the version prefix 404.
 
 **Rate limiting**: 100 req/60s per service, Redis distributed fixed window; unauthenticated requests also count (preventing resource exhaustion by brute force); returns 429 when exceeded.
 

@@ -13,7 +13,6 @@ use axum::extract::{Json, Path, Query, State};
 use axum::http::{Request, StatusCode};
 use axum::response::IntoResponse;
 use ecat_auth::{AuthClaims, JwtAuthLayer};
-use ecat_data::RdbmsClient;
 use ecat_data_sqlx::SqlxClient;
 use serde_json::json;
 use service::handlers::*;
@@ -156,7 +155,9 @@ async fn require_admin_accepts_admin_role() {
 }
 
 #[tokio::test]
-async fn missing_api_version_returns_400() {
+async fn version_in_path_needs_no_header_unknown_version_404() {
+    // 版本即 URL 前缀：无版本 header 直接落到 handler（db None → 503）；
+    // 未知版本 /api/v2/ 无路由 → 404。
     use tower::ServiceExt;
     let router = api_router(state());
     let resp = router
@@ -164,21 +165,7 @@ async fn missing_api_version_returns_400() {
         .oneshot(
             Request::builder()
                 .method("POST")
-                .uri("/api/admin/login")
-                .header("content-type", "application/json")
-                .body(Body::from(r#"{"email":"a@b.c","password":"x"}"#))
-                .unwrap(),
-        )
-        .await
-        .unwrap();
-    assert_eq!(resp.status(), StatusCode::BAD_REQUEST);
-    // 带上版本头则通过版本层，落到 handler → db None → 503
-    let resp = router
-        .oneshot(
-            Request::builder()
-                .method("POST")
-                .uri("/api/admin/login")
-                .header("x-api-version", "v1")
+                .uri("/api/v1/admin/login")
                 .header("content-type", "application/json")
                 .body(Body::from(r#"{"email":"a@b.c","password":"x"}"#))
                 .unwrap(),
@@ -186,6 +173,31 @@ async fn missing_api_version_returns_400() {
         .await
         .unwrap();
     assert_eq!(resp.status(), StatusCode::SERVICE_UNAVAILABLE);
+    // 未知版本路径：带合法 token 绕过 jwt 层 → 子路由内无此路由 → 404
+    // （无 token 时会被 merge 的子路由 jwt 层先拦成 401，属认证语义而非路由 404）
+    let token = signed_token("admin");
+    let (parts, body) = router
+        .clone()
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri("/api/v2/admin/login")
+                .header("content-type", "application/json")
+                .header("authorization", format!("Bearer {token}"))
+                .body(Body::from(r#"{"email":"a@b.c","password":"x"}"#))
+                .unwrap(),
+        )
+        .await
+        .unwrap()
+        .into_parts();
+    let bytes = axum::body::to_bytes(body, usize::MAX).await.unwrap();
+    assert_eq!(
+        parts.status,
+        StatusCode::NOT_FOUND,
+        "v2 got {}: {}",
+        parts.status,
+        String::from_utf8_lossy(&bytes)
+    );
 }
 
 #[tokio::test]
@@ -269,7 +281,7 @@ fn page_q(page: u64, page_size: u64) -> Query<PageQuery> {
 async fn router_call(method: &str, uri: &str, token: Option<&str>) -> (StatusCode, serde_json::Value) {
     use tower::ServiceExt;
     let router = api_router(state());
-    let mut req = Request::builder().method(method).uri(uri).header("x-api-version", "v1");
+    let mut req = Request::builder().method(method).uri(uri);
     if let Some(t) = token {
         req = req.header("authorization", format!("Bearer {t}"));
     }
@@ -282,7 +294,7 @@ async fn router_call(method: &str, uri: &str, token: Option<&str>) -> (StatusCod
 
 #[tokio::test]
 async fn crud_without_token_401() {
-    let (status, body) = router_call("GET", "/api/admin/destinations", None).await;
+    let (status, body) = router_call("GET", "/api/v1/admin/destinations", None).await;
     assert_eq!(status, StatusCode::UNAUTHORIZED);
     // JwtAuthLayer 直接拒绝，body 为 {"error":...} 非标准信封
     assert_eq!(body["error"], "missing authorization token");
@@ -290,7 +302,7 @@ async fn crud_without_token_401() {
 
 #[tokio::test]
 async fn crud_non_admin_token_403() {
-    let (status, body) = router_call("GET", "/api/admin/destinations", Some(&signed_token("user"))).await;
+    let (status, body) = router_call("GET", "/api/v1/admin/destinations", Some(&signed_token("user"))).await;
     assert_eq!(status, StatusCode::FORBIDDEN);
     assert_eq!(body["code"], 403);
     assert_eq!(body["message"], "admin role required");
@@ -298,7 +310,7 @@ async fn crud_non_admin_token_403() {
 
 #[tokio::test]
 async fn crud_db_unavailable_503() {
-    let (status, body) = router_call("GET", "/api/admin/destinations", Some(&signed_token("admin"))).await;
+    let (status, body) = router_call("GET", "/api/v1/admin/destinations", Some(&signed_token("admin"))).await;
     assert_eq!(status, StatusCode::SERVICE_UNAVAILABLE);
     assert_eq!(body["code"], 503);
 }

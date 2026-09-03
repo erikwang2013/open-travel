@@ -50,10 +50,7 @@ async fn call(
     token: Option<&str>,
     body: Option<Value>,
 ) -> (StatusCode, Value) {
-    let mut builder = Request::builder()
-        .method(method)
-        .uri(uri)
-        .header("x-api-version", "v1");
+    let mut builder = Request::builder().method(method).uri(uri);
     if let Some(t) = token {
         builder = builder.header("authorization", format!("Bearer {t}"));
     }
@@ -120,7 +117,7 @@ async fn lock() -> tokio::sync::MutexGuard<'static, ()> {
 #[tokio::test]
 async fn create_order_requires_jwt() {
     // JwtAuthLayer 直接拒绝（非 JSON 信封），只断言状态码
-    let (status, _) = call(router(state_with_db_or_none()), "POST", "/api/orders", None, Some(json!({}))).await;
+    let (status, _) = call(router(state_with_db_or_none()), "POST", "/api/v1/orders", None, Some(json!({}))).await;
     assert_eq!(status, StatusCode::UNAUTHORIZED);
 }
 
@@ -130,7 +127,7 @@ async fn unsupported_order_type_returns_400() {
     let (status, _) = call(
         router(state_with(db)),
         "POST",
-        "/api/orders",
+        "/api/v1/orders",
         Some(&sign("1")),
         Some(json!({"order_type": 9, "product_id": 1, "quantity": 1})),
     )
@@ -146,7 +143,7 @@ async fn create_order_success_decrements_seats() {
     let (status, body) = call(
         router(state_with(db.clone())),
         "POST",
-        "/api/orders",
+        "/api/v1/orders",
         Some(&sign("1")),
         Some(order_body(line_id, ld_id, 2)),
     )
@@ -172,7 +169,7 @@ async fn insufficient_stock_returns_409() {
     let (status, body) = call(
         router(state_with(db.clone())),
         "POST",
-        "/api/orders",
+        "/api/v1/orders",
         Some(&sign("1")),
         Some(order_body(line_id, ld_id, 2)),
     )
@@ -196,8 +193,8 @@ async fn concurrent_orders_cannot_oversell() {
     let token = sign("1");
     let body = order_body(line_id, ld_id, 1);
     let (a, b) = tokio::join!(
-        call(r.clone(), "POST", "/api/orders", Some(&token), Some(body.clone())),
-        call(r, "POST", "/api/orders", Some(&token), Some(body))
+        call(r.clone(), "POST", "/api/v1/orders", Some(&token), Some(body.clone())),
+        call(r, "POST", "/api/v1/orders", Some(&token), Some(body))
     );
     let ok_count = [&a, &b].iter().filter(|(s, _)| *s == StatusCode::OK).count();
     let conflict_count = [&a, &b].iter().filter(|(s, _)| *s == StatusCode::CONFLICT).count();
@@ -216,9 +213,9 @@ async fn cancel_success_restores_seats() {
     let (ld_id, line_id, _) = pick_line_date(&db, 10).await;
     let r = router(state_with(db.clone()));
     let token = sign("1");
-    let (_, body) = call(r.clone(), "POST", "/api/orders", Some(&token), Some(order_body(line_id, ld_id, 3))).await;
+    let (_, body) = call(r.clone(), "POST", "/api/v1/orders", Some(&token), Some(order_body(line_id, ld_id, 3))).await;
     let order_id = body["data"]["id"].as_u64().unwrap();
-    let (status, body) = call(r, "POST", &format!("/api/orders/{order_id}/cancel"), Some(&token), None).await;
+    let (status, body) = call(r, "POST", &format!("/api/v1/orders/{order_id}/cancel"), Some(&token), None).await;
     assert_eq!(status, StatusCode::OK, "body: {body}");
     assert_eq!(body["data"]["status"], 4);
     let rows = db
@@ -235,7 +232,7 @@ async fn cancel_non_pending_returns_400() {
     let (ld_id, line_id, _) = pick_line_date(&db, 10).await;
     let r = router(state_with(db.clone()));
     let token = sign("1");
-    let (_, body) = call(r.clone(), "POST", "/api/orders", Some(&token), Some(order_body(line_id, ld_id, 1))).await;
+    let (_, body) = call(r.clone(), "POST", "/api/v1/orders", Some(&token), Some(order_body(line_id, ld_id, 1))).await;
     let order_id = body["data"]["id"].as_u64().unwrap();
     db.execute_with(
         "UPDATE travel_orders SET status = 1 WHERE id = ?",
@@ -243,7 +240,7 @@ async fn cancel_non_pending_returns_400() {
     )
     .await
     .unwrap();
-    let (status, body) = call(r, "POST", &format!("/api/orders/{order_id}/cancel"), Some(&token), None).await;
+    let (status, body) = call(r, "POST", &format!("/api/v1/orders/{order_id}/cancel"), Some(&token), None).await;
     assert_eq!(status, StatusCode::BAD_REQUEST, "body: {body}");
     assert_eq!(body["code"], 400);
 }
@@ -254,9 +251,9 @@ async fn list_returns_only_own_orders() {
     let _g = lock().await;
     let (ld_id, line_id, _) = pick_line_date(&db, 10).await;
     let r = router(state_with(db.clone()));
-    let (_, _) = call(r.clone(), "POST", "/api/orders", Some(&sign("1")), Some(order_body(line_id, ld_id, 1))).await;
-    let (_, _) = call(r.clone(), "POST", "/api/orders", Some(&sign("2")), Some(order_body(line_id, ld_id, 1))).await;
-    let (status, body) = call(r.clone(), "GET", "/api/orders", Some(&sign("1")), None).await;
+    let (_, _) = call(r.clone(), "POST", "/api/v1/orders", Some(&sign("1")), Some(order_body(line_id, ld_id, 1))).await;
+    let (_, _) = call(r.clone(), "POST", "/api/v1/orders", Some(&sign("2")), Some(order_body(line_id, ld_id, 1))).await;
+    let (status, body) = call(r.clone(), "GET", "/api/v1/orders", Some(&sign("1")), None).await;
     assert_eq!(status, StatusCode::OK);
     let items = body["data"].as_array().unwrap();
     assert!(!items.is_empty());
@@ -265,7 +262,7 @@ async fn list_returns_only_own_orders() {
         assert!(item["snapshot"]["quantity"].as_u64().is_some());
     }
     // 用户 2 的列表同样只含自己的（至少有一条）
-    let (_, body2) = call(r, "GET", "/api/orders", Some(&sign("2")), None).await;
+    let (_, body2) = call(r, "GET", "/api/v1/orders", Some(&sign("2")), None).await;
     assert!(!body2["data"].as_array().unwrap().is_empty());
 }
 
@@ -275,12 +272,12 @@ async fn detail_of_other_user_returns_404() {
     let _g = lock().await;
     let (ld_id, line_id, _) = pick_line_date(&db, 10).await;
     let r = router(state_with(db.clone()));
-    let (_, body) = call(r.clone(), "POST", "/api/orders", Some(&sign("1")), Some(order_body(line_id, ld_id, 1))).await;
+    let (_, body) = call(r.clone(), "POST", "/api/v1/orders", Some(&sign("1")), Some(order_body(line_id, ld_id, 1))).await;
     let order_id = body["data"]["id"].as_u64().unwrap();
-    let (status, body) = call(r.clone(), "GET", &format!("/api/orders/{order_id}"), Some(&sign("2")), None).await;
+    let (status, body) = call(r.clone(), "GET", &format!("/api/v1/orders/{order_id}"), Some(&sign("2")), None).await;
     assert_eq!(status, StatusCode::NOT_FOUND, "body: {body}");
     // 本人可见
-    let (_, body2) = call(r, "GET", &format!("/api/orders/{order_id}"), Some(&sign("1")), None).await;
+    let (_, body2) = call(r, "GET", &format!("/api/v1/orders/{order_id}"), Some(&sign("1")), None).await;
     assert_eq!(body2["data"]["id"], json!(order_id));
 }
 
@@ -298,7 +295,7 @@ async fn expired_pending_order_is_cancelled_and_stock_restored() {
     .unwrap();
     let r = router(state_with(db.clone()));
     let token = sign("1");
-    let (_, body) = call(r.clone(), "POST", "/api/orders", Some(&token), Some(order_body(line_id, ld_id, 2))).await;
+    let (_, body) = call(r.clone(), "POST", "/api/v1/orders", Some(&token), Some(order_body(line_id, ld_id, 2))).await;
     let order_id = body["data"]["id"].as_u64().unwrap();
     db.execute_with(
         "UPDATE travel_orders SET expire_at = DATE_SUB(NOW(), INTERVAL 1 HOUR) WHERE id = ?",
@@ -307,7 +304,7 @@ async fn expired_pending_order_is_cancelled_and_stock_restored() {
     .await
     .unwrap();
     // 触发惰性清理：列表前扫描过期订单
-    let (_, list_body) = call(r, "GET", "/api/orders", Some(&token), None).await;
+    let (_, list_body) = call(r, "GET", "/api/v1/orders", Some(&token), None).await;
     let items = list_body["data"].as_array().unwrap();
     let expired = items.iter().find(|i| i["id"] == json!(order_id)).unwrap();
     assert_eq!(expired["status"], 4, "expired order should be auto-cancelled");
@@ -335,7 +332,7 @@ async fn redis_stock_key_released_on_cancel() {
     let token = sign("1");
     let key = format!("travel:stock:1:{ld_id}");
     let _ = cache.delete(&key).await;
-    let (_, body) = call(r.clone(), "POST", "/api/orders", Some(&token), Some(order_body(line_id, ld_id, 4))).await;
+    let (_, body) = call(r.clone(), "POST", "/api/v1/orders", Some(&token), Some(order_body(line_id, ld_id, 4))).await;
     assert_eq!(body["code"], 0, "body: {body}");
     let left: i64 = cache
         .get(&key)
@@ -346,7 +343,7 @@ async fn redis_stock_key_released_on_cancel() {
         .unwrap();
     assert_eq!(left, 6);
     let order_id = body["data"]["id"].as_u64().unwrap();
-    let (_, _) = call(r, "POST", &format!("/api/orders/{order_id}/cancel"), Some(&token), None).await;
+    let (_, _) = call(r, "POST", &format!("/api/v1/orders/{order_id}/cancel"), Some(&token), None).await;
     let left2: i64 = cache
         .get(&key)
         .await
@@ -363,8 +360,7 @@ async fn redis_stock_key_released_on_cancel() {
 async fn pay_success_call(router: Router, order_id: u64, token: Option<&str>) -> (StatusCode, Value) {
     let mut builder = Request::builder()
         .method("POST")
-        .uri(format!("/api/orders/{order_id}/pay-success"))
-        .header("x-api-version", "v1")
+        .uri(format!("/api/v1/orders/{order_id}/pay-success"))
         .header("content-type", "application/json");
     if let Some(t) = token {
         builder = builder.header("x-internal-token", t);
@@ -380,7 +376,7 @@ async fn pay_success_call(router: Router, order_id: u64, token: Option<&str>) ->
 
 async fn new_pending_order(db: &SqlxClient, r: &Router, user: &str) -> u64 {
     let (ld_id, line_id, _) = pick_line_date(db, 10).await;
-    let (_, body) = call(r.clone(), "POST", "/api/orders", Some(&sign(user)), Some(order_body(line_id, ld_id, 1))).await;
+    let (_, body) = call(r.clone(), "POST", "/api/v1/orders", Some(&sign(user)), Some(order_body(line_id, ld_id, 1))).await;
     body["data"]["id"].as_u64().unwrap()
 }
 
@@ -429,7 +425,7 @@ async fn pay_success_cancelled_order_409() {
     let _g = lock().await;
     let r = router(state_with(db.clone()));
     let order_id = new_pending_order(&db, &r, "1").await;
-    let (_, _) = call(r.clone(), "POST", &format!("/api/orders/{order_id}/cancel"), Some(&sign("1")), None).await;
+    let (_, _) = call(r.clone(), "POST", &format!("/api/v1/orders/{order_id}/cancel"), Some(&sign("1")), None).await;
     let (status, body) = pay_success_call(r, order_id, Some("dev-internal-secret")).await;
     assert_eq!(status, StatusCode::CONFLICT, "取消后不可支付: {body}");
 }

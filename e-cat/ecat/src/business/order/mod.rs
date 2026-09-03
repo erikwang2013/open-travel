@@ -1,6 +1,6 @@
 // open-travel order-service：下单 / 订单列表 / 详情 / 取消（P3-08/P3-09）
 //
-// 端口 8006（网关 /api/orders/ → ecat-order:8006）。
+// 端口 8006（网关 /api/v1/orders/ → ecat-order:8006）。
 // 状态机：0待支付 → 1已支付 → 2已确认 → 3已完成（P4-07 支付闭环回调推进）；
 //         0 → 4（超时 / 取消）。本期仅实现 order_type=1（线路）。
 //
@@ -17,7 +17,7 @@
 // 余位与 Redis）+ 启动后台任务每 60s 扫一轮。
 //
 // 中间件链（外层 → 内层）：ApiVersion → CircuitBreaker → Security → RateLimit
-// → [仅 /api/orders/*] JWT。JWT 与 user-service 同一密钥，claims.sub 为 user_id。
+// → [仅 /api/v1/orders/*] JWT。JWT 与 user-service 同一密钥，claims.sub 为 user_id。
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
@@ -166,13 +166,13 @@ async fn connect_cache() -> Option<Arc<RedisCache>> {
 /// 业务路由 + 中间件链；独立成函数便于集成测试直接构造。
 pub(crate) fn api_router(state: AppState) -> Router {
     let orders = Router::new()
-        .route("/api/orders", get(handlers::list_orders).post(handlers::create_order))
-        .route("/api/orders/{id}", get(handlers::order_detail))
-        .route("/api/orders/{id}/cancel", axum::routing::post(handlers::cancel_order))
+        .route("/api/v1/orders", get(handlers::list_orders).post(handlers::create_order))
+        .route("/api/v1/orders/{id}", get(handlers::order_detail))
+        .route("/api/v1/orders/{id}/cancel", axum::routing::post(handlers::cancel_order))
         .layer(ServiceBuilder::new().map_err(no_error).layer(state.jwt.clone()));
     // 内部接口（P4-07）：payment-service 回调确认，不挂 JWT，用 X-Internal-Token 防护
     let internal = Router::new().route(
-        "/api/orders/{id}/pay-success",
+        "/api/v1/orders/{id}/pay-success",
         axum::routing::post(handlers::pay_success),
     );
 
@@ -181,7 +181,6 @@ pub(crate) fn api_router(state: AppState) -> Router {
         .merge(internal)
         .layer(
             ServiceBuilder::new()
-                .layer(ecat::business::shared::ApiVersionLayer)
                 .map_err(no_error)
                 .layer(CircuitBreakerLayer::new())
                 .map_err(no_error)

@@ -47,7 +47,7 @@ class _RoomsDialogState extends State<RoomsDialog> {
       _error = null;
     });
     try {
-      final data = await Api.get('/api/admin/hotels/${widget.hotel.id}/rooms');
+      final data = await Api.get('/api/v1/admin/hotels/${widget.hotel.id}/rooms');
       setState(() {
         _list = (data as List)
             .map((e) => Room.fromJson(e as Map<String, dynamic>))
@@ -97,7 +97,7 @@ class _RoomsDialogState extends State<RoomsDialog> {
     if (ok != true) return;
     try {
       await Api.delete(
-          '/api/admin/hotels/${widget.hotel.id}/rooms/${r.id}');
+          '/api/v1/admin/hotels/${widget.hotel.id}/rooms/${r.id}');
       _showSnack('已删除');
       _load();
     } on ApiException catch (e) {
@@ -209,10 +209,10 @@ class _RoomFormDialogState extends State<RoomFormDialog> {
     });
     try {
       if (widget.room == null) {
-        await Api.post('/api/admin/hotels/${widget.hotel.id}/rooms', body);
+        await Api.post('/api/v1/admin/hotels/${widget.hotel.id}/rooms', body);
       } else {
         await Api.put(
-            '/api/admin/hotels/${widget.hotel.id}/rooms/${widget.room!.id}',
+            '/api/v1/admin/hotels/${widget.hotel.id}/rooms/${widget.room!.id}',
             body);
       }
       if (mounted) Navigator.pop(context, true);

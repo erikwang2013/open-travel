@@ -52,7 +52,7 @@ class _HotelsPageState extends State<HotelsPage> {
       _error = null;
     });
     try {
-      final data = await Api.get('/api/admin/hotels',
+      final data = await Api.get('/api/v1/admin/hotels',
           {'page': '$_page', 'page_size': '$_pageSize'});
       setState(() {
         _list = (data['items'] as List)
@@ -81,7 +81,7 @@ class _HotelsPageState extends State<HotelsPage> {
 
   Future<void> _toggleStatus(Hotel h, bool on) async {
     try {
-      await Api.put('/api/admin/hotels/${h.id}/status', {'status': on ? 1 : 0});
+      await Api.put('/api/v1/admin/hotels/${h.id}/status', {'status': on ? 1 : 0});
       _load();
     } on ApiException catch (e) {
       _showSnack(e.message);
@@ -104,7 +104,7 @@ class _HotelsPageState extends State<HotelsPage> {
     );
     if (ok != true) return;
     try {
-      await Api.delete('/api/admin/hotels/${h.id}');
+      await Api.delete('/api/v1/admin/hotels/${h.id}');
       _showSnack('已删除');
       _load();
     } on ApiException catch (e) {
@@ -264,9 +264,9 @@ class _HotelFormDialogState extends State<HotelFormDialog> {
     });
     try {
       if (widget.hotel == null) {
-        await Api.post('/api/admin/hotels', body);
+        await Api.post('/api/v1/admin/hotels', body);
       } else {
-        await Api.put('/api/admin/hotels/${widget.hotel!.id}', body);
+        await Api.put('/api/v1/admin/hotels/${widget.hotel!.id}', body);
       }
       if (mounted) Navigator.pop(context, true);
     } on ApiException catch (e) {

@@ -58,7 +58,7 @@ class _FlightsPageState extends State<FlightsPage> {
       _error = null;
     });
     try {
-      final data = await Api.get('/api/admin/flights',
+      final data = await Api.get('/api/v1/admin/flights',
           {'page': '$_page', 'page_size': '$_pageSize'});
       setState(() {
         _list = (data['items'] as List)
@@ -87,7 +87,7 @@ class _FlightsPageState extends State<FlightsPage> {
 
   Future<void> _toggleStatus(Flight f, bool on) async {
     try {
-      await Api.put('/api/admin/flights/${f.id}/status', {'status': on ? 1 : 0});
+      await Api.put('/api/v1/admin/flights/${f.id}/status', {'status': on ? 1 : 0});
       _load();
     } on ApiException catch (e) {
       _showSnack(e.message);
@@ -110,7 +110,7 @@ class _FlightsPageState extends State<FlightsPage> {
     );
     if (ok != true) return;
     try {
-      await Api.delete('/api/admin/flights/${f.id}');
+      await Api.delete('/api/v1/admin/flights/${f.id}');
       _showSnack('已删除');
       _load();
     } on ApiException catch (e) {
@@ -281,9 +281,9 @@ class _FlightFormDialogState extends State<FlightFormDialog> {
     });
     try {
       if (widget.flight == null) {
-        await Api.post('/api/admin/flights', body);
+        await Api.post('/api/v1/admin/flights', body);
       } else {
-        await Api.put('/api/admin/flights/${widget.flight!.id}', body);
+        await Api.put('/api/v1/admin/flights/${widget.flight!.id}', body);
       }
       if (mounted) Navigator.pop(context, true);
     } on ApiException catch (e) {

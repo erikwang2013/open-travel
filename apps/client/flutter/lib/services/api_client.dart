@@ -12,7 +12,6 @@ class ApiClient {
       baseUrl: AppConfig.apiBase,
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
-      headers: {'X-Api-Version': AppConfig.apiVersion},
     ),
   );
 }

@@ -37,7 +37,7 @@ async fn call(
     token: Option<&str>,
     body: Option<Value>,
 ) -> (StatusCode, Value) {
-    let mut builder = Request::builder().method(method).uri(uri).header("x-api-version", "v1");
+    let mut builder = Request::builder().method(method).uri(uri);
     if let Some(t) = token {
         builder = builder.header("authorization", format!("Bearer {t}"));
     }
@@ -70,9 +70,8 @@ async fn callback(
     let body = json!({ "txn_no": txn_no, "status": status }).to_string();
     let mut builder = Request::builder()
         .method("POST")
-        .uri(format!("/api/payments/callback/{channel}"))
-        .header("content-type", "application/json")
-        .header("x-api-version", "v1");
+        .uri(format!("/api/v1/payments/callback/{channel}"))
+        .header("content-type", "application/json");
     if with_sig {
         builder = builder.header("x-signature", hmac_hex(body.as_bytes()));
     }
@@ -174,7 +173,7 @@ async fn create_payment_success() {
     let Some(db) = connect_test_db().await else { return };
     let order_id = insert_order(&db, 900101, 19900).await;
     let r = router(state_with(db.clone(), MockConfirm::new(Ok(()))));
-    let (status, body) = call(r, "POST", "/api/payments", Some(&sign("900101")), Some(pay_body(order_id, "stripe"))).await;
+    let (status, body) = call(r, "POST", "/api/v1/payments", Some(&sign("900101")), Some(pay_body(order_id, "stripe"))).await;
     assert_eq!(status, StatusCode::OK, "body: {body}");
     assert_eq!(body["code"], 0);
     let d = &body["data"];
@@ -186,7 +185,7 @@ async fn create_payment_success() {
     assert!(d["checkout_url"]
         .as_str()
         .unwrap()
-        .contains(&format!("/api/payments/sandbox/{}", d["txn_no"].as_str().unwrap())));
+        .contains(&format!("/api/v1/payments/sandbox/{}", d["txn_no"].as_str().unwrap())));
     let rows = db
         .query_with("SELECT CAST(status AS CHAR) AS status FROM travel_payments WHERE order_id = ?", &[json!(order_id)])
         .await
@@ -200,8 +199,8 @@ async fn create_payment_idempotent_same_txn() {
     let Some(db) = connect_test_db().await else { return };
     let order_id = insert_order(&db, 900102, 5000).await;
     let r = router(state_with(db.clone(), MockConfirm::new(Ok(()))));
-    let (_, b1) = call(r.clone(), "POST", "/api/payments", Some(&sign("900102")), Some(pay_body(order_id, "stripe"))).await;
-    let (status, b2) = call(r, "POST", "/api/payments", Some(&sign("900102")), Some(pay_body(order_id, "stripe"))).await;
+    let (_, b1) = call(r.clone(), "POST", "/api/v1/payments", Some(&sign("900102")), Some(pay_body(order_id, "stripe"))).await;
+    let (status, b2) = call(r, "POST", "/api/v1/payments", Some(&sign("900102")), Some(pay_body(order_id, "stripe"))).await;
     assert_eq!(status, StatusCode::OK, "body: {b2}");
     assert_eq!(b1["data"]["txn_no"], b2["data"]["txn_no"], "重复发起应返回同一条流水");
     let rows = db
@@ -214,7 +213,7 @@ async fn create_payment_idempotent_same_txn() {
 
 #[tokio::test]
 async fn create_payment_requires_jwt() {
-    let (status, _) = call(router(state_with_db_or_none()), "POST", "/api/payments", None, Some(pay_body(1, "stripe"))).await;
+    let (status, _) = call(router(state_with_db_or_none()), "POST", "/api/v1/payments", None, Some(pay_body(1, "stripe"))).await;
     assert_eq!(status, StatusCode::UNAUTHORIZED);
 }
 
@@ -222,7 +221,7 @@ async fn create_payment_requires_jwt() {
 async fn channel_list_sorted_zh_first() {
     let Some(db) = connect_test_db().await else { return };
     let r = router(state_with(db, MockConfirm::new(Ok(()))));
-    let (status, body) = call(r, "GET", "/api/payments/channels?lang=zh", None, None).await;
+    let (status, body) = call(r, "GET", "/api/v1/payments/channels?lang=zh", None, None).await;
     assert_eq!(status, StatusCode::OK, "body: {body}");
     let arr = body["data"].as_array().unwrap();
     assert!(!arr.is_empty());
@@ -244,11 +243,11 @@ async fn create_payment_disabled_channel_400() {
     let r = router(state_with(db.clone(), MockConfirm::new(Ok(()))));
     // 停用 usdt
     db.execute_with("UPDATE travel_payment_channels SET enabled = 0 WHERE channel_code = 'usdt'", &[]).await.unwrap();
-    let (status, body) = call(r.clone(), "POST", "/api/payments", Some(&sign("900103")), Some(pay_body(order_id, "usdt"))).await;
+    let (status, body) = call(r.clone(), "POST", "/api/v1/payments", Some(&sign("900103")), Some(pay_body(order_id, "usdt"))).await;
     assert_eq!(status, StatusCode::BAD_REQUEST, "body: {body}");
     assert_eq!(body["code"], 400);
     // 未知渠道 404
-    let (status, body) = call(r, "POST", "/api/payments", Some(&sign("900103")), Some(pay_body(order_id, "nope"))).await;
+    let (status, body) = call(r, "POST", "/api/v1/payments", Some(&sign("900103")), Some(pay_body(order_id, "nope"))).await;
     assert_eq!(status, StatusCode::NOT_FOUND, "body: {body}");
     db.execute_with("UPDATE travel_payment_channels SET enabled = 1 WHERE channel_code = 'usdt'", &[]).await.unwrap();
     cleanup(&db, order_id).await;
@@ -260,16 +259,15 @@ async fn callback_bad_signature_401_not_booked() {
     let order_id = insert_order(&db, 900104, 8888).await;
     let confirm = MockConfirm::new(Ok(()));
     let r = router(state_with(db.clone(), confirm.clone()));
-    let (_, body) = call(r.clone(), "POST", "/api/payments", Some(&sign("900104")), Some(pay_body(order_id, "stripe"))).await;
+    let (_, body) = call(r.clone(), "POST", "/api/v1/payments", Some(&sign("900104")), Some(pay_body(order_id, "stripe"))).await;
     let txn = body["data"]["txn_no"].as_str().unwrap().to_string();
     // 无签名 / 错误签名 → 401
     let (status, _) = callback(r.clone(), "stripe", &txn, 1, false).await;
     assert_eq!(status, StatusCode::UNAUTHORIZED);
     let mut wrong = Request::builder()
         .method("POST")
-        .uri("/api/payments/callback/stripe")
+        .uri("/api/v1/payments/callback/stripe")
         .header("content-type", "application/json")
-        .header("x-api-version", "v1")
         .header("x-signature", "deadbeef")
         .body(Body::from(json!({"txn_no": txn, "status": 1}).to_string()))
         .unwrap();
@@ -291,7 +289,7 @@ async fn callback_success_books_and_confirms() {
     let order_id = insert_order(&db, 900105, 6600).await;
     let confirm = MockConfirm::new(Ok(()));
     let r = router(state_with(db.clone(), confirm.clone()));
-    let (_, body) = call(r.clone(), "POST", "/api/payments", Some(&sign("900105")), Some(pay_body(order_id, "stripe"))).await;
+    let (_, body) = call(r.clone(), "POST", "/api/v1/payments", Some(&sign("900105")), Some(pay_body(order_id, "stripe"))).await;
     let txn = body["data"]["txn_no"].as_str().unwrap().to_string();
     let (status, body) = callback(r.clone(), "stripe", &txn, 1, true).await;
     assert_eq!(status, StatusCode::OK, "body: {body}");
@@ -316,7 +314,7 @@ async fn callback_idempotent_no_double_confirm() {
     let order_id = insert_order(&db, 900106, 6600).await;
     let confirm = MockConfirm::new(Ok(()));
     let r = router(state_with(db.clone(), confirm.clone()));
-    let (_, body) = call(r.clone(), "POST", "/api/payments", Some(&sign("900106")), Some(pay_body(order_id, "stripe"))).await;
+    let (_, body) = call(r.clone(), "POST", "/api/v1/payments", Some(&sign("900106")), Some(pay_body(order_id, "stripe"))).await;
     let txn = body["data"]["txn_no"].as_str().unwrap().to_string();
     let (s1, b1) = callback(r.clone(), "stripe", &txn, 1, true).await;
     let (s2, b2) = callback(r.clone(), "stripe", &txn, 1, true).await;
@@ -337,7 +335,7 @@ async fn callback_failure_marks_failed() {
     let order_id = insert_order(&db, 900107, 3300).await;
     let confirm = MockConfirm::new(Ok(()));
     let r = router(state_with(db.clone(), confirm.clone()));
-    let (_, body) = call(r.clone(), "POST", "/api/payments", Some(&sign("900107")), Some(pay_body(order_id, "stripe"))).await;
+    let (_, body) = call(r.clone(), "POST", "/api/v1/payments", Some(&sign("900107")), Some(pay_body(order_id, "stripe"))).await;
     let txn = body["data"]["txn_no"].as_str().unwrap().to_string();
     let (status, body) = callback(r, "stripe", &txn, 2, true).await;
     assert_eq!(status, StatusCode::OK, "body: {body}");

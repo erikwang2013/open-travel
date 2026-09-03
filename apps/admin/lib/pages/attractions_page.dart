@@ -73,7 +73,7 @@ class _AttractionsPageState extends State<AttractionsPage> {
         'page_size': '$_pageSize',
         if (_destFilter != null) 'destination_id': '$_destFilter',
       };
-      final data = await Api.get('/api/admin/attractions', q);
+      final data = await Api.get('/api/v1/admin/attractions', q);
       setState(() {
         _list = (data['list'] as List)
             .map((e) => Attraction.fromJson(e as Map<String, dynamic>))
@@ -110,7 +110,7 @@ class _AttractionsPageState extends State<AttractionsPage> {
     );
     if (ok != true) return;
     try {
-      await Api.delete('/api/admin/attractions/${a.id}');
+      await Api.delete('/api/v1/admin/attractions/${a.id}');
       _showSnack('已删除');
       _load();
     } on ApiException catch (e) {

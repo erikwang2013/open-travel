@@ -23,7 +23,7 @@ class OrderService {
     int page = 1,
   }) async {
     final res = await ApiClient.instance.dio.get<Map<String, dynamic>>(
-      '/api/search',
+      '/api/v1/search',
       queryParameters: {
         'q': q.isEmpty ? null : q,
         'destination_id': ?destinationId,
@@ -50,7 +50,7 @@ class OrderService {
 
   Future<List<Line>> fetchLines({int? destinationId}) async {
     final res = await ApiClient.instance.dio.get<Map<String, dynamic>>(
-      '/api/lines',
+      '/api/v1/lines',
       queryParameters: {'destination_id': ?destinationId, 'lang': _lang},
     );
     final data = res.data?['data'];
@@ -63,7 +63,7 @@ class OrderService {
 
   Future<Line> fetchLine(int id) async {
     final res = await ApiClient.instance.dio
-        .get<Map<String, dynamic>>('/api/lines/$id', queryParameters: {'lang': _lang});
+        .get<Map<String, dynamic>>('/api/v1/lines/$id', queryParameters: {'lang': _lang});
     final data = res.data?['data'];
     if (data is! Map<String, dynamic>) throw Exception('bad response');
     return Line.fromJson(data, _lang);
@@ -71,7 +71,7 @@ class OrderService {
 
   Future<List<LineDate>> fetchLineDates(int id) async {
     final res = await ApiClient.instance.dio
-        .get<Map<String, dynamic>>('/api/lines/$id/dates', queryParameters: {'lang': _lang});
+        .get<Map<String, dynamic>>('/api/v1/lines/$id/dates', queryParameters: {'lang': _lang});
     final data = res.data?['data'];
     if (data is! List) return const [];
     return [
@@ -90,7 +90,7 @@ class OrderService {
     String? checkOut,
   }) async {
     final res = await ApiClient.instance.dio.post<Map<String, dynamic>>(
-      '/api/orders',
+      '/api/v1/orders',
       data: {
         'order_type': orderType,
         'product_id': productId,
@@ -113,7 +113,7 @@ class OrderService {
     int? cabin,
   }) async {
     final res = await ApiClient.instance.dio.get<Map<String, dynamic>>(
-      '/api/flights/search',
+      '/api/v1/flights/search',
       queryParameters: {
         'from': from,
         'to': to,
@@ -131,7 +131,7 @@ class OrderService {
 
   Future<Flight> fetchFlight(int id) async {
     final res =
-        await ApiClient.instance.dio.get<Map<String, dynamic>>('/api/flights/$id');
+        await ApiClient.instance.dio.get<Map<String, dynamic>>('/api/v1/flights/$id');
     final data = res.data?['data'];
     if (data is! Map<String, dynamic>) throw Exception('bad response');
     return Flight.fromJson(data);
@@ -139,7 +139,7 @@ class OrderService {
 
   Future<List<Hotel>> searchHotels({required String city, int? star}) async {
     final res = await ApiClient.instance.dio.get<Map<String, dynamic>>(
-      '/api/hotels/search',
+      '/api/v1/hotels/search',
       queryParameters: {'city': city, 'star': star},
     );
     final data = res.data?['data'];
@@ -152,7 +152,7 @@ class OrderService {
 
   Future<Hotel> fetchHotel(int id) async {
     final res =
-        await ApiClient.instance.dio.get<Map<String, dynamic>>('/api/hotels/$id');
+        await ApiClient.instance.dio.get<Map<String, dynamic>>('/api/v1/hotels/$id');
     final data = res.data?['data'];
     if (data is! Map<String, dynamic>) throw Exception('bad response');
     return Hotel.fromJson(data, _lang);
@@ -160,7 +160,7 @@ class OrderService {
 
   Future<List<PaymentChannel>> fetchPaymentChannels() async {
     final res = await ApiClient.instance.dio.get<Map<String, dynamic>>(
-      '/api/payments/channels',
+      '/api/v1/payments/channels',
       queryParameters: {'lang': _lang},
     );
     final data = res.data?['data'];
@@ -176,7 +176,7 @@ class OrderService {
     required String channelCode,
   }) async {
     final res = await ApiClient.instance.dio.post<Map<String, dynamic>>(
-      '/api/payments',
+      '/api/v1/payments',
       data: {'order_id': orderId, 'channel_code': channelCode},
       options: _auth,
     );
@@ -191,7 +191,7 @@ class OrderService {
 
   Future<OrderPage> fetchOrders({int page = 1, int pageSize = 20}) async {
     final res = await ApiClient.instance.dio.get<Map<String, dynamic>>(
-      '/api/orders',
+      '/api/v1/orders',
       queryParameters: {'page': page, 'page_size': pageSize},
       options: _auth,
     );
@@ -212,7 +212,7 @@ class OrderService {
 
   Future<Order> fetchOrder(int id) async {
     final res = await ApiClient.instance.dio
-        .get<Map<String, dynamic>>('/api/orders/$id', options: _auth);
+        .get<Map<String, dynamic>>('/api/v1/orders/$id', options: _auth);
     final data = res.data?['data'];
     if (data is! Map<String, dynamic>) throw Exception('bad response');
     return Order.fromJson(data, _lang);
@@ -220,7 +220,7 @@ class OrderService {
 
   Future<Order> cancelOrder(int id) async {
     final res = await ApiClient.instance.dio
-        .post<Map<String, dynamic>>('/api/orders/$id/cancel', options: _auth);
+        .post<Map<String, dynamic>>('/api/v1/orders/$id/cancel', options: _auth);
     final data = res.data?['data'];
     if (data is! Map<String, dynamic>) throw Exception('bad response');
     return Order.fromJson(data, _lang);

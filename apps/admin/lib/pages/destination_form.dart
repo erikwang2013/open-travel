@@ -87,9 +87,9 @@ class _DestinationFormPageState extends State<DestinationFormPage> {
     });
     try {
       if (widget.destination == null) {
-        await Api.post('/api/admin/destinations', body);
+        await Api.post('/api/v1/admin/destinations', body);
       } else {
-        await Api.put('/api/admin/destinations/${widget.destination!.id}', body);
+        await Api.put('/api/v1/admin/destinations/${widget.destination!.id}', body);
       }
       if (mounted) Navigator.pop(context, true);
     } on ApiException catch (e) {

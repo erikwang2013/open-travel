@@ -68,27 +68,27 @@ docker compose -f config/docker-compose.yml up -d   # 启动数据源 + 服务 +
 | flight-service | 8007 | 机票 |
 | hotel-service | 8008 | 酒店 |
 | payment-service | 8009 | 支付 |
-| Nginx 网关 | 8082→80 | 按 `/api/user/`、`/api/booking/`、`/api/admin/`、`/api/search`、`/api/lines`、`/api/orders`、`/api/flights`、`/api/hotels`、`/api/payments` 前缀分流 |
+| Nginx 网关 | 8082→80 | 按 `/api/v1/user/`、`/api/v1/booking/`、`/api/v1/admin/`、`/api/v1/search`、`/api/v1/lines`、`/api/v1/orders`、`/api/v1/flights`、`/api/v1/hotels`、`/api/v1/payments` 前缀分流 |
 | MySQL | 3308→3306 | 数据源（宿主端口冲突，临时映射） |
 | Redis | 6381→6379 | 缓存 / 限流 |
 | OpenSearch | 9201→9200 | 多语言搜索 |
 
 ### 验证
 
-> 业务接口需携带 `X-Api-Version: v1` 请求头（版本经 header 传递，缺失或值错误返回 400）。
+> 业务接口版本在 URL 前缀：`/api/v1/...`（无需版本请求头）。
 
 ```bash
 curl http://localhost:8082/health
-curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/dates?region_id=1"
+curl "http://localhost:8082/api/v1/booking/dates?region_id=1"
 # {"code":0,"message":"ok","data":[{"region_id":1,"name_en":"placeholder-destination"}]}
 
 # 管理端登录（admin@travel.local / Admin@123 为开发环境默认账号，仅本地使用）
-curl -X POST http://localhost:8082/api/admin/login -H "Content-Type: application/json" \
-  -H "X-Api-Version: v1" -d '{"email":"admin@travel.local","password":"Admin@123"}'
+curl -X POST http://localhost:8082/api/v1/admin/login -H "Content-Type: application/json" \
+  -d '{"email":"admin@travel.local","password":"Admin@123"}'
 # {"code":0,"message":"ok","data":{"token":"<jwt>"}}
 
 # 景区列表（按目的地查询，多语种字段按 lang 返回）
-curl -H "X-Api-Version: v1" "http://localhost:8082/api/booking/attractions?destination_id=1"
+curl "http://localhost:8082/api/v1/booking/attractions?destination_id=1"
 # {"code":0,"message":"ok","data":[{...}]}
 ```
 

@@ -1,7 +1,6 @@
 // open-travel flight-service：航班查询/比价（P4-02）
 //
 // 端口约定：user 8001 / booking 8002 / admin 8003 / search 8004 / line 8005 / order 8006 / 本服务 8007。
-// 网关已配置 /api/flights/ → ecat-flight:8007，接口需 X-Api-Version: v1（ApiVersionLayer）。
 //
 // 本服务只做查询（下单在 order-service P4-07）。查询链路（与 line 一致）：
 //   1. search：Redis 缓存 travel:flights:{from}:{to}:{date}:{cabin}（TTL 60s），未命中回源
@@ -225,7 +224,7 @@ async fn fetch_flight(db: &SqlxClient, id: u64) -> Option<FlightRow> {
     result.first().map(row_to_flight)
 }
 
-/// GET /api/flights/search：航班查询/比价。
+/// GET /api/v1/flights/search：航班查询/比价。
 /// from/to 必填（IATA 三字母码），date/cabin 可选；结果按价格升序，分页默认 page=1 page_size=20。
 pub(crate) async fn flights_search(
     State(state): State<AppState>,
@@ -301,7 +300,7 @@ pub(crate) async fn flights_search(
     (StatusCode::OK, Json(ApiResponse { code: 0, message: "ok".into(), data: Some(SearchData { total, page, page_size, items }) }))
 }
 
-/// GET /api/flights/{id}：详情，不缓存（余票实时）；不存在或下架返回 404。
+/// GET /api/v1/flights/{id}：详情，不缓存（余票实时）；不存在或下架返回 404。
 pub(crate) async fn flight_detail(
     State(state): State<AppState>,
     Path(id): Path<u64>,
@@ -346,11 +345,10 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     //   ApiVersion → CircuitBreaker → Security → RateLimit
     // 公开接口无 JWT；限流保留防止滥用。
     let api = Router::new()
-        .route("/api/flights/search", get(flights_search))
-        .route("/api/flights/{id}", get(flight_detail))
+        .route("/api/v1/flights/search", get(flights_search))
+        .route("/api/v1/flights/{id}", get(flight_detail))
         .layer(
             ServiceBuilder::new()
-                .layer(ecat::business::shared::ApiVersionLayer)
                 .map_err(no_error)
                 .layer(CircuitBreakerLayer::new())
                 .map_err(no_error)

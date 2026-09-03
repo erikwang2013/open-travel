@@ -253,106 +253,105 @@ async fn connect_cache() -> Option<Arc<RedisCache>> {
 pub(crate) fn api_router(state: AppState) -> Router {
     let admin = Router::new()
         .route(
-            "/api/admin/destinations",
+            "/api/v1/admin/destinations",
             get(handlers::list_destinations).post(handlers::create_destination),
         )
-        .route("/api/admin/destinations/{id}", put(handlers::update_destination))
+        .route("/api/v1/admin/destinations/{id}", put(handlers::update_destination))
         .route(
-            "/api/admin/destinations/{id}/status",
+            "/api/v1/admin/destinations/{id}/status",
             put(handlers::update_destination_status),
         )
-        .route("/api/admin/destinations/{id}", delete(handlers::delete_destination))
+        .route("/api/v1/admin/destinations/{id}", delete(handlers::delete_destination))
         .route(
-            "/api/admin/attractions",
+            "/api/v1/admin/attractions",
             get(handlers::list_attractions).post(handlers::create_attraction),
         )
-        .route("/api/admin/attractions/{id}", put(handlers::update_attraction))
-        .route("/api/admin/attractions/{id}", delete(handlers::delete_attraction))
+        .route("/api/v1/admin/attractions/{id}", put(handlers::update_attraction))
+        .route("/api/v1/admin/attractions/{id}", delete(handlers::delete_attraction))
         .route(
-            "/api/admin/lines",
+            "/api/v1/admin/lines",
             get(line_handlers::list_lines).post(line_handlers::create_line),
         )
-        .route("/api/admin/lines/{id}", put(line_handlers::update_line))
-        .route("/api/admin/lines/{id}", delete(line_handlers::delete_line))
+        .route("/api/v1/admin/lines/{id}", put(line_handlers::update_line))
+        .route("/api/v1/admin/lines/{id}", delete(line_handlers::delete_line))
         .route(
-            "/api/admin/lines/{id}/status",
+            "/api/v1/admin/lines/{id}/status",
             put(line_handlers::update_line_status),
         )
         .route(
-            "/api/admin/lines/{id}/dates",
+            "/api/v1/admin/lines/{id}/dates",
             get(line_date_handlers::list_line_dates).post(line_date_handlers::create_line_date),
         )
         .route(
-            "/api/admin/lines/{id}/dates/{date_id}",
+            "/api/v1/admin/lines/{id}/dates/{date_id}",
             put(line_date_handlers::update_line_date),
         )
         .route(
-            "/api/admin/lines/{id}/dates/{date_id}",
+            "/api/v1/admin/lines/{id}/dates/{date_id}",
             delete(line_date_handlers::delete_line_date),
         )
-        .route("/api/admin/stats/overview", get(stats_handlers::overview))
-        .route("/api/admin/stats/top", get(stats_handlers::top))
-        .route("/api/admin/stats/trend", get(stats_handlers::trend))
-        .route("/api/admin/reports/sales", get(reports_handlers::sales_report))
-        .route("/api/admin/reports/payments", get(reports_handlers::payments_report))
-        .route("/api/admin/orders", get(orders_handlers::list_orders))
-        .route("/api/admin/orders/{id}", get(orders_handlers::order_detail))
-        .route("/api/admin/orders/{id}/refund", post(orders_handlers::refund_order))
-        .route("/api/admin/users", get(users_handlers::list_users))
-        .route("/api/admin/users/{id}/status", patch(users_handlers::update_user_status))
-        .route("/api/admin/payments", get(payments_handlers::list_payments))
-        .route("/api/admin/payments/channels", get(payments_handlers::list_channels))
+        .route("/api/v1/admin/stats/overview", get(stats_handlers::overview))
+        .route("/api/v1/admin/stats/top", get(stats_handlers::top))
+        .route("/api/v1/admin/stats/trend", get(stats_handlers::trend))
+        .route("/api/v1/admin/reports/sales", get(reports_handlers::sales_report))
+        .route("/api/v1/admin/reports/payments", get(reports_handlers::payments_report))
+        .route("/api/v1/admin/orders", get(orders_handlers::list_orders))
+        .route("/api/v1/admin/orders/{id}", get(orders_handlers::order_detail))
+        .route("/api/v1/admin/orders/{id}/refund", post(orders_handlers::refund_order))
+        .route("/api/v1/admin/users", get(users_handlers::list_users))
+        .route("/api/v1/admin/users/{id}/status", patch(users_handlers::update_user_status))
+        .route("/api/v1/admin/payments", get(payments_handlers::list_payments))
+        .route("/api/v1/admin/payments/channels", get(payments_handlers::list_channels))
         .route(
-            "/api/admin/payments/channels/{code}/enabled",
+            "/api/v1/admin/payments/channels/{code}/enabled",
             patch(payments_handlers::update_channel_enabled),
         )
         .route(
-            "/api/admin/flights",
+            "/api/v1/admin/flights",
             get(flight_handlers::list_flights).post(flight_handlers::create_flight),
         )
-        .route("/api/admin/flights/{id}", put(flight_handlers::update_flight))
-        .route("/api/admin/flights/{id}", delete(flight_handlers::delete_flight))
+        .route("/api/v1/admin/flights/{id}", put(flight_handlers::update_flight))
+        .route("/api/v1/admin/flights/{id}", delete(flight_handlers::delete_flight))
         .route(
-            "/api/admin/flights/{id}/status",
+            "/api/v1/admin/flights/{id}/status",
             put(flight_handlers::update_flight_status),
         )
         .route(
-            "/api/admin/hotels",
+            "/api/v1/admin/hotels",
             get(hotel_handlers::list_hotels).post(hotel_handlers::create_hotel),
         )
-        .route("/api/admin/hotels/{id}", put(hotel_handlers::update_hotel))
-        .route("/api/admin/hotels/{id}", delete(hotel_handlers::delete_hotel))
+        .route("/api/v1/admin/hotels/{id}", put(hotel_handlers::update_hotel))
+        .route("/api/v1/admin/hotels/{id}", delete(hotel_handlers::delete_hotel))
         .route(
-            "/api/admin/hotels/{id}/status",
+            "/api/v1/admin/hotels/{id}/status",
             put(hotel_handlers::update_hotel_status),
         )
         .route(
-            "/api/admin/hotels/{id}/rooms",
+            "/api/v1/admin/hotels/{id}/rooms",
             get(hotel_handlers::list_rooms).post(hotel_handlers::create_room),
         )
         .route(
-            "/api/admin/hotels/{id}/rooms/{room_id}",
+            "/api/v1/admin/hotels/{id}/rooms/{room_id}",
             put(hotel_handlers::update_room),
         )
         .route(
-            "/api/admin/hotels/{id}/rooms/{room_id}",
+            "/api/v1/admin/hotels/{id}/rooms/{room_id}",
             delete(hotel_handlers::delete_room),
         )
-        .route("/api/admin/cdn/providers", get(cdn_handlers::list_providers))
-        .route("/api/admin/cdn/providers/{code}", put(cdn_handlers::update_provider))
+        .route("/api/v1/admin/cdn/providers", get(cdn_handlers::list_providers))
+        .route("/api/v1/admin/cdn/providers/{code}", put(cdn_handlers::update_provider))
         .route(
-            "/api/admin/cdn/providers/{code}/status",
+            "/api/v1/admin/cdn/providers/{code}/status",
             patch(cdn_handlers::update_provider_status),
         )
-        .route("/api/admin/cdn/providers/{code}/plan", post(cdn_handlers::provider_plan))
+        .route("/api/v1/admin/cdn/providers/{code}/plan", post(cdn_handlers::provider_plan))
         .layer(ServiceBuilder::new().map_err(no_error).layer(state.jwt.clone()));
 
     Router::new()
-        .route("/api/admin/login", post(login))
+        .route("/api/v1/admin/login", post(login))
         .merge(admin)
         .layer(
             ServiceBuilder::new()
-                .layer(ecat::business::shared::ApiVersionLayer)
                 .map_err(no_error)
                 .layer(CircuitBreakerLayer::new())
                 .map_err(no_error)

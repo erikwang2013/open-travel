@@ -32,9 +32,9 @@ class _DashboardPageState extends State<DashboardPage> {
     });
     try {
       final results = await Future.wait([
-        Api.get('/api/admin/stats/overview'),
-        Api.get('/api/admin/stats/trend'),
-        Api.get('/api/admin/stats/top'),
+        Api.get('/api/v1/admin/stats/overview'),
+        Api.get('/api/v1/admin/stats/trend'),
+        Api.get('/api/v1/admin/stats/top'),
       ]);
       setState(() {
         _overview = (results[0] as Map).cast<String, dynamic>();

@@ -77,7 +77,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
 
   Future<void> _loadChannels() async {
     try {
-      final data = await Api.get('/api/admin/payments/channels');
+      final data = await Api.get('/api/v1/admin/payments/channels');
       if (mounted) {
         setState(() {
           _channels = (data['items'] as List)
@@ -102,7 +102,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
         'channel': ?_channelFilter,
         if (_statusFilter != null) 'status': '$_statusFilter',
       };
-      final data = await Api.get('/api/admin/payments', q);
+      final data = await Api.get('/api/v1/admin/payments', q);
       setState(() {
         _list = (data['items'] as List)
             .map((e) => Payment.fromJson(e as Map<String, dynamic>))
@@ -130,7 +130,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
 
   Future<void> _toggleChannel(Channel c, bool on) async {
     try {
-      await Api.patch('/api/admin/payments/channels/${c.code}/enabled',
+      await Api.patch('/api/v1/admin/payments/channels/${c.code}/enabled',
           {'enabled': on});
       _showSnack('渠道 ${c.code} 已${on ? '启用' : '禁用'}');
       _loadChannels();

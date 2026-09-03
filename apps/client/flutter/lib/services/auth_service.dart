@@ -42,7 +42,7 @@ class AuthService extends ChangeNotifier {
 
   Future<void> login(String email, String password) async {
     final res = await ApiClient.instance.dio.post<Map<String, dynamic>>(
-      '/api/user/login',
+      '/api/v1/user/login',
       data: {'email': email, 'password': password},
     );
     final data = _unwrap(res.data);
@@ -58,7 +58,7 @@ class AuthService extends ChangeNotifier {
 
   Future<void> refreshProfile() async {
     final res = await ApiClient.instance.dio.get<Map<String, dynamic>>(
-      '/api/user/profile',
+      '/api/v1/user/profile',
       options: _authOptions,
     );
     _profile = UserProfile.fromJson(_unwrap(res.data));
@@ -68,7 +68,7 @@ class AuthService extends ChangeNotifier {
   /// PUT {nickname, lang}；data 为空（部分实现只回 code/message）时回退 GET 刷新。
   Future<void> updateProfile({required String nickname, required String lang}) async {
     await ApiClient.instance.dio.put<Map<String, dynamic>>(
-      '/api/user/profile',
+      '/api/v1/user/profile',
       data: {'nickname': nickname, 'lang': lang},
       options: _authOptions,
     );

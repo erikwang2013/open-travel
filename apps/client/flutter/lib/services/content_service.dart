@@ -12,7 +12,7 @@ class ContentService {
 
   Future<List<Destination>> fetchDestinations({int regionId = 1}) async {
     final res = await ApiClient.instance.dio
-        .get<Map<String, dynamic>>('/api/booking/dates', queryParameters: {'region_id': regionId});
+        .get<Map<String, dynamic>>('/api/v1/booking/dates', queryParameters: {'region_id': regionId});
     final data = res.data?['data'];
     if (data is! List) return const [];
     return [
@@ -23,7 +23,7 @@ class ContentService {
 
   Future<List<Attraction>> fetchAttractions({required int destinationId}) async {
     final res = await ApiClient.instance.dio.get<Map<String, dynamic>>(
-      '/api/booking/attractions',
+      '/api/v1/booking/attractions',
       queryParameters: {'destination_id': destinationId},
     );
     final data = res.data?['data'];

@@ -70,7 +70,7 @@ class _LinesPageState extends State<LinesPage> {
 
   Future<void> _loadDests() async {
     try {
-      final data = await Api.get('/api/admin/destinations', {'page': '1', 'page_size': '500'});
+      final data = await Api.get('/api/v1/admin/destinations', {'page': '1', 'page_size': '500'});
       final names = <int, String>{};
       for (final e in data['list'] as List) {
         final d = Destination.fromJson(e as Map<String, dynamic>);
@@ -94,7 +94,7 @@ class _LinesPageState extends State<LinesPage> {
         'page_size': '$_pageSize',
         if (_statusFilter != null) 'status': '$_statusFilter',
       };
-      final data = await Api.get('/api/admin/lines', q);
+      final data = await Api.get('/api/v1/admin/lines', q);
       setState(() {
         _list = (data['items'] as List)
             .map((e) => Line.fromJson(e as Map<String, dynamic>))
@@ -117,7 +117,7 @@ class _LinesPageState extends State<LinesPage> {
 
   Future<void> _toggleStatus(Line l, bool on) async {
     try {
-      await Api.put('/api/admin/lines/${l.id}/status', {'status': on ? 1 : 0});
+      await Api.put('/api/v1/admin/lines/${l.id}/status', {'status': on ? 1 : 0});
       _load();
     } on ApiException catch (e) {
       _showSnack(e.message);
@@ -140,7 +140,7 @@ class _LinesPageState extends State<LinesPage> {
     );
     if (ok != true) return;
     try {
-      await Api.delete('/api/admin/lines/${l.id}');
+      await Api.delete('/api/v1/admin/lines/${l.id}');
       _showSnack('已删除');
       _load();
     } on ApiException catch (e) {

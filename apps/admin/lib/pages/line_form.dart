@@ -105,7 +105,7 @@ class _LineFormPageState extends State<LineFormPage> {
 
   Future<void> _loadDests() async {
     try {
-      final data = await Api.get('/api/admin/destinations', {'page': '1', 'page_size': '500'});
+      final data = await Api.get('/api/v1/admin/destinations', {'page': '1', 'page_size': '500'});
       final list = (data['list'] as List)
           .map((e) => Destination.fromJson(e as Map<String, dynamic>))
           .toList();
@@ -167,9 +167,9 @@ class _LineFormPageState extends State<LineFormPage> {
     });
     try {
       if (widget.line == null) {
-        await Api.post('/api/admin/lines', body);
+        await Api.post('/api/v1/admin/lines', body);
       } else {
-        await Api.put('/api/admin/lines/${widget.line!.id}', body);
+        await Api.put('/api/v1/admin/lines/${widget.line!.id}', body);
       }
       if (mounted) Navigator.pop(context, true);
     } on ApiException catch (e) {

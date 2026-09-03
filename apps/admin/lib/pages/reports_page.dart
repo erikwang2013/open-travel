@@ -40,8 +40,8 @@ class _ReportsPageState extends State<ReportsPage> {
     try {
       final q = {'from': _from, 'to': _to};
       final results = await Future.wait([
-        Api.get('/api/admin/reports/sales', q),
-        Api.get('/api/admin/reports/payments', q),
+        Api.get('/api/v1/admin/reports/sales', q),
+        Api.get('/api/v1/admin/reports/payments', q),
       ]);
       setState(() {
         _sales = ((results[0]['items'] ?? []) as List)

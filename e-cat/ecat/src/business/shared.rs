@@ -1,4 +1,4 @@
-//! open-travel 业务服务共享代码：JWT 密钥解析、Redis 分布式限流、API 版本校验、axum Error 归一。
+//! open-travel 业务服务共享代码：JWT 密钥解析、Redis 分布式限流、雪花 ID 初始化、axum Error 归一。
 
 use axum::body::Body;
 use axum::http::{Request, StatusCode};
@@ -254,64 +254,4 @@ fn rate_key(service: &str, window_secs: u64) -> String {
         .unwrap_or(0);
     let window_start = now / window_secs * window_secs;
     format!("rl:{service}:{window_start}")
-}
-
-/// API 版本校验层：版本经 `X-Api-Version` header 传递（URL 不含版本前缀）。
-/// 强制要求：缺失或非支持版本直接 400，不进入业务处理。
-/// 手写 tower::Layer（error 透传），因为 axum from_fn 要求 inner error
-/// 精确为 Infallible，与本项目 map_err(no_error) 归一后的 NoError 不兼容。
-#[derive(Clone)]
-pub struct ApiVersionLayer;
-
-impl<S> tower::Layer<S> for ApiVersionLayer {
-    type Service = ApiVersionService<S>;
-
-    fn layer(&self, inner: S) -> Self::Service {
-        ApiVersionService { inner }
-    }
-}
-
-#[derive(Clone)]
-pub struct ApiVersionService<S> {
-    inner: S,
-}
-
-impl<S> tower::Service<Request<Body>> for ApiVersionService<S>
-where
-    S: tower::Service<Request<Body>, Response = Response> + Clone + Send + 'static,
-    S::Future: Send + 'static,
-{
-    type Response = Response;
-    type Error = S::Error;
-    type Future = Pin<
-        Box<dyn std::future::Future<Output = Result<Self::Response, Self::Error>> + Send>,
-    >;
-
-    fn poll_ready(
-        &mut self,
-        cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Result<(), Self::Error>> {
-        self.inner.poll_ready(cx)
-    }
-
-    fn call(&mut self, req: Request<Body>) -> Self::Future {
-        let version = req
-            .headers()
-            .get("x-api-version")
-            .and_then(|v| v.to_str().ok())
-            .unwrap_or("");
-        if version != "v1" {
-            return Box::pin(async move {
-                Ok(Response::builder()
-                    .status(StatusCode::BAD_REQUEST)
-                    .header("content-type", "application/json")
-                    .body(Body::from(
-                        r#"{"code":400,"message":"missing or unsupported api version (X-Api-Version: v1 required)","data":null}"#,
-                    ))
-                    .expect("valid response"))
-            });
-        }
-        let fut = self.inner.call(req);
-        Box::pin(async move { fut.await })
-    }
 }

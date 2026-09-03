@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
       _error = null;
     });
     try {
-      final data = await Api.post('/api/admin/login',
+      final data = await Api.post('/api/v1/admin/login',
           {'email': _email.text.trim(), 'password': _password.text});
       AuthService.instance.setToken(data['token'] as String);
     } on ApiException catch (e) {

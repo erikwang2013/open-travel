@@ -1,7 +1,7 @@
 // open-travel hotel-service：酒店搜索/详情（P4-04）
 //
 // 端口约定：user 8001 / booking 8002 / admin 8003 / search 8004 / line 8005 /
-// order 8006 / payment 8007 / 本服务 8008。网关已配置 /api/hotels/ → ecat-hotel:8008。
+// order 8006 / payment 8007 / 本服务 8008。网关已配置 /api/v1/hotels/ → ecat-hotel:8008。
 //
 // 只做查询（下单在 order-service P4-07）；房价本期固定，check_in/check_out
 // 仅展示用、不参与计价。search 结果 Redis 缓存 travel:hotels:{city}:{page}
@@ -342,11 +342,10 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     //   ApiVersion → CircuitBreaker → Security → RateLimit
     // 公开接口无 JWT；限流保留防止滥用。
     let api = Router::new()
-        .route("/api/hotels/search", get(hotels_search))
-        .route("/api/hotels/{id}", get(hotel_detail))
+        .route("/api/v1/hotels/search", get(hotels_search))
+        .route("/api/v1/hotels/{id}", get(hotel_detail))
         .layer(
             ServiceBuilder::new()
-                .layer(ecat::business::shared::ApiVersionLayer)
                 .map_err(no_error)
                 .layer(CircuitBreakerLayer::new())
                 .map_err(no_error)
