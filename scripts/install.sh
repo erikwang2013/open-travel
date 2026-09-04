@@ -42,8 +42,8 @@ cat <<'EOF'
 ✅ Open Travel 安装完成！
 
   网关地址   http://localhost:8082        （探活：/health）
-  管理端     http://localhost:8082/api/admin 通过 API 访问；
-             前端界面见 apps/admin（flutter run -d chrome，端口 8082 已代理 /api/admin）
+  管理端     http://localhost:8082/api/v1/admin 通过 API 访问；
+             前端界面见 apps/admin（flutter run -d chrome，端口 8082 已代理 /api/v1/admin）
   默认账号   admin@travel.local / Admin@123（仅本地开发环境）
 
   常用命令：

@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.4.1] — 2026-09-04
+
+### Fixed
+- 根 README 脚本表补全：新增 `scripts/install.sh`（一键安装）、`up.sh`/`down.sh`、`deploy.sh`、`health_check.sh`、`reconcile_payments.sh`、`env_audit.sh` 条目；删除不存在的 `scripts/release.sh` 行（仅 e-cat/ 下有同名脚本）
+- `scripts/install.sh` 完成横幅管理端地址 `/api/admin` → `/api/v1/admin`，与 1.4.0 API 版本迁入 URL 前缀对齐
+
 ## [1.4.0] — 2026-09-04
 
 ### Changed

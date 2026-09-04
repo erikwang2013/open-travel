@@ -96,10 +96,15 @@ curl "http://localhost:8082/api/v1/booking/attractions?destination_id=1"
 
 | 脚本 | 用途 |
 |------|------|
+| `scripts/install.sh` | 一键安装：环境检查 → 启动全部服务 → 初始化搜索索引 → 健康巡检 → 打印访问地址与账号（幂等，可重复执行） |
+| `scripts/up.sh` / `down.sh` | 启动 / 停止 compose 全部服务 |
+| `scripts/deploy.sh` | 重新构建并重启服务 |
+| `scripts/health_check.sh` | 服务健康巡检 |
 | `scripts/opensearch_init.sh` | 幂等创建 OpenSearch 索引（cjk 分析器） |
 | `scripts/loadtest.sh` | 压测 |
+| `scripts/reconcile_payments.sh` | 支付订单对账 |
+| `scripts/env_audit.sh` | 环境变量与配置审计 |
 | `scripts/cdn_setup.sh` / `cdn_upload.sh` | CDN 配置与上传（`--provider` 八云插件：cloudfront/aliyun/gcp/azure/cloudflare/tencent/huawei/bunny，`--dry-run` 默认） |
-| `scripts/release.sh` | 发布流程辅助 |
 
 ### 后端文档
 
