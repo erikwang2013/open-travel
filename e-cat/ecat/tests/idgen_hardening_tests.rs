@@ -8,6 +8,10 @@ use ecat_data_redis::RedisCache;
 
 const CLAIM_KEY: &str = "ex:idgen:worker-idx";
 
+/// 领号计数器是共享全局状态（`ex:idgen:worker-idx` + idgen_rs 全局单例），
+/// 用例并发跑会互相删计数器导致假失败，故全部经此串行。
+static SERIAL: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
 fn test_redis_url() -> String {
     std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://localhost:6381".into())
 }
@@ -27,6 +31,7 @@ async fn test_cache() -> Option<Arc<RedisCache>> {
 /// 不在进程边界内），此处证明稳定性与不重复。
 #[tokio::test]
 async fn concurrent_ids_share_worker_id_and_are_unique() {
+    let _g = SERIAL.lock().unwrap_or_else(|e| e.into_inner());
     let Some(cache) = test_cache().await else { return };
     let _ = cache.delete(CLAIM_KEY).await;
 
@@ -58,29 +63,31 @@ async fn concurrent_ids_share_worker_id_and_are_unique() {
 /// 导致 PK 碰撞；`redis-cli` 不在 PATH，故用同套件的 `idgen_probe` 子进程探针。
 #[tokio::test]
 async fn distinct_processes_claim_distinct_worker_ids() {
+    let _g = SERIAL.lock().unwrap_or_else(|e| e.into_inner());
     let Some(cache) = test_cache().await else { return };
     let _ = cache.delete(CLAIM_KEY).await;
 
     let exe = std::env::current_exe().expect("测试二进制路径");
     let url = test_redis_url();
-    let mut seen = Vec::new();
-    for _ in 0..4 {
+    let mut claimed: Vec<u16> = Vec::new();
+    for expected in 1..=4u16 {
+        // 探针断言本进程领到的正是 `expected`（计数器清零后第 N 个进程必须是 N）；
+        // 不满足则退出非 0。用退出码而非 stdout——test harness 会吞掉子进程测试的 stdout。
         let out = std::process::Command::new(&exe)
             .arg("idgen_probe")
             .arg("--exact")
             .arg("--ignored")
             .env("REDIS_URL", &url)
+            .env("IDGEN_EXPECTED_WORKER", expected.to_string())
             .output()
             .expect("探针子进程启动失败");
-        let s = String::from_utf8_lossy(&out.stdout);
-        let line = s.lines().find(|l| l.starts_with("worker=")).unwrap_or("");
-        let Some(v) = line.strip_prefix("worker=").and_then(|v| v.parse::<u16>().ok()) else {
-            panic!("探针未报出 worker id（子进程 exit {:?}，stderr {}）",
-                out.status.code(),
+        if !out.status.success() {
+            panic!("第 {expected} 个进程未领到预期 worker id（stderr {}）",
                 String::from_utf8_lossy(&out.stderr));
-        };
-        seen.push(v);
+        }
+        claimed.push(expected);
     }
+    let seen = claimed;
     let uniq: std::collections::HashSet<u16> = seen.iter().copied().collect();
     assert_eq!(
         uniq.len(),
@@ -93,7 +100,8 @@ async fn distinct_processes_claim_distinct_worker_ids() {
     assert!(c > 0 || seen.is_empty(), "计数器 key 应存在（实际 {c}）");
 }
 
-/// 子进程探针：领号后打印 worker id。`#[ignore]` 保证只经上方 `Command` 显式调用。
+/// 子进程探针：领号后断言正是期望值（计数器清零后第 N 个进程必须是 N），不满足即非 0 退出。
+/// `#[ignore]` 保证只经上方 `Command` 显式调用。
 #[test]
 #[ignore]
 fn idgen_probe() {
@@ -103,8 +111,14 @@ fn idgen_probe() {
         .expect("测试运行时构建失败");
     let id = rt.block_on(snowflake_id());
     let w = idgen_rs::id_helper::extract_id_info(id).worker_id;
-    println!("worker={w}");
-    eprintln!("worker={w}");
+    let want: u16 = std::env::var("IDGEN_EXPECTED_WORKER")
+        .ok()
+        .and_then(|v| v.parse().ok())
+        .expect("IDGEN_EXPECTED_WORKER 未设置");
+    assert_eq!(
+        w, want,
+        "worker id 碰撞：第 {want} 个进程领到 {w}，与已领号进程重复"
+    );
 }
 
 /// 风险 2：领号通道不通必须拒绝启动，不得降级到 worker_id=0 继续写库。
