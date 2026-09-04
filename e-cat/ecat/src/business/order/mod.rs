@@ -35,7 +35,7 @@ use ecat_tracing::TracingLayer;
 use ecat_transport_http::HttpServer;
 use serde::{Deserialize, Serialize};
 use ecat::business::shared::{
-    connect_kafka, connect_primary, init_id_gen, jwt_secret, no_error, publish_audit, RedisRateLimitLayer,
+    connect_kafka, connect_primary, jwt_secret, no_error, publish_audit, RedisRateLimitLayer,
 };
 use std::sync::Arc;
 use std::time::Duration;
@@ -192,7 +192,6 @@ pub(crate) fn api_router(state: AppState) -> Router {
 }
 
 pub async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    init_id_gen();
     let jwt = JwtAuthLayer::new(jwt_secret()).expect("valid jwt secret");
     let state = AppState {
         db: connect_primary().await,

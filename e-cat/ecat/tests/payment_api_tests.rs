@@ -86,16 +86,10 @@ async fn callback(
 }
 
 /// 依赖 3308 容器库；连接失败跳过（离线仍可跑）。
-/// 雪花生成器进程内仅初始化一次（Once 防并发测试线程同时 init 撞 idgen_rs 内部 OnceLock）。
-static IDGEN_INIT: std::sync::Once = std::sync::Once::new();
-fn ensure_id_gen() {
-    IDGEN_INIT.call_once(|| ecat::business::shared::init_id_gen());
-}
 
 async fn connect_test_db() -> Option<Arc<SqlxClient>> {
     match SqlxClient::connect("mysql://root:travel_dev@localhost:3308/travel?charset=utf8mb4").await {
         Ok(db) => {
-            ensure_id_gen();
             Some(Arc::new(db))
         }
         Err(e) => {
@@ -107,7 +101,7 @@ async fn connect_test_db() -> Option<Arc<SqlxClient>> {
 
 /// 直接插入一条待支付订单（支付路径只读 travel_orders 的 status/amount_cents）。
 async fn insert_order(db: &SqlxClient, user_id: u64, amount_cents: u64) -> u64 {
-    let order_id = idgen_rs::id_helper::next_id();
+    let order_id = ecat::business::shared::snowflake_id().await;
     db.execute_with(
         "INSERT INTO travel_orders (id, user_id, order_type, product_id, product_snapshot, \
          destination_id, booking_id, status, amount_cents, expire_at) \

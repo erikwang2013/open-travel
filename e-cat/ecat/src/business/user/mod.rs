@@ -31,7 +31,7 @@ use ecat_transport_http::HttpServer;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use ecat_mq_kafka::KafkaMq;
-use ecat::business::shared::{connect_kafka, connect_primary, init_id_gen, jwt_secret, no_error, publish_audit, RedisRateLimitLayer};
+use ecat::business::shared::{connect_kafka, connect_primary, jwt_secret, no_error, publish_audit, RedisRateLimitLayer};
 use std::sync::Arc;
 use tower::ServiceBuilder;
 
@@ -179,7 +179,7 @@ pub(crate) async fn register(
     let lang = body.lang.as_deref().unwrap_or("en");
     // 主键去 AUTO_INCREMENT 后显式生成雪花 id；预查已排除重复，
     // INSERT 仍失败按重复处理（唯一索引兜底，竞态安全）
-    let user_id = idgen_rs::id_helper::next_id();
+    let user_id = ecat::business::shared::snowflake_id().await;
     match db
         .execute_with(
             "INSERT INTO travel_users (id, email, password_hash, lang) VALUES (?, ?, ?, ?)",
@@ -428,7 +428,6 @@ async fn connect_cache() -> Option<Arc<RedisCache>> {
 }
 
 pub async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    init_id_gen();
     let jwt = JwtAuthLayer::new(jwt_secret()).expect("valid jwt secret");
     let state = AppState {
         db: connect_primary().await,

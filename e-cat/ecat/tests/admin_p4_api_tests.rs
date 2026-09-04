@@ -54,18 +54,12 @@ fn unique_name(prefix: &str) -> String {
 }
 
 /// 本机 MySQL（docker compose 映射 3308）；连不上返回 None，测试跳过。
-/// 雪花生成器进程内仅初始化一次（Once 防并发测试线程同时 init 撞 idgen_rs 内部 OnceLock）。
-static IDGEN_INIT: std::sync::Once = std::sync::Once::new();
-fn ensure_id_gen() {
-    IDGEN_INIT.call_once(|| ecat::business::shared::init_id_gen());
-}
 
 async fn real_db() -> Option<SqlxClient> {
     let url = std::env::var("TEST_DATABASE_URL")
         .unwrap_or_else(|_| "mysql://root:travel_dev@localhost:3308/travel".into());
     match SqlxClient::connect(&url).await {
         Ok(db) => {
-            ensure_id_gen();
             Some(db)
         }
         Err(e) => {
@@ -78,7 +72,7 @@ async fn real_db() -> Option<SqlxClient> {
 /// 直接 SQL 建测试用户，返回 (id, email)。主键已去 AUTO_INCREMENT：显式生成雪花 id。
 async fn insert_test_user(db: &SqlxClient) -> (u64, String) {
     let email = format!("p4-user-{}@example.com", unique_name(""));
-    let id = idgen_rs::id_helper::next_id();
+    let id = ecat::business::shared::snowflake_id().await;
     let _ = db
         .execute_with(
             "INSERT INTO travel_users (id, email, password_hash) VALUES (?, ?, 'x')",
@@ -97,7 +91,7 @@ async fn orders_list_filter_and_pagination() {
     let (uid, email) = insert_test_user(&st.db.clone().unwrap().as_ref()).await;
     let mut ids = Vec::new();
     for status in [0, 1] {
-        let oid = idgen_rs::id_helper::next_id();
+        let oid = ecat::business::shared::snowflake_id().await;
         let affected = st
             .db
             .as_ref()
@@ -208,7 +202,7 @@ async fn orders_detail_and_refund_restores_stock() {
             &[json!(date_id)],
         )
         .await;
-    let order_id = idgen_rs::id_helper::next_id();
+    let order_id = ecat::business::shared::snowflake_id().await;
     let _ = db
         .execute_with(
             "INSERT INTO travel_orders (id, user_id, order_type, product_id, product_snapshot, \
@@ -221,7 +215,7 @@ async fn orders_detail_and_refund_restores_stock() {
         .execute_with(
             "INSERT INTO travel_payments (id, order_id, channel_code, amount_cents, status, txn_no, paid_at) \
              VALUES (?, ?, 'card', 20000, 1, ?, NOW())",
-            &[json!(idgen_rs::id_helper::next_id()), json!(order_id), json!(txn)],
+            &[json!(ecat::business::shared::snowflake_id().await), json!(order_id), json!(txn)],
         )
         .await;
 
@@ -252,7 +246,7 @@ async fn orders_detail_and_refund_restores_stock() {
     let (status, body) = body_json(refund_order(State(st.clone()), admin_guard(), Path(order_id)).await).await;
     assert_eq!(status, StatusCode::CONFLICT, "{body}");
     // 待支付订单退款 → 409
-    let pending_id = idgen_rs::id_helper::next_id();
+    let pending_id = ecat::business::shared::snowflake_id().await;
     let _ = db
         .execute_with(
             "INSERT INTO travel_orders (id, user_id, order_type, product_id, product_snapshot, \
@@ -611,7 +605,7 @@ async fn payments_list_and_channels_toggle() {
     st.db.as_ref().unwrap().execute_with(
         "INSERT INTO travel_payments (id, order_id, channel_code, amount_cents, status, txn_no, created_at) \
          VALUES (?, 0, 'stripe', 100, 1, ?, NOW())",
-        &[json!(idgen_rs::id_helper::next_id()), json!(txn)],
+        &[json!(ecat::business::shared::snowflake_id().await), json!(txn)],
     ).await.unwrap();
 
     // 列表：channel 过滤命中，字段完整

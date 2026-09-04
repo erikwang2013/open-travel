@@ -200,7 +200,7 @@ pub(crate) async fn create_payment(
         TXN_SEQ.fetch_add(1, Ordering::Relaxed)
     );
     // 主键去 AUTO_INCREMENT 后显式生成雪花 id
-    let payment_id = idgen_rs::id_helper::next_id();
+    let payment_id = ecat::business::shared::snowflake_id().await;
     if let Err(e) = db
         .execute_with(
             "INSERT INTO travel_payments (id, order_id, channel_code, amount_cents, status, txn_no) \

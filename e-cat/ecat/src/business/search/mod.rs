@@ -27,7 +27,7 @@ use ecat_tracing::TracingLayer;
 use ecat_transport_http::HttpServer;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use ecat::business::shared::{connect_primary, connect_replica, init_id_gen, no_error, RedisRateLimitLayer};
+use ecat::business::shared::{connect_primary, connect_replica, no_error, RedisRateLimitLayer};
 use std::sync::Arc;
 use std::time::Duration;
 use tower::ServiceBuilder;
@@ -485,7 +485,7 @@ async fn log_search(state: &AppState, keyword: &str, lang: &str, count: u64) {
     let Some(db) = &state.db else { return };
     match db.query_with(
         "INSERT INTO travel_searches (id, keyword, lang, result_count) VALUES (?, ?, ?, ?)",
-        &[json!(idgen_rs::id_helper::next_id()), json!(keyword), json!(lang), json!(count)],
+        &[json!(ecat::business::shared::snowflake_id().await), json!(keyword), json!(lang), json!(count)],
     ).await {
         Ok(_) => {}
         Err(e) => tracing::warn!(error = %e, "search log insert failed"),
@@ -658,7 +658,6 @@ fn connect_os() -> Option<Arc<OpenSearchClient>> {
 }
 
 pub async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    init_id_gen();
     let state = AppState {
         db: connect_primary().await,
         replica: connect_replica().await,

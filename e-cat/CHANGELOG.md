@@ -2,6 +2,10 @@
 
 ## [1.4.1] — 2026-09-04
 
+### Changed
+- 雪花 worker id 从静态 `ECAT_WORKER_ID` 改为 Redis `INCR` 原子自动领号：静态 env 在 `replicas: 3` 等多副本下必然撞号，现由 `ex:idgen:worker-idx` 单调计数器分配，`assert!(idx < 64)` 防 `idgen_rs` 位宽静默溢出（`fast_generator.rs` 的 `(worker_id << seq_bits)` 无掩码，64+ 会溢入时间戳位造成 PK 碰撞）；删除 docker-compose 9 处 env 配置；计数器污染（非整数残留使 `INCR` 报 `value is not an integer`、砖掉全部号位）增加 DEL + 重试一次自愈
+- 雪花取号收敛为唯一入口 `shared::snowflake_id()`：删除 `init_id_gen()` 及各 service `run()` 首行调用（原「必须首行调用」纯约定），改 `tokio::sync::OnceCell` 守卫（`std::sync::OnceLock` 在闭包 panic 后永久置为已初始化），`try_next_id()` 失败时带项目诊断上下文 panic 而非 `idgen_rs` 的裸 `ID generator not initialized.`
+
 ### Fixed
 - 根 README 脚本表补全：新增 `scripts/install.sh`（一键安装）、`up.sh`/`down.sh`、`deploy.sh`、`health_check.sh`、`reconcile_payments.sh`、`env_audit.sh` 条目；删除不存在的 `scripts/release.sh` 行（仅 e-cat/ 下有同名脚本）
 - `scripts/install.sh` 完成横幅管理端地址 `/api/admin` → `/api/v1/admin`，与 1.4.0 API 版本迁入 URL 前缀对齐

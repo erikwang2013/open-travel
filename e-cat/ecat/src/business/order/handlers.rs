@@ -366,7 +366,7 @@ pub(crate) async fn create_order(
 
     // 4. 插入订单：amount = price × qty，destination_id 仅线路有意义（航班/酒店记 0）。
     //    主键去 AUTO_INCREMENT 后显式生成雪花 id
-    let order_id = idgen_rs::id_helper::next_id();
+    let order_id = ecat::business::shared::snowflake_id().await;
     let insert = db
         .execute_with(
             "INSERT INTO travel_orders \

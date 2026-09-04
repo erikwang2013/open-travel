@@ -90,7 +90,7 @@ pub(crate) async fn create_line_date(
         }
     }
     // 主键去 AUTO_INCREMENT 后显式生成雪花 id（pick 白名单不含 id，body 无法覆盖）
-    let new_id = idgen_rs::id_helper::next_id();
+    let new_id = ecat::business::shared::snowflake_id().await;
     let mut insert_cols = vec!["id".to_string(), "line_id".to_string()];
     insert_cols.extend(cols);
     let mut insert_vals = vec![json!(new_id), json!(line_id)];

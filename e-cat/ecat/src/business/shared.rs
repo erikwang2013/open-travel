@@ -12,10 +12,21 @@ use serde_json::json;
 use std::convert::Infallible;
 use std::fmt;
 use std::pin::Pin;
-use std::sync::Arc;
+use std::sync::{Arc, LazyLock};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 const DEV_JWT_SECRET: &str = "dev-only-change-me-32-bytes-minimum-secret";
+
+/// 雪花 ID 6-bit worker 域上限（0..63）。`idgen_rs` 不校验 worker id 是否超出位宽，
+/// 超界会静默溢出进时间戳位、产生跨进程 PK 碰撞，故由本层强制断言。
+const WORKER_ID_MAX: u64 = 64;
+/// worker 领号计数器 key。刻意不与既有业务 key（`rl:*`、`hotwords:*`）共用命名空间；
+/// 计数器值必须是整数，被其他组件写入非整数会让 `INCR` 失败，`claim_worker_id` 有
+/// 自清理兜底。
+/// worker id 会随重启漂移（user 首次领 0、重启后领 9），**不代表服务身份**：已发 id
+/// 嵌的是旧 worker id、新 id 嵌新 id，位段不同不冲突（`init_with_capacity` 幂等）。
+/// 64 个号位是**一次性预算**，不回收——反复重启/崩溃会耗尽，耗尽后按位宽断言 fail-fast。
+const WORKER_CLAIM_KEY: &str = "ex:idgen:worker-idx";
 
 /// 连接 MySQL 主库（DATABASE_URL，写路径）。失败返回 None 并告警，不阻塞服务启动。
 pub async fn connect_primary() -> Option<Arc<SqlxClient>> {
@@ -112,19 +123,81 @@ pub fn jwt_secret() -> String {
     }
 }
 
-/// 雪花 ID 生成器初始化：worker id 取 ECAT_WORKER_ID（缺省 0）。
-/// 单机多服务每个进程须配不同 id（config/docker-compose.yml）。idgen_rs 全局单例且
-/// init 幂等（首调生效），重复调用无害；未 init 时 next_id() panic，各 run() 必须首行调用。
-pub fn init_id_gen() {
-    let worker_id = std::env::var("ECAT_WORKER_ID")
-        .ok()
-        .and_then(|v| v.parse::<u16>().ok())
-        .unwrap_or(0);
+/// 雪花 ID 唯一入口：首次取号时在异步运行时内领 worker id 并初始化生成器，随后取号。
+/// 取代散落在各 handler 的 `idgen_rs::id_helper::next_id()`——后者在生成器未初始化时
+/// panic 且堆栈离根因很远；此函数把初始化与取号收敛到一处，漏初始化当场炸在入口。
+///
+/// 取号路径必须异步：领号是一次 Redis `INCR`，同步入口只能 `block_on`，而
+/// `block_on` 不能在正在驱动任务的线程上执行（单线程 tokio 运行时、`#[tokio::test]`
+/// 直接 panic）。所有调用点本就在请求/测试的异步上下文中，故直接 `.await`。
+pub async fn snowflake_id() -> u64 {
+    if !idgen_rs::id_helper::is_initialized() {
+        // tokio::sync::OnceCell 而非 std OnceLock：后者在闭包 panic 时永久置为已
+        // 初始化，后续取号静默拿 None；此处失败即进程中止，不留脏状态。
+        static INIT: LazyLock<tokio::sync::OnceCell<()>> =
+            LazyLock::new(|| tokio::sync::OnceCell::new());
+        INIT.get_or_init(
+            || async {
+                let _ = claim_worker_id().await.expect(
+                    "worker id 领号失败（不可降级，详见 claim_worker_id）"
+                );
+            },
+        )
+        .await;
+    }
+    // try_next_id 而非 next_id：后者失败时消息是 idgen_rs 自带的
+    // "ID generator not initialized."，不带本项目的诊断上下文。
+    idgen_rs::id_helper::try_next_id().unwrap_or_else(|msg| {
+        panic!(
+            "雪花 ID 生成器未初始化: {msg}。snowflake_id() 首次调用会经 Redis 领号，\
+             反复失败说明领号通道不通（见 connect_worker_claim_redis）"
+        )
+    })
+}
+
+/// 从 Redis 原子领一个全局唯一的雪花 worker id 并初始化生成器。
+/// `INCR` 而非 `GET`+`SET`——后者两个进程会同时读到 None 然后都写成功，等于没修。
+/// 失败即 panic 拒绝启动：worker id 唯一性只能由 Redis 原子操作保证，降级到 0 会让
+/// 多进程静默 PK 碰撞（不可逆数据损坏）；「雪花不可用导致服务起不来」可观测可恢复。
+/// 与限流层的 fail-open 语义相反，故不复用 `connect_cache()`。
+pub async fn claim_worker_id() -> Result<u16, String> {
+    // pub 仅为集成测试：无法重置 idgen_rs 全局单例，fail-closed 行为直测本函数。
+    let cache = connect_worker_claim_redis().await?;
+    // 先清污染值：key 上若残留非整数（其他组件复用同名 key），`INCR` 报
+    // "value is not an integer" 而失败——那会让 64 个号位全部领不到号。
+    // 计数器是纯单调计数器，清掉后重新计数只影响 worker id 分配顺序，不影响唯一性
+    // （唯一性来自 INCR 原子性 + 6-bit 位宽断言），故失败即清理后继续。
+    let idx = match cache.increment(WORKER_CLAIM_KEY, 1).await {
+        Ok(n) => n,
+        Err(e) => {
+            if let Err(c) = cache.delete(WORKER_CLAIM_KEY).await {
+                return Err(format!("worker id 计数器非整数，清理失败（{e}；清理错误 {c}）"));
+            }
+            cache.increment(WORKER_CLAIM_KEY, 1)
+                .await
+                .map_err(|e| e.to_string())?
+        }
+    };
     assert!(
-        worker_id < 64,
-        "ECAT_WORKER_ID 超出 6-bit worker 域（0..63），当前 {worker_id}；超界会静默别名导致跨进程 PK 碰撞"
+        idx < WORKER_ID_MAX as i64,
+        "可用 worker id 已耗尽（领到 {idx}，上限 {WORKER_ID_MAX}）；扩容需改大 max_nodes，\
+         禁止 % 取模——回绕后与已领号进程同毫秒序列碰撞"
     );
-    idgen_rs::id_helper::init_with_capacity(worker_id, 64, 10_000);
+    tracing::info!(worker_id = idx, "雪花 worker id 已领");
+    idgen_rs::id_helper::init_with_capacity(idx as u16, WORKER_ID_MAX as u32, 10_000);
+    Ok(idx as u16)
+}
+
+/// 领号专用 Redis 连接。不重试——失败发生在首次取号（即第一次 INSERT 时），进程
+/// panic 可观测，重试无意义；与限流的 fail-open 连接互不影响。
+/// pub 仅为集成测试断言 fail-closed：测试无法重置 idgen_rs 全局单例，故直测本函数
+/// 的 Err 路径而非 `#[should_panic]`。
+pub async fn connect_worker_claim_redis() -> Result<Arc<RedisCache>, String> {
+    let url = std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://localhost:6379".into());
+    RedisCache::connect(&url)
+        .await
+        .map(Arc::new)
+        .map_err(|e| e.to_string())
 }
 
 /// e-cat 中间件的 Error 非 Infallible，无法满足 axum Router::layer 的 Into<Infallible>

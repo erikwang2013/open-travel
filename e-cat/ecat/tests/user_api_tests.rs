@@ -203,18 +203,12 @@ async fn update_profile_db_unavailable_503() {
 }
 
 /// 本机 MySQL（docker compose 映射 3308）；连不上返回 None，测试跳过。
-/// 雪花生成器进程内仅初始化一次（Once 防并发测试线程同时 init 撞 idgen_rs 内部 OnceLock）。
-static IDGEN_INIT: std::sync::Once = std::sync::Once::new();
-fn ensure_id_gen() {
-    IDGEN_INIT.call_once(|| ecat::business::shared::init_id_gen());
-}
 
 async fn user_real_db() -> Option<SqlxClient> {
     let url = std::env::var("TEST_DATABASE_URL")
         .unwrap_or_else(|_| "mysql://root:travel_dev@localhost:3308/travel".into());
     match SqlxClient::connect(&url).await {
         Ok(db) => {
-            ensure_id_gen();
             Some(db)
         }
         Err(e) => {
@@ -232,7 +226,7 @@ async fn update_profile_updates_nickname_and_lang() {
     let _ = db
         .execute_with(
             "INSERT INTO travel_users (id, email, password_hash) VALUES (?, ?, ?)",
-            &[json!(idgen_rs::id_helper::next_id()), json!(email), json!(hash)],
+            &[json!(ecat::business::shared::snowflake_id().await), json!(email), json!(hash)],
         )
         .await;
     let rows = db
@@ -278,7 +272,7 @@ async fn disabled_user_jwt_request_403() {
     let _ = db
         .execute_with(
             "INSERT INTO travel_users (id, email, password_hash, status) VALUES (?, ?, 'x', 1)",
-            &[json!(idgen_rs::id_helper::next_id()), json!(email)],
+            &[json!(ecat::business::shared::snowflake_id().await), json!(email)],
         )
         .await;
     let rows = db.query_with("SELECT id FROM travel_users WHERE email = ?", &[json!(email)]).await.unwrap();
@@ -321,7 +315,6 @@ async fn ready_reports_degraded_without_datasources() {
 #[tokio::test]
 async fn register_assigns_nonzero_increasing_snowflake_ids() {
     let Some(db) = user_real_db().await else { return };
-    ensure_id_gen();
     let pid = std::process::id();
     let state = AppState {
         db: Some(Arc::new(db)),

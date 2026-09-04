@@ -30,7 +30,7 @@ use ecat_tracing::TracingLayer;
 use ecat_transport_http::HttpServer;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use ecat::business::shared::{connect_primary, connect_replica, init_id_gen, jwt_secret, no_error, RedisRateLimitLayer};
+use ecat::business::shared::{connect_primary, connect_replica, jwt_secret, no_error, RedisRateLimitLayer};
 use std::sync::Arc;
 use std::time::Duration;
 use tower::ServiceBuilder;
@@ -413,7 +413,6 @@ async fn connect_cache() -> Option<Arc<RedisCache>> {
 }
 
 pub async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    init_id_gen();
     let state = AppState {
         db: connect_primary().await,
         replica: connect_replica().await,

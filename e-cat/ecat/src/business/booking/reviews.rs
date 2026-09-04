@@ -177,7 +177,7 @@ pub(crate) async fn create_review(
         json!(comment)
     };
     // 主键去 AUTO_INCREMENT 后显式生成雪花 id
-    let review_id = idgen_rs::id_helper::next_id();
+    let review_id = ecat::business::shared::snowflake_id().await;
     if let Err(e) = db
         .query_with(
             "INSERT INTO travel_reviews (id, user_id, attraction_id, destination_id, rating, content, lang) \

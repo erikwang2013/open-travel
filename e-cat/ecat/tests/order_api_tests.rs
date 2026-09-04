@@ -20,16 +20,10 @@ use service::*;
 use ecat::business::shared::{connect_primary, jwt_secret};
 use std::sync::Arc;
 
-/// 雪花生成器进程内仅初始化一次（Once 防并发测试线程同时 init 撞 idgen_rs 内部 OnceLock）。
-static IDGEN_INIT: std::sync::Once = std::sync::Once::new();
-fn ensure_id_gen() {
-    IDGEN_INIT.call_once(|| ecat::business::shared::init_id_gen());
-}
 
-/// 连主库并确保雪花生成器已 init（下单 handler 会生成 id）。
+/// 连主库（下单 handler 会生成 id，雪花生成器首次取号时自初始化）。
 async fn real_db() -> Option<Arc<SqlxClient>> {
     let db = connect_primary().await?;
-    ensure_id_gen();
     Some(db)
 }
 

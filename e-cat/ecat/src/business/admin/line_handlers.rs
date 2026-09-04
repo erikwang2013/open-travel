@@ -317,7 +317,7 @@ pub(crate) async fn create_line(
         vals.push(v);
     }
     // 主键去 AUTO_INCREMENT 后显式生成雪花 id（pick 白名单不含 id，body 无法覆盖）
-    let new_id = idgen_rs::id_helper::next_id();
+    let new_id = ecat::business::shared::snowflake_id().await;
     cols.insert(0, "id".into());
     vals.insert(0, json!(new_id));
     let sql = format!(
