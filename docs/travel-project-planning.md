@@ -1,6 +1,6 @@
 # Open-Travel 全球旅游平台 — 项目规划
 
-> 技术栈：**Rust e-cat 微服务框架**（v3.0.2 · 51 crates）· Flutter 多端 + HarmonyOS · MySQL + Redis + OpenSearch
+> 技术栈：**Rust e-cat 微服务框架**（v3.0.3 · 52 crates）· Flutter 多端 + HarmonyOS · MySQL + Redis + OpenSearch
 > 覆盖 12+ 语种的全平台 i18n 适配
 
 ---
@@ -15,7 +15,7 @@ open-travel/
 │   │   ├── harmonyos/    # 鸿蒙端（ArkUI）
 │   │   └── (未来) wechat-mini/  # 微信小程序
 │   └── admin/            # 管理端（Flutter Web）
-├── e-cat/                # Rust 微服务框架「一只猫」，v3.0.2，51 crates
+├── e-cat/                # Rust 微服务框架「一只猫」，v3.0.3，52 crates
 │   ├── ecat/                 # 应用生命周期：AppBuilder → App
 │   ├── ecat-transport-http/  # HTTP（axum）
 │   ├── ecat-transport-grpc/  # gRPC（tonic）
@@ -73,7 +73,7 @@ open-travel/
 
 ### 3.1 框架事实
 
-- e-cat（中文名「一只猫」）对标 go-kratos/kratos v3，版本 v3.0.2，共 51 crates，位于仓库 `e-cat/` 子目录。
+- e-cat（中文名「一只猫」）对标 go-kratos/kratos v3，版本 v3.0.3，共 52 crates，位于仓库 `e-cat/` 子目录。
 - **HTTP**：axum（`ecat-transport-http`）；**gRPC**：tonic（`ecat-transport-grpc`）；Protobuf：prost + tonic-build。
 - **中间件**（HTTP/gRPC 共用同一套 tower::Layer）：RecoveryLayer（捕获 panic）、TracingLayer（trace_id 注入）、LoggingLayer、TimeoutLayer、RateLimitLayer、SecurityLayer（攻击检测）、CircuitBreaker（熔断）、Auth（JWT/API Key）、MetricsLayer（Prometheus）。
 - **数据层**：`ecat-data-sqlx`（MySQL/PostgreSQL/SQLite/TiDB）、`ecat-data-redis`、`ecat-data-opensearch`。

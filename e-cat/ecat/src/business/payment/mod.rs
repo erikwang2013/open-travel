@@ -9,7 +9,7 @@
 // 渠道抽象（P4-15）：本期所有渠道统一走模拟实现（sandbox 收银台 + 模拟验签）；
 //      真实渠道接入点：handlers::create_payment 内按 channel_code 分发替换。
 //
-// 中间件链（外层 → 内层）：ApiVersion → CircuitBreaker → Security → RateLimit
+// 中间件链（外层 → 内层）：CircuitBreaker → Security → RateLimit
 // → [仅 /api/v1/payments] JWT。JWT 与 user-service 同一密钥，claims.sub 为 user_id。
 use axum::extract::State;
 use axum::http::StatusCode;

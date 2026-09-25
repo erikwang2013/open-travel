@@ -16,7 +16,7 @@
 // 超时释放：惰性（列表/详情前扫 expire_at < NOW() 且 status=0 → 置 4 并回补
 // 余位与 Redis）+ 启动后台任务每 60s 扫一轮。
 //
-// 中间件链（外层 → 内层）：ApiVersion → CircuitBreaker → Security → RateLimit
+// 中间件链（外层 → 内层）：CircuitBreaker → Security → RateLimit
 // → [仅 /api/v1/orders/*] JWT。JWT 与 user-service 同一密钥，claims.sub 为 user_id。
 use axum::extract::State;
 use axum::http::StatusCode;

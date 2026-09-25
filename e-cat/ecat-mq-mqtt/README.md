@@ -1,6 +1,6 @@
 # ecat-mq-mqtt
 
-<p align="center"><img src="../../docs/mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><img src="../../docs/mascot.svg" alt="Dora 小途 — Open Travel 吉祥物" width="180"></p>
 
 
 [MQTT](https://mqtt.org) message queue backend for the e-cat ecosystem, powered by [rumqttc](https://crates.io/crates/rumqttc).

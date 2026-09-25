@@ -1,7 +1,7 @@
 <!-- Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz -->
 # Open Travel — Global Travel Platform
 
-<p align="center"><img src="../docs/mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><img src="../docs/mascot.svg" alt="Dora 小途 — Open Travel 吉祥物" width="180"></p>
 
 
 [简体中文](README.md) | English | [日本語](../docs/i18n/ja/README.md) | [한국어](../docs/i18n/ko/README.md) | [Русский](../docs/i18n/ru/README.md) | [Deutsch](../docs/i18n/de/README.md) | [Français](../docs/i18n/fr/README.md) | [Español](../docs/i18n/es/README.md) | [Português](../docs/i18n/pt/README.md) | [हिन्दी](../docs/i18n/hi/README.md) | [العربية](../docs/i18n/ar/README.md) | [বাংলা](../docs/i18n/bn/README.md) | [Bahasa Indonesia](../docs/i18n/id/README.md)
@@ -10,11 +10,11 @@
 
 ## Overview
 
-Open Travel is a global travel platform monorepo. The backend is built on **e-cat** (a.k.a. 一只猫), a Rust microservices framework (v3.0.3 · 51 crates) inspired by [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 — API-first development, pluggable component architecture, and a unified HTTP/gRPC middleware abstraction.
+Open Travel is a global travel platform monorepo. The backend is built on **e-cat** (a.k.a. 一只猫), a Rust microservices framework (v3.0.3 · 52 crates) inspired by [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 — API-first development, pluggable component architecture, and a unified HTTP/gRPC middleware abstraction.
 
 | Dimension | Description |
 | :--- | :--- |
-| **Backend** | e-cat (Rust): HTTP/axum + gRPC/tonic, 51-crate microservice ecosystem |
+| **Backend** | e-cat (Rust): HTTP/axum + gRPC/tonic, 52-crate microservice ecosystem |
 | **Services** | user-service (:8001) through payment-service (:8009) — 9 services; business logic in `e-cat/ecat/src/business/`, service entries in `e-cat/ecat/src/bin/` |
 | **Gateway** | Nginx (`config/nginx.conf`), prefix-based routing |
 | **Clients** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS) |
@@ -29,9 +29,9 @@ open-travel/
 ├── apps/                  # client/ multi-platform clients + admin/ admin console
 ├── config/                # docker-compose.yml, nginx.conf, schema.sql, opensearch.yml
 ├── docs/                  # Planning docs, integration/loadtest reports, SVG diagrams, i18n
-├── scripts/               # opensearch_init / loadtest / cdn_setup / cdn_upload / release
+├── scripts/               # install / up·down / deploy / health_check / opensearch_init / loadtest / reconcile_payments / env_audit / cdn_setup·cdn_upload / gen_arb + seed data
 └── e-cat/                 # e-cat framework + business services (single Cargo workspace)
-    ├── ecat*/             # 51 ecat-* framework crates
+    ├── ecat*/             # 52 ecat-* framework crates
     ├── ecat/              # Main framework crate: facade + business modules (src/business/) + service entries (src/bin/)
     ├── config/            # Framework config examples
     └── examples/          # Framework examples

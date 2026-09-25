@@ -105,7 +105,7 @@
   <text x="681" y="608" text-anchor="middle" class="t-s">बहुभाषी खोज · एकत्रीकरण</text>
   <rect x="786" y="290" width="168" height="130" class="box"/>
   <text x="870" y="322" text-anchor="middle" class="t-m">JWT प्रमाणीकरण</text>
-  <text x="870" y="346" text-anchor="middle" class="t-s">OAuth2 · टोकन सत्यापन</text>
+  <text x="870" y="346" text-anchor="middle" class="t-s">JWT HS256 · टोकन सत्यापन</text>
   <text x="870" y="368" text-anchor="middle" class="t-s">रोल अनुमतियाँ RBAC</text>
   <rect x="786" y="440" width="168" height="130" class="box"/>
   <text x="870" y="472" text-anchor="middle" class="t-m">TLS एन्क्रिप्शन</text>

@@ -1,7 +1,7 @@
 // open-travel admin-service：管理端登录（JWT role=admin）
 //
 // 端口 8003。密码方案与 user-service 完全一致（bcrypt + JWT），claims 增加
-// role="admin"，sub 为 admin id。中间件链同 user-service：ApiVersion →
+// role="admin"，sub 为 admin id。中间件链同 user-service：
 // CircuitBreaker → Security → RedisRateLimit；login 公开（限流防暴力）。
 // 防枚举：邮箱不存在时仍对固定 hash 执行一次 bcrypt verify，抹平时序差，
 // 统一 401。受保护的管理端点用 require_admin 守卫（校验 claims role=admin）。

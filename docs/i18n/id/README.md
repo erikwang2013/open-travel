@@ -1,6 +1,6 @@
 # Open Travel — Platform Wisata Global
 
-<p align="center"><img src="../../mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><img src="../../mascot.svg" alt="Dora 小途 — Open Travel 吉祥物" width="180"></p>
 
 
 [简体中文](../../README.md) | [English](README.md) | [日本語](ja/README.md) | [한국어](ko/README.md) | [Русский](ru/README.md) | [Deutsch](de/README.md) | [Français](fr/README.md) | [Español](es/README.md) | [Português](pt/README.md) | [हिन्दी](hi/README.md) | [العربية](ar/README.md) | [বাংলা](bn/README.md) | [Bahasa Indonesia](id/README.md)
@@ -9,16 +9,31 @@
 
 ## Tentang Proyek
 
-Open Travel adalah monorepo platform wisata global yang menggunakan **e-cat (seekor kucing)** — **framework mikroservis Rust** (v3.0.3 · 51 crates) yang setara dengan [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 — untuk membangun backend berperforma tinggi, dipadukan dengan klien multi-platform Flutter dan klien native HarmonyOS, guna memberikan pengalaman pemesanan wisata yang seragam bagi pengguna global.
+Open Travel adalah monorepo platform wisata global yang menggunakan **e-cat (seekor kucing)** — **framework mikroservis Rust** (v3.0.3 · 52 crates) yang setara dengan [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 — untuk membangun backend berperforma tinggi, dipadukan dengan klien multi-platform Flutter dan klien native HarmonyOS, guna memberikan pengalaman pemesanan wisata yang seragam bagi pengguna global.
 
 | Aspek | Deskripsi |
 | :--- | :--- |
-| **Backend** | e-cat (Rust): HTTP/axum + gRPC/tonic, ekosistem mikroservis 51 crates |
-| **Klien multi-platform** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS) |
+| **Backend** | e-cat (Rust): HTTP/axum + gRPC/tonic, ekosistem mikroservis 52 crates |
+| **Klien multi-platform** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS), `apps/admin` (konsol admin Flutter Web) |
 | **Database** | MySQL (database `travel`, prefiks tabel `travel_`) + Redis cache + OpenSearch pencarian multibahasa |
 | **Keamanan** | ecat-security / ecat-auth (JWT) / ecat-tls: autentikasi, audit, rate limiting, proteksi injeksi |
 | **Internasionalisasi** | Paket bahasa ARB 12+ bahasa, dukungan RTL, tokenisasi multibahasa OpenSearch |
 | **Pembayaran** | WeChat Pay, Alipay |
+
+## Maskot Proyek 「小途」
+
+Seekor kucing petualang berwarna amber yang mengenakan topi ekspedisi dan menyeret koper penuh stiker sambil mengejar pesawat kertas, “dilahirkan” oleh framework **e-cat (seekor kucing)**. Bentuk wajah kucing dimodifikasi dari [Twemoji](https://github.com/jdecked/twemoji) 1f431 (CC-BY 4.0), sedangkan topi ekspedisi / koper / pesawat kertas adalah karya orisinal. Sumber vektor dan detail lengkapnya ada di [`docs/mascot.svg`](docs/mascot.svg).
+
+| Lokasi | Bentuk |
+| :--- | :--- |
+| `docs/mascot.svg` | **Sumber vektor tunggal** (gambar seluruh badan 512×512) |
+| `apps/*/web/favicon.svg` | Ikon tab browser (versi close-up wajah, tetap dikenali pada 16px; `favicon.png` 16px sebagai cadangan untuk browser lama) |
+| `apps/*/web/icons/Icon-*.png` | Ikon PWA / layar utama 192·512 (termasuk versi area aman maskable) |
+| `apps/*/assets/mascot.png` | Ditampilkan di dalam aplikasi Flutter (halaman login admin, halaman profil klien) |
+| `apps/client/harmonyos/.../media/mascot.svg` | Di dalam aplikasi HarmonyOS (`Image` merender SVG secara native; varian yang disederhanakan untuk seluler) |
+| README / dokumen crate | Posisi merek di bagian atas halaman |
+
+> Untuk mengubah desain, cukup ubah `docs/mascot.svg`; sisanya adalah turunan: favicon adalah potongan close-up wajahnya (menghapus kumis / garis dahi / bagasi dan goresan lain yang kabur pada ukuran kecil), dan varian HarmonyOS menghapus `<defs>` / gradien lalu memakai warna solid agar cocok dengan perender SVG seluler.
 
 ## Fitur Utama
 
@@ -28,21 +43,21 @@ Open Travel adalah monorepo platform wisata global yang menggunakan **e-cat (see
 - 🔐 Pertahanan berlapis: TLS 1.3, autentikasi JWT, log audit, penyaringan input, rate limiting, verifikasi HMAC callback pembayaran, autentikasi layanan internal
 - 📱 Pengalaman konsisten lintas platform: Flutter (iOS/Android/Web/Desktop) + HarmonyOS
 
-## Diagram Arsitektur
+## Diagram Desain Arsitektur
 
-![Diagram Arsitektur](../../svg/id/architecture.svg)
+![Diagram Desain Arsitektur](../../svg/id/architecture.svg)
 
-## Diagram Fitur
+## Diagram Desain Fitur
 
-![Diagram Fitur](../../svg/id/features.svg)
+![Diagram Desain Fitur](../../svg/id/features.svg)
 
-## Diagram Proyek
+## Diagram Struktur Proyek
 
-![Diagram Proyek](../../svg/id/project.svg)
+![Diagram Struktur Proyek](../../svg/id/project.svg)
 
-## Diagram Siklus Permintaan
+## Diagram Siklus Hidup Permintaan
 
-![Diagram Siklus Permintaan](../../svg/id/request-cycle.svg)
+![Diagram Siklus Hidup Permintaan](../../svg/id/request-cycle.svg)
 
 ## Diagram Arsitektur Keamanan
 
@@ -52,16 +67,26 @@ Open Travel adalah monorepo platform wisata global yang menggunakan **e-cat (see
 
 ```
 open-travel/
-├── apps/                  # Direktori klien multi-platform
-│   ├── flutter/           # Flutter: iOS / Android / Web / Desktop (i18n 12+ bahasa)
-│   └── harmonyos/         # Klien native HarmonyOS
+├── apps/                  # Klien multi-platform dan panel admin
+│   ├── client/
+│   │   ├── flutter/       # Flutter: iOS / Android / Web / Desktop (i18n 12+ bahasa, web/favicon.svg adalah ikon 「小途」)
+│   │   └── harmonyos/     # Klien native HarmonyOS
+│   └── admin/             # Panel admin Flutter Web
 ├── e-cat/                 # Framework e-cat + layanan bisnis (satu Cargo workspace)
-│   ├── ecat*/             # 51 crate framework ecat-*
-│   ├── ecat/              # Crate utama: fasad + modul bisnis (src/business/) + entri layanan (src/bin/)
+│   ├── ecat*/             # 52 crate framework ecat-*
+│   ├── ecat/              # Crate framework utama: fasad + modul bisnis (src/business/) + entri layanan (src/bin/ 9 layanan)
 │   ├── config/            # Contoh konfigurasi framework
-│   └── examples/          # Contoh proyek framework
-├── docs/                  # Perencanaan proyek, diagram (SVG), QR code pembayaran
-├── config/                # Konfigurasi lingkungan dan deployment
+│   ├── examples/          # Contoh proyek framework
+│   └── CHANGELOG.md       # Catatan perubahan framework + proyek (nomor versi = versi proyek, lihat tags)
+├── docs/                  # Dokumentasi teknis
+│   ├── api.md             # Referensi API (endpoint, autentikasi, pembatasan laju)
+│   ├── mascot.svg         # Maskot 「小途」 (sumber vektor tunggal, favicon dan ikon tiap platform diturunkan dari sini)
+│   ├── svg/               # Diagram arsitektur / fitur / siklus hidup / keamanan / struktur (termasuk terjemahan 12 bahasa)
+│   ├── i18n/              # README 12 bahasa
+│   └── coin/              # QR code donasi
+├── config/                # Konfigurasi lingkungan dan deployment (nginx.conf, docker-compose.yml, schema.sql)
+├── scripts/               # Instalasi / deployment / pemeriksaan / uji beban / CDN / data awal
+├── .github/workflows/     # CI
 └── README.md
 ```
 

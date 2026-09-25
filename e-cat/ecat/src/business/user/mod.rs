@@ -437,7 +437,7 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     };
 
     // 业务路由：注册/登录公开；profile 挂 JWT（Auth 层内）。
-    // 执行顺序（外层 → 内层）：ApiVersion → CircuitBreaker → Security → RateLimit
+    // 执行顺序（外层 → 内层）：CircuitBreaker → Security → RateLimit
     //   → [profile 仅] Auth(JWT)
     // e-cat 中间件的 Error 非 Infallible，需 map_err 归一以满足 axum Router::layer
     // 约束；RateLimit（Redis 分布式）覆盖全部业务路由：未认证请求也计入限流，

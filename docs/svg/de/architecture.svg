@@ -105,7 +105,7 @@
   <text x="681" y="608" text-anchor="middle" class="t-s">Suche · Aggregation</text>
   <rect x="786" y="290" width="168" height="130" class="box"/>
   <text x="870" y="322" text-anchor="middle" class="t-m">Auth / JWT</text>
-  <text x="870" y="346" text-anchor="middle" class="t-s">OAuth2 · Token-Prüfung</text>
+  <text x="870" y="346" text-anchor="middle" class="t-s">JWT HS256 · Token-Prüfung</text>
   <text x="870" y="368" text-anchor="middle" class="t-s">Rollen · RBAC</text>
   <rect x="786" y="440" width="168" height="130" class="box"/>
   <text x="870" y="472" text-anchor="middle" class="t-m">TLS — Verschlüsselung</text>

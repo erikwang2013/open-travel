@@ -50,7 +50,7 @@
   <rect x="170" y="296" width="790" height="64" class="box"/>
   <rect x="170" y="296" width="4" height="64" class="accent"/>
   <text x="200" y="322" class="t-m">Security Layer Auth</text>
-  <text x="200" y="344" class="t-s">JWT validation · OAuth2 · Audit logs</text>
+  <text x="200" y="344" class="t-s">JWT validation · Rate limit 100 req/60s · Audit logs</text>
   <circle cx="90" cy="328" r="16" class="num"/>
   <text x="90" y="333" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="14" font-weight="700" fill="#ffffff">4</text>
 

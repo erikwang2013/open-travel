@@ -669,7 +669,7 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let sync_state = state.clone();
     tokio::spawn(async move { sync_loop(sync_state).await });
 
-    // 中间件链（外层 → 内层）：ApiVersion → CircuitBreaker → Security → RateLimit
+    // 中间件链（外层 → 内层）：CircuitBreaker → Security → RateLimit
     let api = Router::new()
         .route("/api/v1/search", get(search))
         .route("/api/v1/search/hotwords", get(hotwords))

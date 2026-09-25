@@ -2,23 +2,38 @@
 
 # Open Travel — Globale Reiseplattform
 
-<p align="center"><img src="../../mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><img src="../../mascot.svg" alt="Dora 小途 — Open Travel 吉祥物" width="180"></p>
 
 
 > Eine Reisebuchungsplattform für Nutzer weltweit: Rust-Mikroservice-Backend + Flutter / HarmonyOS-Clienten mit Unterstützung für **12+ Sprachen**, internationale Zahlungen und mehrsprachige Suche.
 
 ## Projektübersicht
 
-Open Travel ist ein Monorepo einer globalen Reiseplattform, aufgebaut auf **e-cat (eine Katze)** — einem Rust-Mikroservice-Framework auf Augenhöhe mit [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 (v3.0.3 · 51 Crates) — für ein leistungsstarkes Backend, zusammen mit Flutter-Mehrplattform- und nativen HarmonyOS-Clienten, die weltweit ein einheitliches Reisebuchungserlebnis bieten.
+Open Travel ist ein Monorepo einer globalen Reiseplattform, aufgebaut auf **e-cat (eine Katze)** — einem Rust-Mikroservice-Framework auf Augenhöhe mit [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 (v3.0.3 · 52 Crates) — für ein leistungsstarkes Backend, zusammen mit Flutter-Mehrplattform- und nativen HarmonyOS-Clienten, die weltweit ein einheitliches Reisebuchungserlebnis bieten.
 
 | Dimension | Beschreibung |
 | :--- | :--- |
-| **Backend-Framework** | e-cat (Rust): HTTP/axum + gRPC/tonic, Mikroservice-Ökosystem aus 51 Crates |
-| **Mehrplattform-Clienten** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS) |
+| **Backend-Framework** | e-cat (Rust): HTTP/axum + gRPC/tonic, Mikroservice-Ökosystem aus 52 Crates |
+| **Mehrplattform-Clienten** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS), `apps/admin` (Flutter-Web-Admin-Konsole) |
 | **Datenbank** | MySQL (Datenbank `travel`, Tabellenpräfix `travel_`) + Redis-Cache + OpenSearch-Mehrsprachsuche |
 | **Sicherheit** | ecat-security / ecat-auth (JWT) / ecat-tls: Authentifizierung, Audit, Rate-Limiting, Schutz vor Injektionen |
 | **Internationalisierung** | 12+ Sprachen als ARB-Sprachpakete, RTL-Unterstützung, mehrsprachige OpenSearch-Tokenisierung |
 | **Zahlungen** | WeChat Pay, Alipay |
+
+## Das Projektmaskottchen „Dora 小途“
+
+Eine amberfarbene Reisekatze mit Entdeckerhut, die einen mit Stickern beklebten Koffer hinter sich herzieht und einem Papierflieger nachjagt — „geboren“ aus dem **e-cat (eine Katze)**-Framework. Die Katzenkopfform basiert auf [Twemoji](https://github.com/jdecked/twemoji) 1f431 (CC-BY 4.0), Entdeckerhut / Koffer / Papierflieger sind original. Die Vektorquelle und das vollständige Design finden sich in [`docs/mascot.svg`](../../mascot.svg).
+
+| Einsatzort | Form |
+| :--- | :--- |
+| `docs/mascot.svg` | **Einzige Vektorquelle** (Ganzkörperdarstellung 512×512) |
+| `apps/*/web/favicon.svg` | Browser-Tab-Icon (Nahaufnahme des Gesichts, noch bei 16px erkennbar; `favicon.png` mit 16px als Fallback für ältere Browser) |
+| `apps/*/web/icons/Icon-*.png` | PWA-/Homescreen-Icons 192·512 (inkl. maskable-Variante mit Sicherheitsbereich) |
+| `apps/*/assets/mascot.png` | Anzeige innerhalb der Flutter-Apps (Admin-Loginseite, Profilseite des Clients) |
+| `apps/client/harmonyos/.../media/mascot.svg` | Innerhalb der HarmonyOS-App (`Image` rendert SVG nativ; vereinfachte Variante für Mobilgeräte) |
+| Alle READMEs / Crate-Dokumentation | Markenplatz im Kopfbereich |
+
+> Für Änderungen am Design nur `docs/mascot.svg` anpassen, alles andere ist abgeleitet: Das favicon ist ein Ausschnitt der Gesichtsnahaufnahme (ohne Schnurrhaare / Stirnzeichnung / Gepäck und andere Striche, die bei kleiner Größe verschwimmen), die HarmonyOS-Variante entfernt `<defs>`/Verläufe und verwendet eine einfarbige Hintergrundfarbe, um den SVG-Renderer auf Mobilgeräten zu unterstützen.
 
 ## Kernfunktionen
 
@@ -28,21 +43,21 @@ Open Travel ist ein Monorepo einer globalen Reiseplattform, aufgebaut auf **e-ca
 - 🔐 Verteidigung in der Tiefe: TLS 1.3, JWT-Authentifizierung, Audit-Logs, Eingabefilterung, Rate-Limiting, HMAC-Verifizierung von Zahlungs-Callbacks, interne Service-Authentifizierung
 - 📱 Konsistentes Erlebnis auf allen Plattformen: Flutter (iOS/Android/Web/Desktop) + HarmonyOS
 
-## Architekturdiagramm
+## Architektur-Designdiagramm
 
-![Architekturdiagramm](../../svg/de/architecture.svg)
+![Architektur-Designdiagramm](../../svg/de/architecture.svg)
 
-## Funktionsdiagramm
+## Funktions-Designdiagramm
 
-![Funktionsdiagramm](../../svg/de/features.svg)
+![Funktions-Designdiagramm](../../svg/de/features.svg)
 
-## Projektdiagramm
+## Projektstrukturdiagramm
 
-![Projektdiagramm](../../svg/de/project.svg)
+![Projektstrukturdiagramm](../../svg/de/project.svg)
 
-## Request-Zyklus-Diagramm
+## Request-Lebenszyklusdiagramm
 
-![Request-Zyklus-Diagramm](../../svg/de/request-cycle.svg)
+![Request-Lebenszyklusdiagramm](../../svg/de/request-cycle.svg)
 
 ## Sicherheitsarchitektur-Diagramm
 
@@ -52,16 +67,26 @@ Open Travel ist ein Monorepo einer globalen Reiseplattform, aufgebaut auf **e-ca
 
 ```
 open-travel/
-├── apps/                  # Verzeichnis der Clienten
-│   ├── flutter/           # Flutter: iOS / Android / Web / Desktop (i18n in 12+ Sprachen)
-│   └── harmonyos/         # Nativer HarmonyOS-Client
+├── apps/                  # Clients für alle Plattformen und Admin-Oberfläche
+│   ├── client/
+│   │   ├── flutter/       # Flutter: iOS / Android / Web / Desktop (i18n in 12+ Sprachen, web/favicon.svg ist das „Dora 小途“-Icon)
+│   │   └── harmonyos/     # Nativer HarmonyOS-Client
+│   └── admin/             # Flutter-Web-Admin-Oberfläche
 ├── e-cat/                 # e-cat-Framework + Geschäftsdienste (ein Cargo-Workspace)
-│   ├── ecat*/             # 51 ecat-*-Framework-Crates
-│   ├── ecat/              # Haupt-Crate: Fassade + Geschäftsmodule (src/business/) + Service-Einstiege (src/bin/)
+│   ├── ecat*/             # 52 ecat-*-Framework-Crates
+│   ├── ecat/              # Haupt-Framework-Crate: Fassade + Geschäftsmodule (src/business/) + Service-Einstiege (src/bin/, 9 Dienste)
 │   ├── config/            # Framework-Konfigurationsbeispiele
-│   └── examples/          # Framework-Beispielprojekte
-├── docs/                  # Projektplanung, Diagramme (SVG), Zahlungs-QR-Codes
-├── config/                # Umgebungs- und Deployment-Konfiguration
+│   ├── examples/          # Framework-Beispielprojekte
+│   └── CHANGELOG.md       # Änderungsprotokoll für Framework + Projektversionen (die Versionsnummer ist die Projektversion, siehe Tags)
+├── docs/                  # Technische Dokumentation
+│   ├── api.md             # API-Referenz (Endpunkte, Authentifizierung, Rate-Limiting)
+│   ├── mascot.svg         # Maskottchen „Dora 小途“ (einzige Vektorquelle, favicon und App-Icons werden daraus abgeleitet)
+│   ├── svg/               # Architektur- / Funktions- / Lebenszyklus- / Sicherheits- / Strukturdiagramme (mit Übersetzungen in 12 Sprachen)
+│   ├── i18n/              # READMEs in 12 Sprachen
+│   └── coin/              # QR-Codes für Spenden
+├── config/                # Umgebungs- und Deployment-Konfiguration (nginx.conf, docker-compose.yml, schema.sql)
+├── scripts/               # Installation / Deployment / Health-Check / Lasttest / CDN / Seed-Daten
+├── .github/workflows/     # CI
 └── README.md
 ```
 

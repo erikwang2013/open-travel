@@ -1,6 +1,6 @@
 # Open Travel — منصة السفر العالمية
 
-<p align="center"><img src="../../mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><img src="../../mascot.svg" alt="Dora 小途 — Open Travel 吉祥物" width="180"></p>
 
 
 [简体中文](../../README.md) | [English](README.md) | [日本語](ja/README.md) | [한국어](ko/README.md) | [Русский](ru/README.md) | [Deutsch](de/README.md) | [Français](fr/README.md) | [Español](es/README.md) | [Português](pt/README.md) | [हिन्दी](hi/README.md) | [العربية](ar/README.md) | [বাংলা](bn/README.md) | [Bahasa Indonesia](id/README.md)
@@ -9,16 +9,31 @@
 
 ## نبذة عن المشروع
 
-Open Travel هو مستودع مونوريبو لمنصة سفر عالمية، يستخدم **e-cat (قطة)** — **إطار عمل ميكروسيرفيس بلغة Rust** (الإصدار 3.0.3 · 51 crate) مماثل لـ [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 — لبناء خلفية عالية الأداء، مع عملاء Flutter متعددي المنصات وعميل HarmonyOS الأصلي، لتوفير تجربة حجز سفر موحدة للمستخدمين حول العالم.
+Open Travel هو مستودع مونوريبو لمنصة سفر عالمية، يستخدم **e-cat (قطة)** — **إطار عمل ميكروسيرفيس بلغة Rust** (الإصدار 3.0.3 · 52 crate) مماثل لـ [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 — لبناء خلفية عالية الأداء، مع عملاء Flutter متعددي المنصات وعميل HarmonyOS الأصلي، لتوفير تجربة حجز سفر موحدة للمستخدمين حول العالم.
 
 | البعد | الوصف |
 | :--- | :--- |
-| **إطار العمل الخلفي** | e-cat (Rust): HTTP/axum + gRPC/tonic، نظام ميكروسيرفيس من 51 crate |
-| **العملاء متعددو المنصات** | `apps/client/flutter` (iOS / Android / Web / Desktop)، `apps/client/harmonyos` (HarmonyOS) |
+| **إطار العمل الخلفي** | e-cat (Rust): HTTP/axum + gRPC/tonic، نظام ميكروسيرفيس من 52 crate |
+| **العملاء متعددو المنصات** | `apps/client/flutter` (iOS / Android / Web / Desktop)، `apps/client/harmonyos` (HarmonyOS)، `apps/admin` (لوحة إدارة Flutter Web) |
 | **قاعدة البيانات** | MySQL (قاعدة بيانات `travel`، بادئة الجداول `travel_`) + Redis للتخزين المؤقت + OpenSearch للبحث متعدد اللغات |
 | **الأمان** | ecat-security / ecat-auth (JWT) / ecat-tls: مصادقة، تدقيق، تحديد معدل، حماية من الحقن |
 | **التدويل** | حزم لغات ARB لأكثر من 12 لغة، دعم RTL، تجزئة متعددة اللغات في OpenSearch |
 | **الدفع** | WeChat Pay، Alipay |
+
+## تميمة المشروع «小途»
+
+قطة سفر بلون كهرماني ترتدي قبعة استكشاف وتجرّ حقيبة ملصقات وتطارد طائرة ورقية، «وُلدت» من إطار **e-cat (قطة)**. تصميم وجه القطة مبني على [Twemoji](https://github.com/jdecked/twemoji) 1f431 (CC-BY 4.0) بعد تعديله، أما قبعة الاستكشاف / الحقيبة / الطائرة الورقية فأعمال أصلية. المصدر المتجهي والتفاصيل الكاملة في [`docs/mascot.svg`](docs/mascot.svg).
+
+| الموقع | الشكل |
+| :--- | :--- |
+| `docs/mascot.svg` | **المصدر المتجهي الوحيد** (هيئة كاملة 512×512) |
+| `apps/*/web/favicon.svg` | أيقونة تبويب المتصفح (نسخة لقطة قريبة للوجه، تبقى مميزة عند 16px؛ `favicon.png` بديل 16px للمتصفحات القديمة) |
+| `apps/*/web/icons/Icon-*.png` | أيقونة PWA / الشاشة الرئيسية 192·512 (مع نسخة maskable بمنطقة آمنة) |
+| `apps/*/assets/mascot.png` | العرض داخل تطبيق Flutter (صفحة دخول لوحة الإدارة، صفحة الملف الشخصي في العميل) |
+| `apps/client/harmonyos/.../media/mascot.svg` | داخل تطبيق HarmonyOS (عرض SVG أصلي عبر `Image`؛ نسخة مبسطة للجوال) |
+| كل ملفات README / وثائق crate | موضع العلامة أعلى الصفحة |
+
+> لتعديل التصميم عدّل `docs/mascot.svg` فقط، فالباقي مشتقات منه: الـ favicon هو قصّة لقطة قريبة للوجه، ونسخة HarmonyOS تحذف `<defs>`/التدرجات وتستخدم لونًا صلبًا ليناسب عارض SVG على الجوال.
 
 ## الميزات الأساسية
 
@@ -28,21 +43,21 @@ Open Travel هو مستودع مونوريبو لمنصة سفر عالمية، 
 - 🔐 دفاع أمني متعمق: TLS 1.3، مصادقة JWT، سجلات تدقيق، تصفية المدخلات، تحديد معدل، التحقق من HMAC لاستدعاءات الدفع، مصادقة الخدمات الداخلية
 - 📱 تجربة متسقة عبر المنصات: Flutter (iOS/Android/Web/Desktop) + HarmonyOS
 
-## مخطط البنية
+## مخطط تصميم البنية
 
-![مخطط البنية](../../svg/ar/architecture.svg)
+![مخطط تصميم البنية](../../svg/ar/architecture.svg)
 
-## مخطط الميزات
+## مخطط تصميم الميزات
 
-![مخطط الميزات](../../svg/ar/features.svg)
+![مخطط تصميم الميزات](../../svg/ar/features.svg)
 
-## مخطط المشروع
+## مخطط هيكل المشروع
 
-![مخطط المشروع](../../svg/ar/project.svg)
+![مخطط هيكل المشروع](../../svg/ar/project.svg)
 
-## مخطط دورة الطلب
+## مخطط دورة حياة الطلب
 
-![مخطط دورة الطلب](../../svg/ar/request-cycle.svg)
+![مخطط دورة حياة الطلب](../../svg/ar/request-cycle.svg)
 
 ## مخطط البنية الأمنية
 
@@ -52,16 +67,26 @@ Open Travel هو مستودع مونوريبو لمنصة سفر عالمية، 
 
 ```
 open-travel/
-├── apps/                  # دليل العملاء متعددي المنصات
-│   ├── flutter/           # Flutter: iOS / Android / Web / Desktop (تدويل لأكثر من 12 لغة)
-│   └── harmonyos/         # عميل HarmonyOS الأصلي
+├── apps/                  # العملاء متعددو المنصات ولوحة الإدارة
+│   ├── client/
+│   │   ├── flutter/       # Flutter: iOS / Android / Web / Desktop (تدويل لأكثر من 12 لغة، web/favicon.svg هو أيقونة شعار المشروع)
+│   │   └── harmonyos/     # عميل HarmonyOS الأصلي
+│   └── admin/             # لوحة الإدارة Flutter Web
 ├── e-cat/                 # إطار عمل e-cat + خدمات الأعمال (مساحة عمل Cargo واحدة)
-│   ├── ecat*/             # 51 كريت إطار العمل ecat-*
-│   ├── ecat/              # كريت الإطار الرئيسي: الواجهة + وحدات الأعمال (src/business/) + مداخل الخدمات (src/bin/)
+│   ├── ecat*/             # 52 كريت إطار العمل ecat-*
+│   ├── ecat/              # كريت الإطار الرئيسي: الواجهة + وحدات الأعمال (src/business/) + مداخل الخدمات (src/bin/ 9 خدمات)
 │   ├── config/            # أمثلة إعدادات الإطار
-│   └── examples/          # أمثلة مشاريع الإطار
-├── docs/                  # تخطيط المشروع، المخططات (SVG)، رموز QR للدفع
-├── config/                # إعدادات البيئة والنشر
+│   ├── examples/          # أمثلة مشاريع الإطار
+│   └── CHANGELOG.md       # سجل تغييرات الإطار + المشروع
+├── docs/                  # الوثائق التقنية
+│   ├── api.md             # مرجع API (النقاط الطرفية، المصادقة، تحديد المعدل)
+│   ├── mascot.svg         # التميمة «小途» (المصدر المتجهي الوحيد، ومنه تُشتق favicon وأيقونات كل منصة)
+│   ├── svg/               # مخططات البنية / الميزات / دورة الحياة / الأمان / الهيكل (مع ترجمات 12 لغة)
+│   ├── i18n/              # README بـ 12 لغة
+│   └── coin/              # رموز QR للتبرع
+├── config/                # إعدادات البيئة والنشر (nginx.conf، docker-compose.yml، schema.sql)
+├── scripts/               # التثبيت / النشر / الفحص / اختبار الضغط / CDN / البيانات الأولية
+├── .github/workflows/     # CI
 └── README.md
 ```
 

@@ -1,7 +1,13 @@
 # Open Travel 全球旅游平台 — 项目规划 v2
 
-> 技术栈：**Rust e-cat 微服务框架**（v3.0.3 · 51 crates）· Flutter 多端 + HarmonyOS · MySQL + Redis + OpenSearch
+> 技术栈：**Rust e-cat 微服务框架**（v3.0.3 · 52 crates）· Flutter 多端 + HarmonyOS · MySQL + Redis + OpenSearch
 > 覆盖 12+ 语种的全平台 i18n · 本文档基于 2026-08-29「已实现功能事实清单」编写，标注**已实现**的均为事实，其余为**规划中**
+
+> **更新提示（2026-09-26）**：正文是 2026-08-29 的事实快照，其后已有变化，读时请对照本提示 ——
+> ① **API 版本**从 `X-Api-Version` 请求头迁入 URL 前缀 `/api/v1/...`（原「缺失返回 400」的校验已移除，未知版本由网关 404）；正文路径示例一律需加 `/api/v1` 前缀。
+> ② **微服务由 2 个增至 9 个**：新增 line / order / flight / hotel / payment / search / admin-service，端口 8004–8009 + 8003。
+> ③ **e-cat 框架 crate 数 51 → 52**（当前 v3.0.3）。
+> 最新事实以 [e-cat/CHANGELOG.md](../e-cat/CHANGELOG.md) 与根 [README.md](../README.md) 为准。
 
 ---
 

@@ -2,23 +2,38 @@
 
 # Open Travel — 글로벌 여행 플랫폼
 
-<p align="center"><img src="../../mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><img src="../../mascot.svg" alt="Dora 小途 — Open Travel 吉祥物" width="180"></p>
 
 
 > 전 세계 사용자를 위한 여행 예약 플랫폼: Rust 마이크로서비스 백엔드 + Flutter / HarmonyOS 멀티 플랫폼 클라이언트, **12+ 언어** 지원, 국제 결제 및 다국어 검색.
 
 ## 프로젝트 소개
 
-Open Travel은 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3를 벤치마킹한 **Rust 마이크로서비스 프레임워크**(v3.0.3 · 51 crates)인 **e-cat(고양이 한 마리)** 을 사용해 고성능 백엔드를 구축하고, Flutter 멀티 플랫폼 및 HarmonyOS 네이티브 클라이언트를 결합하여 전 세계 사용자에게 통일된 여행 예약 경험을 제공하는 글로벌 여행 플랫폼 monorepo입니다.
+Open Travel은 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3를 벤치마킹한 **Rust 마이크로서비스 프레임워크**(v3.0.3 · 52 crates)인 **e-cat(고양이 한 마리)** 을 사용해 고성능 백엔드를 구축하고, Flutter 멀티 플랫폼 및 HarmonyOS 네이티브 클라이언트를 결합하여 전 세계 사용자에게 통일된 여행 예약 경험을 제공하는 글로벌 여행 플랫폼 monorepo입니다.
 
 | 항목 | 설명 |
 | :--- | :--- |
-| **백엔드 프레임워크** | e-cat(Rust): HTTP/axum + gRPC/tonic, 51 crates 마이크로서비스 생태계 |
-| **멀티 플랫폼 클라이언트** | `apps/client/flutter`(iOS / Android / Web / Desktop), `apps/client/harmonyos`(HarmonyOS) |
+| **백엔드 프레임워크** | e-cat(Rust): HTTP/axum + gRPC/tonic, 52 crates 마이크로서비스 생태계 |
+| **멀티 플랫폼 클라이언트** | `apps/client/flutter`(iOS / Android / Web / Desktop), `apps/client/harmonyos`(HarmonyOS), `apps/admin` (Flutter Web 관리 콘솔) |
 | **데이터베이스** | MySQL(DB명 `travel`, 테이블 접두사 `travel_`) + Redis 캐시 + OpenSearch 다국어 검색 |
 | **보안** | ecat-security / ecat-auth(JWT) / ecat-tls: 인증, 감사, 속도 제한, 주입 방지 |
 | **국제화** | 12+ 언어 ARB 로케일 팩, RTL 지원, OpenSearch 다국어 토큰화 |
 | **결제** | WeChat Pay, Alipay |
+
+## 프로젝트 마스코트 「小途」
+
+탐험 모자를 쓰고 스티커가 붙은 여행 가방을 끌며 종이비행기를 쫓는 호박색 여행 고양이로, **e-cat(고양이 한 마리)** 프레임워크가 “낳은” 캐릭터입니다. 고양이 얼굴은 [Twemoji](https://github.com/jdecked/twemoji) 1f431(CC-BY 4.0)을 수정한 것이며, 탐험 모자 / 여행 가방 / 종이비행기는 창작물입니다. 벡터 원본과 전체 설정은 [`docs/mascot.svg`](docs/mascot.svg)를 참고하세요.
+
+| 적용 위치 | 형태 |
+| :--- | :--- |
+| `docs/mascot.svg` | **벡터 단일 원본**(전신 512×512) |
+| `apps/*/web/favicon.svg` | 브라우저 탭 아이콘(얼굴 클로즈업 버전, 16px에서도 식별 가능, `favicon.png` 16px는 구형 브라우저용 대체) |
+| `apps/*/web/icons/Icon-*.png` | PWA / 홈 화면 아이콘 192·512(maskable 안전 영역 버전 포함) |
+| `apps/*/assets/mascot.png` | Flutter 앱 내 표시(관리자 로그인 페이지, 클라이언트 프로필 페이지) |
+| `apps/client/harmonyos/.../media/mascot.svg` | HarmonyOS 앱 내(`Image`가 SVG를 네이티브 렌더링, 모바일용 단순화 변형) |
+| 각 README / crate 문서 | 페이지 상단 브랜드 영역 |
+
+> 디자인을 바꿀 때는 `docs/mascot.svg`만 수정하면 되고 나머지는 모두 파생물입니다. favicon은 얼굴 클로즈업을 잘라낸 것(수염 / 이마 무늬 / 가방 등 작은 크기에서 뭉개지는 획을 제거)이고, HarmonyOS 변형은 `<defs>` / 그라디언트를 제거하고 단색 배경으로 바꿔 모바일 SVG 렌더러에 맞춘습니다.
 
 ## 핵심 기능
 
@@ -28,21 +43,21 @@ Open Travel은 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3를 벤
 - 🔐 심층 방어: TLS 1.3, JWT 인증, 감사 로그, 입력 필터링, 속도 제한, 결제 콜백 HMAC 검증, 내부 서비스 인증
 - 📱 멀티 플랫폼 일관된 경험: Flutter(iOS/Android/Web/Desktop) + HarmonyOS
 
-## 아키텍처 다이어그램
+## 아키텍처 설계 다이어그램
 
-![아키텍처 다이어그램](../../svg/ko/architecture.svg)
+![아키텍처 설계 다이어그램](../../svg/ko/architecture.svg)
 
-## 기능 다이어그램
+## 기능 설계 다이어그램
 
-![기능 다이어그램](../../svg/ko/features.svg)
+![기능 설계 다이어그램](../../svg/ko/features.svg)
 
-## 프로젝트 다이어그램
+## 프로젝트 구조 다이어그램
 
-![프로젝트 다이어그램](../../svg/ko/project.svg)
+![프로젝트 구조 다이어그램](../../svg/ko/project.svg)
 
-## 요청 사이클 다이어그램
+## 요청 라이프사이클 다이어그램
 
-![요청 사이클 다이어그램](../../svg/ko/request-cycle.svg)
+![요청 라이프사이클 다이어그램](../../svg/ko/request-cycle.svg)
 
 ## 보안 아키텍처 다이어그램
 
@@ -52,16 +67,26 @@ Open Travel은 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3를 벤
 
 ```
 open-travel/
-├── apps/                  # 멀티 플랫폼 클라이언트 디렉터리
-│   ├── flutter/           # Flutter: iOS / Android / Web / Desktop(12+ 언어 i18n)
-│   └── harmonyos/         # HarmonyOS 네이티브 클라이언트
+├── apps/                  # 멀티 플랫폼 클라이언트와 관리자
+│   ├── client/
+│   │   ├── flutter/       # Flutter: iOS / Android / Web / Desktop(12+ 언어 i18n, web/favicon.svg는 「小途」 아이콘)
+│   │   └── harmonyos/     # HarmonyOS 네이티브 클라이언트
+│   └── admin/             # Flutter Web 관리자
 ├── e-cat/                 # e-cat 프레임워크 + 비즈니스 서비스(단일 Cargo workspace)
-│   ├── ecat*/             # 51개 ecat-* 프레임워크 crate
-│   ├── ecat/              # 메인 프레임워크 crate: 파사드 + 비즈니스 모듈 (src/business/) + 서비스 엔트리 (src/bin/)
+│   ├── ecat*/             # 52개 ecat-* 프레임워크 crate
+│   ├── ecat/              # 메인 프레임워크 crate: 파사드 + 비즈니스 모듈(src/business/) + 서비스 엔트리(src/bin/ 9개 서비스)
 │   ├── config/            # 프레임워크 설정 예제
-│   └── examples/          # 프레임워크 예제 프로젝트
-├── docs/                  # 프로젝트 계획, 아키텍처 다이어그램(SVG), 결제 QR 코드
-├── config/                # 환경 및 배포 구성
+│   ├── examples/          # 프레임워크 예제 프로젝트
+│   └── CHANGELOG.md       # 프레임워크 + 프로젝트 버전 변경 로그(버전 번호가 곧 프로젝트 버전, tags 참조)
+├── docs/                  # 기술 문서
+│   ├── api.md             # API 레퍼런스(엔드포인트, 인증, 속도 제한)
+│   ├── mascot.svg         # 마스코트 「小途」(벡터 단일 원본, favicon과 각 플랫폼 아이콘은 여기서 파생)
+│   ├── svg/               # 아키텍처 / 기능 / 라이프사이클 / 보안 / 구조 다이어그램(12개 언어 번역본 포함)
+│   ├── i18n/              # 12개 언어 README
+│   └── coin/              # 후원 QR 코드
+├── config/                # 환경 및 배포 구성(nginx.conf, docker-compose.yml, schema.sql)
+├── scripts/               # 설치 / 배포 / 점검 / 부하 테스트 / CDN / 시드 데이터
+├── .github/workflows/     # CI
 └── README.md
 ```
 

@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.4.2] — 2026-09-26
+
+### Changed
+- 吉祥物「小途」打通到客户端与文档：新增 `apps/*/web/favicon.svg`（脸部特写版，16px 下仍可辨认）并接入两端 `index.html`；PWA 图标 Icon-192/512 与 maskable 由 Flutter 默认蓝 logo 占位图换为小途（maskable 按 Android 安全区 78% 留白）；`apps/*/assets/mascot.png` 与鸿蒙 `media/mascot.svg` 从 `docs/mascot.svg` 重新派生 —— 二者此前仍是 1.4.0 重设计**之前**的旧造型（奶白猫 + 珊瑚色太阳帽 + 蓝行李箱），与 README 展示的不是同一角色；鸿蒙变体去掉 `<defs>`/渐变改纯色底以适配移动端 SVG 渲染器（`Image` 原生渲染 SVG，无需新依赖）
+- 文档事实校正（13 语种 26 个 SVG + 根 README）：安全图删除 `ApiVersion 校验 · X-Api-Version: v1` 与中间件链「最外层 ApiVersion」（该层已于 1.4.0 移除），链路校正为 `Tracing → CircuitBreaker → Security → RateLimit(Redis) → JWT`，传输加密面板补 nginx 实际配置 `HSTS · 证书 config/certs/`；架构图 `OAuth2 · Token 校验` → `JWT HS256`（OAuth2 仅框架提供、无服务接入），生命周期图同步去掉 OAuth2 并补限流档位
+- 同上，9 处 crate 内中间件链注释（`business/*/mod.rs`）删去已不存在的 ApiVersion 段
+- crate 数 51 → 52（实测 `ecat-*` crate 数，含 `-crate`/`Crates` 等 12 语种写法共 40 处）、根 README 脚本表所在的结构树补 `scripts/` / `.github/workflows/` / `docs/` 明细与 9 个服务入口说明；`e-cat/README{,.en}.md` 结构树的已不存在脚本 `release` 改为实际脚本清单
+- 吉祥物统一命名「小途」：`e-cat/` 与各 crate、12 语种 README、apps/ 各端 README 共 72 个文件 72 处旧名「Travly 小旅」→「Dora 小途」（本 CHANGELOG 历史条目按记录保留不改）；根 README 增「项目吉祥物「小途」」节，列明矢量唯一源与全部派生落点
+- `index.html` / `manifest.json` 清理 Flutter 脚手架占位文案（`A new Flutter project.`、`travel_admin`、`open_travel`）为实际项目说明与标题；`docs/travel-project-planning{,-v2}.md` 更新版本/crate 数，v2 增「更新提示」标注正文为 2026-08-29 快照及其后变化（API 版本前缀、服务 2→9）
+
+### Fixed
+- 根 README 安全架构图下「分层防护」一行仍写 `ApiVersion 校验`（1.4.0 已删该层），改为实际链路并补 `/api/v1/` 版本前缀与网关 404 行为
+
 ## [1.4.1] — 2026-09-04
 
 ### Changed

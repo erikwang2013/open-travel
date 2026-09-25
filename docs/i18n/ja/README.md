@@ -2,23 +2,38 @@
 
 # Open Travel — グローバル旅行プラットフォーム
 
-<p align="center"><img src="../../mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><img src="../../mascot.svg" alt="Dora 小途 — Open Travel 吉祥物" width="180"></p>
 
 
 > 世界中のユーザーのための旅行予約プラットフォーム：Rust マイクロサービスバックエンド + Flutter / HarmonyOS マルチプラットフォームクライアント、**12+ 言語**対応、国際決済、多言語検索をサポート。
 
 ## プロジェクト概要
 
-Open Travel は、[go-kratos/kratos](https://github.com/go-kratos/kratos) v3 に範をとった **Rust マイクロサービスフレームワーク**（v3.0.3 · 51 crates）である **e-cat（一匹の猫）** を採用した、グローバル旅行プラットフォームの monorepo です。高性能なバックエンドと Flutter マルチプラットフォーム・鸿蒙（HarmonyOS）ネイティブクライアントを組み合わせ、世界中のユーザーに統一された旅行予約体験を提供します。
+Open Travel は、[go-kratos/kratos](https://github.com/go-kratos/kratos) v3 に範をとった **Rust マイクロサービスフレームワーク**（v3.0.3 · 52 crates）である **e-cat（一匹の猫）** を採用した、グローバル旅行プラットフォームの monorepo です。高性能なバックエンドと Flutter マルチプラットフォーム・鸿蒙（HarmonyOS）ネイティブクライアントを組み合わせ、世界中のユーザーに統一された旅行予約体験を提供します。
 
 | 項目 | 説明 |
 | :--- | :--- |
-| **バックエンドフレームワーク** | e-cat（Rust）：HTTP/axum + gRPC/tonic、51 crates のマイクロサービスエコシステム |
-| **マルチプラットフォームクライアント** | `apps/client/flutter`（iOS / Android / Web / Desktop）、`apps/client/harmonyos`（HarmonyOS） |
+| **バックエンドフレームワーク** | e-cat（Rust）：HTTP/axum + gRPC/tonic、52 crates のマイクロサービスエコシステム |
+| **マルチプラットフォームクライアント** | `apps/client/flutter`（iOS / Android / Web / Desktop）、`apps/client/harmonyos`（HarmonyOS）、`apps/admin`（Flutter Web 管理コンソール） |
 | **データベース** | MySQL（DB 名 `travel`、テーブルプレフィックス `travel_`）+ Redis キャッシュ + OpenSearch 多言語検索 |
 | **セキュリティ** | ecat-security / ecat-auth（JWT）/ ecat-tls：認証、監査、レート制限、インジェクション対策 |
 | **国際化** | 12+ 言語の ARB ロケールパック、RTL サポート、OpenSearch 多言語トークン化 |
 | **決済** | WeChat Pay、Alipay |
+
+## プロジェクトマスコット「小途」
+
+探検帽をかぶり、ステッカーだらけのスーツケースを引きながら紙飛行機を追いかける琥珀色の旅猫。**e-cat（一匹の猫）** フレームワークから「生まれ」ました。猫の顔は [Twemoji](https://github.com/jdecked/twemoji) 1f431（CC-BY 4.0）を基に改変したもので、探検帽 / スーツケース / 紙飛行機はオリジナルです。ベクターソースと詳細な設定は [`docs/mascot.svg`](docs/mascot.svg) を参照。
+
+| 配置先 | 形式 |
+| :--- | :--- |
+| `docs/mascot.svg` | **ベクターの唯一のソース**（全身像 512×512） |
+| `apps/*/web/favicon.svg` | ブラウザタブのアイコン（顔のクローズアップ版、16px でも識別可能。`favicon.png` 16px は古いブラウザ向けの代替） |
+| `apps/*/web/icons/Icon-*.png` | PWA / ホーム画面アイコン 192·512（maskable セーフエリア版を含む） |
+| `apps/*/assets/mascot.png` | Flutter アプリ内表示（管理端ログイン画面、クライアントプロフィール画面） |
+| `apps/client/harmonyos/.../media/mascot.svg` | HarmonyOS アプリ内（`Image` が SVG をネイティブ描画。モバイル向け簡略変体） |
+| 各 README / crate ドキュメント | ページ先頭のブランド位置 |
+
+> デザインを変えるときは `docs/mascot.svg` だけを修正します。他はすべて派生品です：favicon は顔のクローズアップを切り出したもの（ひげ / 額の模様 / 荷物など、小さいサイズでつぶれる筆画を除去）、HarmonyOS 変体は `<defs>` / グラデーションを外して単色背景にし、モバイルの SVG レンダラーに合わせています。
 
 ## 主な特徴
 
@@ -28,21 +43,21 @@ Open Travel は、[go-kratos/kratos](https://github.com/go-kratos/kratos) v3 に
 - 🔐 多層防御：TLS 1.3、JWT 認証、監査ログ、入力フィルタリング、レート制限、決済コールバック HMAC 検証、内部サービス認証
 - 📱 マルチプラットフォームで一貫した体験：Flutter（iOS/Android/Web/Desktop）+ HarmonyOS
 
-## アーキテクチャ図
+## アーキテクチャ設計図
 
-![アーキテクチャ図](../../svg/ja/architecture.svg)
+![アーキテクチャ設計図](../../svg/ja/architecture.svg)
 
-## 機能図
+## 機能設計図
 
-![機能図](../../svg/ja/features.svg)
+![機能設計図](../../svg/ja/features.svg)
 
-## プロジェクト図
+## プロジェクト構造図
 
-![プロジェクト図](../../svg/ja/project.svg)
+![プロジェクト構造図](../../svg/ja/project.svg)
 
-## リクエストサイクル図
+## リクエストライフサイクル図
 
-![リクエストサイクル図](../../svg/ja/request-cycle.svg)
+![リクエストライフサイクル図](../../svg/ja/request-cycle.svg)
 
 ## セキュリティアーキテクチャ図
 
@@ -52,16 +67,26 @@ Open Travel は、[go-kratos/kratos](https://github.com/go-kratos/kratos) v3 に
 
 ```
 open-travel/
-├── apps/                  # マルチプラットフォームクライアントディレクトリ
-│   ├── flutter/           # Flutter：iOS / Android / Web / Desktop（12+ 言語 i18n）
-│   └── harmonyos/         # HarmonyOS ネイティブクライアント
+├── apps/                  # マルチプラットフォームクライアントと管理端
+│   ├── client/
+│   │   ├── flutter/       # Flutter：iOS / Android / Web / Desktop（12+ 言語 i18n、web/favicon.svg は「小途」アイコン）
+│   │   └── harmonyos/     # HarmonyOS ネイティブクライアント
+│   └── admin/             # Flutter Web 管理端
 ├── e-cat/                 # e-cat フレームワーク + 業務サービス（同一 Cargo workspace）
-│   ├── ecat*/             # 51 個の ecat-* フレームワーク crate
-│   ├── ecat/              # メイン crate：ファサード + 業務モジュール（src/business/）+ サービス入口（src/bin/）
+│   ├── ecat*/             # 52 個の ecat-* フレームワーク crate
+│   ├── ecat/              # メインフレームワーク crate：ファサード + 業務モジュール（src/business/）+ サービス入口（src/bin/ 9 サービス）
 │   ├── config/            # フレームワーク設定例
-│   └── examples/          # フレームワークのサンプルプロジェクト
-├── docs/                  # プロジェクト計画、アーキテクチャ図（SVG）、決済用 QR コード
-├── config/                # 環境設定とデプロイ設定
+│   ├── examples/          # フレームワークのサンプルプロジェクト
+│   └── CHANGELOG.md       # フレームワーク + プロジェクトのバージョン変更履歴（バージョン番号はプロジェクトバージョン、tags 参照）
+├── docs/                  # 技術ドキュメント
+│   ├── api.md             # API リファレンス（エンドポイント、認証、レート制限）
+│   ├── mascot.svg         # マスコット「小途」（ベクターの唯一のソース、favicon と各端のアイコンはここから派生）
+│   ├── svg/               # アーキテクチャ / 機能 / ライフサイクル / セキュリティ / 構造 図（12 言語の翻訳版を含む）
+│   ├── i18n/              # 12 言語の README
+│   └── coin/              # 投げ銭 QR コード
+├── config/                # 環境とデプロイ設定（nginx.conf、docker-compose.yml、schema.sql）
+├── scripts/               # インストール / デプロイ / ヘルスチェック / 負荷テスト / CDN / シードデータ
+├── .github/workflows/     # CI
 └── README.md
 ```
 

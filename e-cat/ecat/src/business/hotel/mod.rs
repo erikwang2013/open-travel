@@ -338,7 +338,7 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     };
 
     // 业务路由：完整中间件链，执行顺序（外层 → 内层）：
-    //   ApiVersion → CircuitBreaker → Security → RateLimit
+    //   CircuitBreaker → Security → RateLimit
     // 公开接口无 JWT；限流保留防止滥用。
     let api = Router::new()
         .route("/api/v1/hotels/search", get(hotels_search))

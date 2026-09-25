@@ -2,23 +2,38 @@
 
 # Open Travel — Plateforme mondiale de voyage
 
-<p align="center"><img src="../../mascot.svg" alt="Travly 小旅 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><img src="../../mascot.svg" alt="Dora 小途 — Open Travel 吉祥物" width="180"></p>
 
 
 > Une plateforme de réservation de voyages destinée aux utilisateurs du monde entier : backend de microservices en Rust + clients multiplateformes Flutter / HarmonyOS, avec prise en charge de **12+ langues**, de paiements internationaux et d'une recherche multilingue.
 
 ## Présentation du projet
 
-Open Travel est un monorepo de plateforme de voyage mondiale, construit sur **e-cat (un chat)** — un framework de microservices Rust comparable à [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 (v3.0.3 · 51 crates) — pour un backend haute performance, avec des clients Flutter multiplateforme et un client natif HarmonyOS, offrant une expérience de réservation unifiée aux utilisateurs du monde entier.
+Open Travel est un monorepo de plateforme de voyage mondiale, construit sur **e-cat (un chat)** — un framework de microservices Rust comparable à [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 (v3.0.3 · 52 crates) — pour un backend haute performance, avec des clients Flutter multiplateforme et un client natif HarmonyOS, offrant une expérience de réservation unifiée aux utilisateurs du monde entier.
 
 | Dimension | Description |
 | :--- | :--- |
-| **Framework backend** | e-cat (Rust) : HTTP/axum + gRPC/tonic, écosystème de 51 crates de microservices |
-| **Clients multiplateformes** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS) |
+| **Framework backend** | e-cat (Rust) : HTTP/axum + gRPC/tonic, écosystème de 52 crates de microservices |
+| **Clients multiplateformes** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS), `apps/admin` (console d'administration Flutter Web) |
 | **Base de données** | MySQL (base `travel`, préfixe des tables `travel_`) + cache Redis + recherche multilingue OpenSearch |
 | **Sécurité** | ecat-security / ecat-auth (JWT) / ecat-tls : authentification, audit, limitation de débit, protection contre les injections |
 | **Internationalisation** | 12+ langues en packs ARB, prise en charge RTL, tokenisation multilingue OpenSearch |
 | **Paiements** | WeChat Pay, Alipay |
+
+## La mascotte du projet « Dora 小途 »
+
+Un chat de voyage ambré, coiffé d'un chapeau d'explorateur, traînant une valise couverte d'autocollants et poursuivant un avion en papier — « né » du framework **e-cat (un chat)**. Le visage du chat est dérivé de [Twemoji](https://github.com/jdecked/twemoji) 1f431 (CC-BY 4.0) ; le chapeau d'explorateur / la valise / l'avion en papier sont originaux. La source vectorielle et la charte complète se trouvent dans [`docs/mascot.svg`](../../mascot.svg).
+
+| Emplacement | Forme |
+| :--- | :--- |
+| `docs/mascot.svg` | **Source vectorielle unique** (vue en pied 512×512) |
+| `apps/*/web/favicon.svg` | Icône d'onglet de navigateur (gros plan du visage, encore lisible en 16px ; `favicon.png` en 16px pour les anciens navigateurs) |
+| `apps/*/web/icons/Icon-*.png` | Icônes PWA / écran d'accueil 192·512 (dont la variante maskable avec zone de sécurité) |
+| `apps/*/assets/mascot.png` | Affichage dans les applications Flutter (page de connexion de l'admin, page de profil du client) |
+| `apps/client/harmonyos/.../media/mascot.svg` | Dans l'application HarmonyOS (`Image` rend le SVG nativement ; variante simplifiée pour mobile) |
+| Tous les README / documentations de crate | Emplacement de marque en tête de page |
+
+> Pour modifier le design, ne changer que `docs/mascot.svg` ; tout le reste en dérive : le favicon est un recadrage en gros plan de son visage (sans moustaches / marques du front / bagages et autres traits qui se brouillent en petite taille), la variante HarmonyOS supprime les `<defs>`/dégradés et utilise un fond uni pour s'adapter au moteur de rendu SVG mobile.
 
 ## Fonctionnalités clés
 
@@ -28,21 +43,21 @@ Open Travel est un monorepo de plateforme de voyage mondiale, construit sur **e-
 - 🔐 Sécurité en profondeur : TLS 1.3, authentification JWT, journaux d'audit, filtrage des entrées, limitation de débit, vérification HMAC des callbacks de paiement, authentification des services internes
 - 📱 Expérience cohérente sur toutes les plateformes : Flutter (iOS/Android/Web/Desktop) + HarmonyOS
 
-## Diagramme d'architecture
+## Diagramme de conception de l'architecture
 
-![Diagramme d'architecture](../../svg/fr/architecture.svg)
+![Diagramme de conception de l'architecture](../../svg/fr/architecture.svg)
 
-## Diagramme des fonctionnalités
+## Diagramme de conception des fonctionnalités
 
-![Diagramme des fonctionnalités](../../svg/fr/features.svg)
+![Diagramme de conception des fonctionnalités](../../svg/fr/features.svg)
 
-## Diagramme du projet
+## Diagramme de structure du projet
 
-![Diagramme du projet](../../svg/fr/project.svg)
+![Diagramme de structure du projet](../../svg/fr/project.svg)
 
-## Diagramme du cycle de requête
+## Diagramme du cycle de vie des requêtes
 
-![Diagramme du cycle de requête](../../svg/fr/request-cycle.svg)
+![Diagramme du cycle de vie des requêtes](../../svg/fr/request-cycle.svg)
 
 ## Diagramme de l'architecture de sécurité
 
@@ -52,16 +67,26 @@ Open Travel est un monorepo de plateforme de voyage mondiale, construit sur **e-
 
 ```
 open-travel/
-├── apps/                  # Répertoire des clients
-│   ├── flutter/           # Flutter : iOS / Android / Web / Desktop (i18n en 12+ langues)
-│   └── harmonyos/         # Client natif HarmonyOS
+├── apps/                  # Clients multiplateformes et console d'administration
+│   ├── client/
+│   │   ├── flutter/       # Flutter : iOS / Android / Web / Desktop (i18n en 12+ langues, web/favicon.svg est l'icône « Dora 小途 »)
+│   │   └── harmonyos/     # Client natif HarmonyOS
+│   └── admin/             # Console d'administration Flutter Web
 ├── e-cat/                 # Framework e-cat + services métier (un seul Cargo workspace)
-│   ├── ecat*/             # 51 crates du framework ecat-*
-│   ├── ecat/              # Crate principale : façade + modules métier (src/business/) + entrées des services (src/bin/)
+│   ├── ecat*/             # 52 crates du framework ecat-*
+│   ├── ecat/              # Crate principal du framework : façade + modules métier (src/business/) + points d'entrée des services (src/bin/, 9 services)
 │   ├── config/            # Exemples de configuration du framework
-│   └── examples/          # Exemples de projets du framework
-├── docs/                  # Planification du projet, diagrammes (SVG), QR codes de paiement
-├── config/                # Configuration de l'environnement et du déploiement
+│   ├── examples/          # Projets d'exemple du framework
+│   └── CHANGELOG.md       # Journal des versions du framework + du projet (le numéro de version est celui du projet, voir les tags)
+├── docs/                  # Documentation technique
+│   ├── api.md             # Référence API (points de terminaison, authentification, limitation de débit)
+│   ├── mascot.svg         # Mascotte « Dora 小途 » (source vectorielle unique, le favicon et les icônes des applications en dérivent)
+│   ├── svg/               # Diagrammes architecture / fonctionnalités / cycle de vie / sécurité / structure (avec traductions en 12 langues)
+│   ├── i18n/              # README en 12 langues
+│   └── coin/              # QR codes de don
+├── config/                # Configuration d'environnement et de déploiement (nginx.conf, docker-compose.yml, schema.sql)
+├── scripts/               # Installation / déploiement / inspection / test de charge / CDN / données de démarrage
+├── .github/workflows/     # CI
 └── README.md
 ```
 

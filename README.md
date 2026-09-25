@@ -9,16 +9,31 @@
 
 ## 项目简介
 
-Open Travel 是一个全球旅游平台 monorepo，采用 **e-cat（一只猫）** —— 对标 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 的 **Rust 微服务框架**（v3.0.3 · 51 crates）—— 构建高性能后端，配合 Flutter 多端与鸿蒙原生客户端，为全球用户提供统一的旅行预订体验。
+Open Travel 是一个全球旅游平台 monorepo，采用 **e-cat（一只猫）** —— 对标 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 的 **Rust 微服务框架**（v3.0.3 · 52 crates）—— 构建高性能后端，配合 Flutter 多端与鸿蒙原生客户端，为全球用户提供统一的旅行预订体验。
 
 | 维度 | 说明 |
 | :--- | :--- |
-| **后端框架** | e-cat（Rust）：HTTP/axum + gRPC/tonic，51 crates 微服务生态 |
+| **后端框架** | e-cat（Rust）：HTTP/axum + gRPC/tonic，52 crates 微服务生态 |
 | **多端客户端** | `apps/client/flutter`（iOS / Android / Web / Desktop）、`apps/client/harmonyos`（鸿蒙）、`apps/admin`（Flutter Web 管理端） |
 | **数据库** | MySQL（库名 `travel`，表前缀 `travel_`）+ Redis 缓存 + OpenSearch 多语言搜索 |
 | **安全** | ecat-security / ecat-auth（JWT）/ ecat-tls：认证、审计、限流、防注入 |
 | **国际化** | 12+ 语种 ARB 语言包，RTL 支持，OpenSearch 多语言分词 |
 | **支付** | 微信支付、支付宝 |
+
+## 项目吉祥物「小途」
+
+一只戴探险帽、拖着贴纸行李箱追纸飞机的琥珀色旅行猫，由 **e-cat（一只猫）** 框架「生」出来。猫脸造型基于 [Twemoji](https://github.com/jdecked/twemoji) 1f431（CC-BY 4.0）修改，探险帽 / 行李箱 / 纸飞机为原创。矢量源与完整设定见 [`docs/mascot.svg`](docs/mascot.svg)。
+
+| 落点 | 形式 |
+| :--- | :--- |
+| `docs/mascot.svg` | **矢量唯一源**（全身像 512×512） |
+| `apps/*/web/favicon.svg` | 浏览器标签图标（脸部特写版，16px 下仍可辨认；`favicon.png` 16px 兜底旧浏览器） |
+| `apps/*/web/icons/Icon-*.png` | PWA / 主屏图标 192·512（含 maskable 安全区版） |
+| `apps/*/assets/mascot.png` | Flutter 应用内展示（管理端登录页、客户端个人页） |
+| `apps/client/harmonyos/.../media/mascot.svg` | 鸿蒙应用内（`Image` 原生渲染 SVG；移动端简化变体） |
+| 各 README / crate 文档 | 页首品牌位 |
+
+> 改造型只改 `docs/mascot.svg`，其余均为派生件：favicon 是它的脸部特写裁剪（去掉胡须/额纹/行李等小尺寸糊掉的笔画），鸿蒙变体去掉 `<defs>`/渐变改用纯色底色以适配移动端 SVG 渲染器。
 
 ## 一键安装
 
@@ -119,44 +134,54 @@ curl "http://localhost:8082/api/v1/booking/attractions?destination_id=1"
 - 🔐 安全纵深：TLS 1.3、JWT 认证、审计日志、输入过滤、限流、支付回调 HMAC 验签与内部服务鉴权
 - 📱 多端一致体验：Flutter（iOS/Android/Web/Desktop）+ 鸿蒙
 
-## 架构图
+## 架构设计图
 
-![架构图](docs/svg/architecture.svg)
+![架构设计图](docs/svg/architecture.svg)
 
-## 功能图
+## 功能设计图
 
-![功能图](docs/svg/features.svg)
+![功能设计图](docs/svg/features.svg)
 
-## 项目图
+## 请求生命周期图
 
-![项目图](docs/svg/project.svg)
-
-## 请求周期图
-
-![请求周期图](docs/svg/request-cycle.svg)
+![请求生命周期图](docs/svg/request-cycle.svg)
 
 ## 安全架构图
 
 ![安全架构图](docs/svg/security-architecture.svg)
 
-> 分层防护：ApiVersion 校验 → Tracing → CircuitBreaker → Security → RateLimit(Redis) → JWT；支付回调 HMAC 验签 + 内部 X-Internal-Token 鉴权。
+> 分层防护：Tracing → CircuitBreaker → Security → RateLimit(Redis，100 req/60s) → JWT（仅受保护路由）；API 版本在 URL 前缀 `/api/v1/`，未知版本由网关 404；支付回调 HMAC 验签 + 内部 X-Internal-Token 鉴权。
+
+## 项目结构图
+
+![项目结构图](docs/svg/project.svg)
+
+> 上列各图均有 12 语种译本，位于 `docs/svg/<lang>/`，由对应语言 README 引用。
 
 ## 项目结构
 
 ```
 open-travel/
-├── apps/                  # client/ 多端客户端 + admin/ 管理端
+├── apps/                  # 多端客户端与管理端
 │   ├── client/
-│   │   ├── flutter/       # Flutter：iOS / Android / Web / Desktop（12+ 语种 i18n）
+│   │   ├── flutter/       # Flutter：iOS / Android / Web / Desktop（12+ 语种 i18n，web/favicon.svg 为「小途」图标）
 │   │   └── harmonyos/     # 鸿蒙原生客户端
 │   └── admin/             # Flutter Web 管理端
 ├── e-cat/                 # e-cat 框架 + 业务服务（同一 Cargo workspace）
-│   ├── ecat*/             # 51 个 ecat-* 框架 crate
-│   ├── ecat/              # 主框架 crate：门面 + 业务模块（src/business/）+ 服务入口（src/bin/）
+│   ├── ecat*/             # 52 个 ecat-* 框架 crate
+│   ├── ecat/              # 主框架 crate：门面 + 业务模块（src/business/）+ 服务入口（src/bin/ 9 个服务）
 │   ├── config/            # 框架配置示例
-│   └── examples/          # 框架示例项目
-├── docs/                  # 项目规划、架构图（SVG）、支付二维码
-├── config/                # 环境与部署配置
+│   ├── examples/          # 框架示例项目
+│   └── CHANGELOG.md       # 框架 + 项目版本变更日志（版本号即项目版本，见 tags）
+├── docs/                  # 技术文档
+│   ├── api.md             # API 参考（端点、鉴权、限流）
+│   ├── mascot.svg         # 吉祥物「小途」（矢量唯一源，favicon 与各端图标由此派生）
+│   ├── svg/               # 架构 / 功能 / 生命周期 / 安全 / 结构 图（含 12 语种译本）
+│   ├── i18n/              # 12 语种 README
+│   └── coin/              # 打赏二维码
+├── config/                # 环境与部署配置（nginx.conf、docker-compose.yml、schema.sql）
+├── scripts/               # 安装 / 部署 / 巡检 / 压测 / CDN / 种子数据
+├── .github/workflows/     # CI
 └── README.md
 ```
 

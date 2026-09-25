@@ -420,7 +420,7 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     };
 
     // 业务路由：完整中间件链，执行顺序（外层 → 内层）：
-    //   ApiVersion → CircuitBreaker → Security → RateLimit
+    //   CircuitBreaker → Security → RateLimit
     // dates/attractions 为公开接口（无鉴权），限流保留防止滥用；
     // POST /api/v1/reviews 挂 JWT（Auth 层内），GET /api/v1/reviews 公开。
     // e-cat 中间件的 Error 非 Infallible，需 map_err 归一以满足 axum Router::layer
