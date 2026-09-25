@@ -1,7 +1,7 @@
 <!-- Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz -->
 # Open Travel — Global Travel Platform
 
-<p align="center"><img src="../docs/mascot.svg" alt="Dora 小途 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><img src="../docs/mascot.svg" alt="Nannan 南南 — Open Travel 吉祥物" width="180"></p>
 
 
 [简体中文](README.md) | English | [日本語](../docs/i18n/ja/README.md) | [한국어](../docs/i18n/ko/README.md) | [Русский](../docs/i18n/ru/README.md) | [Deutsch](../docs/i18n/de/README.md) | [Français](../docs/i18n/fr/README.md) | [Español](../docs/i18n/es/README.md) | [Português](../docs/i18n/pt/README.md) | [हिन्दी](../docs/i18n/hi/README.md) | [العربية](../docs/i18n/ar/README.md) | [বাংলা](../docs/i18n/bn/README.md) | [Bahasa Indonesia](../docs/i18n/id/README.md)

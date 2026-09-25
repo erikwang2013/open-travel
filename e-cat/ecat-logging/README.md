@@ -1,6 +1,6 @@
 # ecat-logging
 
-<p align="center"><img src="../../docs/mascot.svg" alt="Dora 小途 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><img src="../../docs/mascot.svg" alt="Nannan 南南 — Open Travel 吉祥物" width="180"></p>
 
 
 Structured logging via tracing for e-cat.

@@ -1,7 +1,7 @@
 # Open Travel — 全球旅游平台
 
-<p align="center"><img src="docs/mascot.svg" alt="Dora 小途 — Open Travel 吉祥物" width="180"></p>
-<p align="center"><sub>吉祥物「小途」猫造型基于 <a href="https://github.com/jdecked/twemoji">Twemoji</a>（CC-BY 4.0）修改 · 呼应 e-cat（一只猫）框架</sub></p>
+<p align="center"><img src="docs/mascot.svg" alt="Nannan 南南 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><sub>罗盘精灵「南南」· 全原创矢量图形，扁平几何（无渐变 / 无第三方素材）</sub></p>
 
 [English](docs/i18n/en/README.md) | [日本語](docs/i18n/ja/README.md) | [한국어](docs/i18n/ko/README.md) | [Русский](docs/i18n/ru/README.md) | [Deutsch](docs/i18n/de/README.md) | [Français](docs/i18n/fr/README.md) | [Español](docs/i18n/es/README.md) | [Português](docs/i18n/pt/README.md) | [हिन्दी](docs/i18n/hi/README.md) | [العربية](docs/i18n/ar/README.md) | [বাংলা](docs/i18n/bn/README.md) | [Bahasa Indonesia](docs/i18n/id/README.md)
 
@@ -20,20 +20,20 @@ Open Travel 是一个全球旅游平台 monorepo，采用 **e-cat（一只猫）
 | **国际化** | 12+ 语种 ARB 语言包，RTL 支持，OpenSearch 多语言分词 |
 | **支付** | 微信支付、支付宝 |
 
-## 项目吉祥物「小途」
+## 项目吉祥物「南南」
 
-一只戴探险帽、拖着贴纸行李箱追纸飞机的琥珀色旅行猫，由 **e-cat（一只猫）** 框架「生」出来。猫脸造型基于 [Twemoji](https://github.com/jdecked/twemoji) 1f431（CC-BY 4.0）修改，探险帽 / 行李箱 / 纸飞机为原创。矢量源与完整设定见 [`docs/mascot.svg`](docs/mascot.svg)。
+一只罗盘精灵：圆表盘就是身体，表圈上 **12 个刻度 = 12+ 语种**，头顶立着一根指针，右手举放大镜找目的地，左上角一架纸飞机拉着航线。扁平几何造型（纯色块 + 细描边，无渐变、无半透明），矢量源与完整设定见 [`docs/mascot.svg`](docs/mascot.svg)。
 
 | 落点 | 形式 |
 | :--- | :--- |
 | `docs/mascot.svg` | **矢量唯一源**（全身像 512×512） |
-| `apps/*/web/favicon.svg` | 浏览器标签图标（脸部特写版，16px 下仍可辨认；`favicon.png` 16px 兜底旧浏览器） |
+| `apps/*/web/favicon.svg` | 浏览器标签图标（表盘特写版，16px 下仍可辨认；`favicon.png` 16px 兜底旧浏览器） |
 | `apps/*/web/icons/Icon-*.png` | PWA / 主屏图标 192·512（含 maskable 安全区版） |
 | `apps/*/assets/mascot.png` | Flutter 应用内展示（管理端登录页、客户端个人页） |
-| `apps/client/harmonyos/.../media/mascot.svg` | 鸿蒙应用内（`Image` 原生渲染 SVG；移动端简化变体） |
+| `apps/client/harmonyos/.../media/mascot.svg` | 鸿蒙应用内（`Image` 原生渲染 SVG；去 opacity 的移动端变体） |
 | 各 README / crate 文档 | 页首品牌位 |
 
-> 改造型只改 `docs/mascot.svg`，其余均为派生件：favicon 是它的脸部特写裁剪（去掉胡须/额纹/行李等小尺寸糊掉的笔画），鸿蒙变体去掉 `<defs>`/渐变改用纯色底色以适配移动端 SVG 渲染器。
+> 改造型只改 `docs/mascot.svg`，其余均为派生件：favicon 是它的表盘特写（去掉手臂 / 放大镜 / 脚 / 航线等小尺寸糊掉的笔画），鸿蒙变体把半透明色预乘为实色并去掉全部 `opacity` 以适配移动端 SVG 渲染器。全部图形为原创，无第三方素材依赖。
 
 ## 一键安装
 
@@ -164,7 +164,7 @@ curl "http://localhost:8082/api/v1/booking/attractions?destination_id=1"
 open-travel/
 ├── apps/                  # 多端客户端与管理端
 │   ├── client/
-│   │   ├── flutter/       # Flutter：iOS / Android / Web / Desktop（12+ 语种 i18n，web/favicon.svg 为「小途」图标）
+│   │   ├── flutter/       # Flutter：iOS / Android / Web / Desktop（12+ 语种 i18n，web/favicon.svg 为「南南」图标）
 │   │   └── harmonyos/     # 鸿蒙原生客户端
 │   └── admin/             # Flutter Web 管理端
 ├── e-cat/                 # e-cat 框架 + 业务服务（同一 Cargo workspace）
@@ -175,7 +175,7 @@ open-travel/
 │   └── CHANGELOG.md       # 框架 + 项目版本变更日志（版本号即项目版本，见 tags）
 ├── docs/                  # 技术文档
 │   ├── api.md             # API 参考（端点、鉴权、限流）
-│   ├── mascot.svg         # 吉祥物「小途」（矢量唯一源，favicon 与各端图标由此派生）
+│   ├── mascot.svg         # 吉祥物「南南」（矢量唯一源，favicon 与各端图标由此派生）
 │   ├── svg/               # 架构 / 功能 / 生命周期 / 安全 / 结构 图（含 12 语种译本）
 │   ├── i18n/              # 12 语种 README
 │   └── coin/              # 打赏二维码

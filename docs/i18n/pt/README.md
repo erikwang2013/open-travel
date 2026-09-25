@@ -4,7 +4,7 @@
 
 # Open Travel — Plataforma Global de Viagens
 
-<p align="center"><img src="../../mascot.svg" alt="Dora 小途 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><img src="../../mascot.svg" alt="Nannan 南南 — Open Travel mascote" width="180"></p>
 
 
 > Uma plataforma de reservas de viagens voltada a usuários globais: backend de microsserviços em Rust + clientes multiplataforma em Flutter / HarmonyOS, com suporte a **mais de 12 idiomas**, pagamentos internacionais e busca multilíngue.
@@ -22,20 +22,20 @@ Open Travel é um monorepo de plataforma global de viagens que usa **e-cat (um g
 | **Internacionalização** | Pacotes de idiomas ARB em 12+ idiomas, suporte a RTL, segmentação multilíngue do OpenSearch |
 | **Pagamentos** | WeChat Pay, Alipay |
 
-## Mascote do projeto «Dora 小途»
+## Mascote do projeto «Nannan 南南»
 
-Um gato de viagem âmbar, de chapéu de explorador, arrastando uma mala coberta de adesivos enquanto persegue um avião de papel — «gerado» pelo framework **e-cat (um gato)**. O rosto do gato é baseado no [Twemoji](https://github.com/jdecked/twemoji) 1f431 (CC-BY 4.0), com modificações; o chapéu de explorador / a mala / o avião de papel são originais. Veja a fonte vetorial e a descrição completa em [`docs/mascot.svg`](../../mascot.svg).
+Um espírito de bússola: o mostrador redondo é o corpo, na luneta há **12 marcações = 12+ idiomas**, no alto da cabeça ergue-se uma agulha, a mão direita segura uma lupa à procura do destino e, no canto superior esquerdo, um avião de papel puxa uma rota de voo. Estilo geométrico plano (blocos de cor sólida + contornos finos, sem gradientes nem transparência); veja a fonte vetorial e a descrição completa em [`docs/mascot.svg`](../../mascot.svg).
 
 | Ponto de aplicação | Forma |
 | :--- | :--- |
 | `docs/mascot.svg` | **Fonte vetorial única** (corpo inteiro 512×512) |
-| `apps/*/web/favicon.svg` | Ícone da aba do navegador (versão em close do rosto, ainda legível a 16px; `favicon.png` de 16px para navegadores antigos) |
+| `apps/*/web/favicon.svg` | Ícone da aba do navegador (close do mostrador, ainda legível a 16px; `favicon.png` de 16px para navegadores antigos) |
 | `apps/*/web/icons/Icon-*.png` | Ícones de PWA / tela inicial 192·512 (incluindo a versão com área segura maskable) |
 | `apps/*/assets/mascot.png` | Exibição dentro do app Flutter (página de login do admin, página de perfil do cliente) |
-| `apps/client/harmonyos/.../media/mascot.svg` | Dentro do app HarmonyOS (`Image` renderiza SVG nativamente; variante simplificada para mobile) |
+| `apps/client/harmonyos/.../media/mascot.svg` | Dentro do app HarmonyOS (`Image` renderiza SVG nativamente; variante mobile sem `opacity`) |
 | Cada README / documentação de crate | Espaço de marca no topo da página |
 
-> Para mudar o visual, edite apenas `docs/mascot.svg` — todo o resto é derivado: o favicon é um recorte em close do rosto, e a variante HarmonyOS remove `<defs>`/gradientes e usa cores sólidas para se adaptar aos renderizadores de SVG em mobile.
+> Para mudar o visual, edite apenas `docs/mascot.svg` — todo o resto é derivado: o favicon é um close do mostrador (sem braços / lupa / pés / rota de voo e outros traços que se borram em tamanho pequeno), e a variante HarmonyOS pré-multiplica as cores semitransparentes em cores sólidas e remove todo `opacity` para se adaptar aos renderizadores de SVG em mobile. Todos os gráficos são originais, sem dependência de material de terceiros.
 
 ## Características principais
 
@@ -71,7 +71,7 @@ Um gato de viagem âmbar, de chapéu de explorador, arrastando uma mala coberta 
 open-travel/
 ├── apps/                  # Clientes multiplataforma e painel administrativo
 │   ├── client/
-│   │   ├── flutter/       # Flutter: iOS / Android / Web / Desktop (i18n em 12+ idiomas; web/favicon.svg é o ícone «Dora 小途»)
+│   │   ├── flutter/       # Flutter: iOS / Android / Web / Desktop (i18n em 12+ idiomas; web/favicon.svg é o ícone «Nannan 南南»)
 │   │   └── harmonyos/     # Cliente nativo HarmonyOS
 │   └── admin/             # Painel administrativo em Flutter Web
 ├── e-cat/                 # Framework e-cat + serviços de negócio (um único Cargo workspace)
@@ -82,7 +82,7 @@ open-travel/
 │   └── CHANGELOG.md       # Changelog de versões do framework + projeto
 ├── docs/                  # Documentação técnica
 │   ├── api.md             # Referência da API (endpoints, autenticação, limitação de taxa)
-│   ├── mascot.svg         # Mascote «Dora 小途» (fonte vetorial única; favicon e ícones de cada plataforma derivam dela)
+│   ├── mascot.svg         # Mascote «Nannan 南南» (fonte vetorial única; favicon e ícones de cada plataforma derivam dela)
 │   ├── svg/               # Diagramas de arquitetura / funcionalidades / ciclo de vida / segurança / estrutura (com traduções em 12 idiomas)
 │   ├── i18n/              # READMEs em 12 idiomas
 │   └── coin/              # QR codes de doação

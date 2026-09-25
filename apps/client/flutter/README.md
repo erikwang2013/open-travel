@@ -1,6 +1,6 @@
 # Open Travel 客户端（apps/client/flutter）
 
-<p align="center"><img src="../../../docs/mascot.svg" alt="Dora 小途 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><img src="../../../docs/mascot.svg" alt="Nannan 南南 — Open Travel 吉祥物" width="180"></p>
 
 > Open Travel 全球旅游平台的 Flutter 多端客户端（iOS / Android / Web / Desktop），支持 **12+ 语种** i18n。项目总览见[根 README](../../../README.md)。
 

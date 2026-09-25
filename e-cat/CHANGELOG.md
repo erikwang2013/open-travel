@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.5.0] — 2026-09-26
+
+### Added
+- 吉祥物整体替换为「南南」(Nannan) —— 罗盘精灵：圆表盘即身体，表圈 **12 个刻度 = 12+ 语种**（四正方向加粗 = 导航方位），头顶指针为呆毛，右手举放大镜（搜索），左上纸飞机 + 虚线航线（全球旅行）。命名取自「指南针」的南。造型为**全原创扁平几何**（纯色块 + 细描边，无渐变、无半透明），`docs/mascot.svg` 全套替换；旧形象「小途」（猫）见 git 历史
+- 13 个 README 补写/重写吉祥物节：新造型描述、落点表（矢量唯一源 → favicon → PWA 图标 → 应用内 → 鸿蒙变体）、派生件改造须知、alt 文本本地化
+
+### Changed
+- 全部派生资源从新 `docs/mascot.svg` 重生：两端 `web/favicon.svg`（表盘特写，16px 下仍可辨认）、`assets/mascot.png`（320² / 200²）、PWA 图标 192·512 + maskable 安全区版 + 16px `favicon.png`、鸿蒙 `entry/.../media/mascot.svg`
+- 鸿蒙变体的适配手段从「去 `<defs>`/渐变」改为「半透明预乘为实色 + 去全部 `opacity`」—— 新造型本就无渐变，本轮把 3 处半透明（地面阴影 / 镜片 / 水印）预乘为实色、白色高光与刻度取实白，全文件零 `opacity`，`Image` 原生渲染 SVG 无需新依赖
+- 吉祥物命名统一为「南南」：76 个文件（各 crate / apps README、12 语种 README、index.html 注释、结构树注释）
+- **移除 Twemoji (CC-BY 4.0) 署名**：旧猫脸基于 Twemoji 1f431 修改因而需要署名，新造型为全原创几何、无第三方素材依赖，继续保留署名即失实（12 个 i18n README）
+
+### Fixed
+- 6 个 i18n README 的既有死链：正文 `[docs/mascot.svg](docs/mascot.svg)` 自 `docs/i18n/<lang>/` 无法解析，改为 `../../mascot.svg`（ar / hi / bn / ja / ko / id）；根 README 的 `docs/mascot.svg` 自根解析正确，保持不变
+- 设计期渲染发现并修正两处造型缺陷：指针超出 viewBox 被裁（读成断掉的尖刺，调整菱形尺寸与轴心）；指针白色半边无描边时在浅色背景上不可见（整个指针读成偏斜三角形，补 `#C13F53` 描边）—— 两处均同步修进 favicon 版
+
 ## [1.4.2] — 2026-09-26
 
 ### Changed

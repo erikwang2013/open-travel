@@ -2,7 +2,7 @@
 
 # Open Travel — 글로벌 여행 플랫폼
 
-<p align="center"><img src="../../mascot.svg" alt="Dora 小途 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><img src="../../mascot.svg" alt="Nannan 南南 — Open Travel 마스코트" width="180"></p>
 
 
 > 전 세계 사용자를 위한 여행 예약 플랫폼: Rust 마이크로서비스 백엔드 + Flutter / HarmonyOS 멀티 플랫폼 클라이언트, **12+ 언어** 지원, 국제 결제 및 다국어 검색.
@@ -20,20 +20,20 @@ Open Travel은 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3를 벤
 | **국제화** | 12+ 언어 ARB 로케일 팩, RTL 지원, OpenSearch 다국어 토큰화 |
 | **결제** | WeChat Pay, Alipay |
 
-## 프로젝트 마스코트 「小途」
+## 프로젝트 마스코트 「南南」
 
-탐험 모자를 쓰고 스티커가 붙은 여행 가방을 끌며 종이비행기를 쫓는 호박색 여행 고양이로, **e-cat(고양이 한 마리)** 프레임워크가 “낳은” 캐릭터입니다. 고양이 얼굴은 [Twemoji](https://github.com/jdecked/twemoji) 1f431(CC-BY 4.0)을 수정한 것이며, 탐험 모자 / 여행 가방 / 종이비행기는 창작물입니다. 벡터 원본과 전체 설정은 [`docs/mascot.svg`](docs/mascot.svg)를 참고하세요.
+나침반 정령: 둥근 문자판이 그대로 몸이고, 테두리에는 **12개의 눈금 = 12개 이상의 언어**, 머리 위에는 바늘이 하나 세워져 있으며, 오른손에 돋보기를 들어 목적지를 찾고, 왼쪽 위에서는 종이비행기가 항로를 끌고 갑니다. 평면 기하 형태(단색 면 + 얇은 외곽선, 그라디언트도 반투명도 없음). 벡터 원본과 전체 설정은 [`docs/mascot.svg`](../../mascot.svg)를 참고하세요.
 
 | 적용 위치 | 형태 |
 | :--- | :--- |
 | `docs/mascot.svg` | **벡터 단일 원본**(전신 512×512) |
-| `apps/*/web/favicon.svg` | 브라우저 탭 아이콘(얼굴 클로즈업 버전, 16px에서도 식별 가능, `favicon.png` 16px는 구형 브라우저용 대체) |
+| `apps/*/web/favicon.svg` | 브라우저 탭 아이콘(문자판 클로즈업 버전, 16px에서도 식별 가능, `favicon.png` 16px는 구형 브라우저용 대체) |
 | `apps/*/web/icons/Icon-*.png` | PWA / 홈 화면 아이콘 192·512(maskable 안전 영역 버전 포함) |
 | `apps/*/assets/mascot.png` | Flutter 앱 내 표시(관리자 로그인 페이지, 클라이언트 프로필 페이지) |
-| `apps/client/harmonyos/.../media/mascot.svg` | HarmonyOS 앱 내(`Image`가 SVG를 네이티브 렌더링, 모바일용 단순화 변형) |
+| `apps/client/harmonyos/.../media/mascot.svg` | HarmonyOS 앱 내(`Image`가 SVG를 네이티브 렌더링, `opacity`를 제거한 모바일용 변형) |
 | 각 README / crate 문서 | 페이지 상단 브랜드 영역 |
 
-> 디자인을 바꿀 때는 `docs/mascot.svg`만 수정하면 되고 나머지는 모두 파생물입니다. favicon은 얼굴 클로즈업을 잘라낸 것(수염 / 이마 무늬 / 가방 등 작은 크기에서 뭉개지는 획을 제거)이고, HarmonyOS 변형은 `<defs>` / 그라디언트를 제거하고 단색 배경으로 바꿔 모바일 SVG 렌더러에 맞춘습니다.
+> 디자인을 바꿀 때는 `docs/mascot.svg`만 수정하면 되고 나머지는 모두 파생물입니다. favicon은 문자판 클로즈업을 잘라낸 것(팔 / 돋보기 / 발 / 항로 등 작은 크기에서 뭉개지는 획을 제거)이고, HarmonyOS 변형은 반투명 색을 미리 실색으로 합성한 뒤 모든 `opacity`를 제거해 모바일 SVG 렌더러에 맞춘 것입니다. 모든 도형은 창작물이며 제3자 소재에 의존하지 않습니다.
 
 ## 핵심 기능
 
@@ -69,7 +69,7 @@ Open Travel은 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3를 벤
 open-travel/
 ├── apps/                  # 멀티 플랫폼 클라이언트와 관리자
 │   ├── client/
-│   │   ├── flutter/       # Flutter: iOS / Android / Web / Desktop(12+ 언어 i18n, web/favicon.svg는 「小途」 아이콘)
+│   │   ├── flutter/       # Flutter: iOS / Android / Web / Desktop(12+ 언어 i18n, web/favicon.svg는 「南南」 아이콘)
 │   │   └── harmonyos/     # HarmonyOS 네이티브 클라이언트
 │   └── admin/             # Flutter Web 관리자
 ├── e-cat/                 # e-cat 프레임워크 + 비즈니스 서비스(단일 Cargo workspace)
@@ -80,7 +80,7 @@ open-travel/
 │   └── CHANGELOG.md       # 프레임워크 + 프로젝트 버전 변경 로그(버전 번호가 곧 프로젝트 버전, tags 참조)
 ├── docs/                  # 기술 문서
 │   ├── api.md             # API 레퍼런스(엔드포인트, 인증, 속도 제한)
-│   ├── mascot.svg         # 마스코트 「小途」(벡터 단일 원본, favicon과 각 플랫폼 아이콘은 여기서 파생)
+│   ├── mascot.svg         # 마스코트 「南南」(벡터 단일 원본, favicon과 각 플랫폼 아이콘은 여기서 파생)
 │   ├── svg/               # 아키텍처 / 기능 / 라이프사이클 / 보안 / 구조 다이어그램(12개 언어 번역본 포함)
 │   ├── i18n/              # 12개 언어 README
 │   └── coin/              # 후원 QR 코드

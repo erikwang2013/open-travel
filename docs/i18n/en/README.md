@@ -2,7 +2,7 @@
 
 # Open Travel — Global Travel Platform
 
-<p align="center"><img src="../../mascot.svg" alt="Dora 小途 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><img src="../../mascot.svg" alt="Nannan 南南 — Open Travel mascot" width="180"></p>
 
 
 > A travel booking platform for users worldwide: Rust microservice backend + Flutter / HarmonyOS multi-platform clients, supporting **12+ languages**, international payments, and multilingual search.
@@ -20,20 +20,20 @@ Open Travel is a global travel platform monorepo built on **e-cat (a cat)** — 
 | **Internationalization** | 12+ language ARB locale packs, RTL support, OpenSearch multilingual tokenization |
 | **Payments** | WeChat Pay, Alipay |
 
-## Project Mascot "Dora 小途"
+## Project Mascot "Nannan 南南"
 
-An amber travel cat in an explorer hat, dragging a sticker-covered suitcase while chasing a paper plane — "born" from the **e-cat (a cat)** framework. The cat face is based on [Twemoji](https://github.com/jdecked/twemoji) 1f431 (CC-BY 4.0), modified; the explorer hat / suitcase / paper plane are original. See [`docs/mascot.svg`](../../mascot.svg) for the vector source and the full design.
+A compass sprite: the round dial is its body, the bezel carries **12 tick marks = 12+ languages**, a needle stands on top of its head, the right hand holds a magnifier hunting for destinations, and a paper plane trails a flight path in the upper left. Flat geometric styling (solid color blocks + thin outlines, no gradients, no transparency); see [`docs/mascot.svg`](../../mascot.svg) for the vector source and the full design.
 
 | Placement | Form |
 | :--- | :--- |
 | `docs/mascot.svg` | **Single vector source** (full body, 512×512) |
-| `apps/*/web/favicon.svg` | Browser tab icon (face close-up, still legible at 16px; `favicon.png` 16px fallback for old browsers) |
+| `apps/*/web/favicon.svg` | Browser tab icon (dial close-up, still legible at 16px; `favicon.png` 16px fallback for old browsers) |
 | `apps/*/web/icons/Icon-*.png` | PWA / home screen icons 192·512 (including maskable safe-zone variants) |
 | `apps/*/assets/mascot.png` | In-app display in Flutter (admin login page, client profile page) |
-| `apps/client/harmonyos/.../media/mascot.svg` | In-app on HarmonyOS (`Image` renders SVG natively; simplified mobile variant) |
+| `apps/client/harmonyos/.../media/mascot.svg` | In-app on HarmonyOS (`Image` renders SVG natively; mobile variant with `opacity` removed) |
 | Each README / crate doc | Header branding slot |
 
-> To restyle the mascot, edit only `docs/mascot.svg` — everything else is derived: the favicon is a cropped close-up of its face, and the HarmonyOS variant drops `<defs>`/gradients for flat colors to suit mobile SVG renderers.
+> To restyle the mascot, edit only `docs/mascot.svg` — everything else is derived: the favicon is a close-up of its dial (dropping the arms / magnifier / feet / flight path and other strokes that blur at small sizes), and the HarmonyOS variant premultiplies semi-transparent colors into solid ones and removes all `opacity` to suit mobile SVG renderers. All artwork is original, with no third-party asset dependencies.
 
 ## Key Features
 
@@ -69,7 +69,7 @@ An amber travel cat in an explorer hat, dragging a sticker-covered suitcase whil
 open-travel/
 ├── apps/                  # Multi-platform clients and admin console
 │   ├── client/
-│   │   ├── flutter/       # Flutter: iOS / Android / Web / Desktop (12+ language i18n; web/favicon.svg is the "Dora 小途" icon)
+│   │   ├── flutter/       # Flutter: iOS / Android / Web / Desktop (12+ language i18n; web/favicon.svg is the "Nannan 南南" icon)
 │   │   └── harmonyos/     # HarmonyOS native client
 │   └── admin/             # Flutter Web admin console
 ├── e-cat/                 # e-cat framework + business services (single Cargo workspace)
@@ -80,7 +80,7 @@ open-travel/
 │   └── CHANGELOG.md       # Framework + project version changelog
 ├── docs/                  # Technical documentation
 │   ├── api.md             # API reference (endpoints, auth, rate limiting)
-│   ├── mascot.svg         # Mascot "Dora 小途" (single vector source; favicon and per-platform icons are derived from it)
+│   ├── mascot.svg         # Mascot "Nannan 南南" (single vector source; favicon and per-platform icons are derived from it)
 │   ├── svg/               # Architecture / feature / lifecycle / security / structure diagrams (with 12 language translations)
 │   ├── i18n/              # READMEs in 12 languages
 │   └── coin/              # Donation QR codes

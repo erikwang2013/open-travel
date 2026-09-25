@@ -1,6 +1,6 @@
 # ecat-mq-nats
 
-<p align="center"><img src="../../docs/mascot.svg" alt="Dora 小途 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><img src="../../docs/mascot.svg" alt="Nannan 南南 — Open Travel 吉祥物" width="180"></p>
 
 
 [NATS](https://nats.io) message queue backend for the e-cat ecosystem, powered by [async-nats](https://crates.io/crates/async-nats).

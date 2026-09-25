@@ -1,6 +1,6 @@
 # Open Travel 管理端（apps/admin）
 
-<p align="center"><img src="../../docs/mascot.svg" alt="Dora 小途 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><img src="../../docs/mascot.svg" alt="Nannan 南南 — Open Travel 吉祥物" width="180"></p>
 
 > Open Travel 全球旅游平台的 Flutter Web 管理端，依赖后端 API 运行。项目总览见[根 README](../../README.md)。
 

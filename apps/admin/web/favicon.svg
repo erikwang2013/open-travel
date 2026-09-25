@@ -1,51 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Dora 小途 — Open Travel 吉祥物（图标版）
-     与 docs/mascot.svg 同一造型源：猫脸取 Twemoji 1f431 (CC-BY 4.0,
-     https://github.com/jdecked/twemoji) 修改，探险帽为原创。
-     本文件为 16~32px favicon 优化版：只保留脸部高辨识度元素（耳/眼/鼻/嘴/帽），
-     去掉胡须、额纹、行李等细碎笔画，避免小尺寸糊成一团。
-     完整全身像见 docs/mascot.svg。 -->
+<!-- Nannan 南南 — Open Travel 吉祥物（图标版）
+     与 docs/mascot.svg 同一造型源：罗盘精灵的表盘特写。
+     本文件为 16~32px favicon 优化版：只保留小尺寸下仍可辨认的元素
+     （表圈 / 12 刻度 / 表情 / 指针），去掉手臂、放大镜、脚、航线等细碎笔画，
+     避免糊成一团。完整全身像见 docs/mascot.svg。
+     扁平几何、无 <defs>/渐变，移动端 SVG 渲染器可直接渲染。 -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
-  <title id="title">Dora 小途 — Open Travel</title>
-  <desc id="desc">圆形徽章内的琥珀色旅行猫头像，右耳斜扣一顶探险帽。猫脸造型基于 Twemoji (CC-BY 4.0)。</desc>
+  <title id="title">Nannan 南南 — Open Travel</title>
+  <desc id="desc">圆表盘造型的罗盘精灵头像：蓝色表圈上十二个刻度，浅色面盘上有笑脸，头顶立着一根珊瑚色指针。</desc>
 
-  <defs>
-    <linearGradient id="bgG" x1="0" y1="0" x2="0.6" y2="1">
-      <stop offset="0%" stop-color="#F6FCFF"/>
-      <stop offset="100%" stop-color="#C9E8F9"/>
-    </linearGradient>
-  </defs>
+  <!-- 表壳 -->
+  <circle cx="64" cy="70" r="50" fill="#2F6FED"/>
 
-  <!-- 圆徽底色 -->
-  <circle cx="64" cy="64" r="62" fill="url(#bgG)"/>
-  <circle cx="64" cy="64" r="62" fill="none" stroke="#C5E4F6" stroke-width="2"/>
-
-  <!-- 猫脸（Twemoji 1f431，与 docs/mascot.svg 同源，缩放 2.7×） -->
-  <g transform="translate(15 7) scale(2.7)">
-    <!-- 头 -->
-    <path fill="#FFCC4D" d="M32.348 13.999s3.445-8.812 1.651-11.998c-.604-1.073-8 1.998-10.723 5.442 0 0-2.586-.86-5.276-.86s-5.276.86-5.276.86C10.001 3.999 2.605.928 2.001 2.001.207 5.187 3.652 13.999 3.652 13.999c-.897 1.722-1.233 4.345-1.555 7.16-.354 3.086.35 5.546.658 6.089.35.617 2.123 2.605 4.484 4.306 3.587 2.583 8.967 3.445 10.761 3.445s7.174-.861 10.761-3.445c2.361-1.701 4.134-3.689 4.484-4.306.308-.543 1.012-3.003.659-6.089-.324-2.814-.659-5.438-1.556-7.16z"/>
-    <!-- 左耳 -->
-    <path fill="#F18F26" d="M2.359 2.971c.2-.599 5.348 2.173 6.518 5.404 0 0-3.808 2.624-4.528 4.624 0 0-2.99-7.028-1.99-10.028z"/>
-    <path fill="#FFCC4D" d="M5.98 7.261c0-1.414 5.457 2.733 4.457 3.733s-1.255.72-2.255 1.72S5.98 8.261 5.98 7.261z"/>
-    <!-- 右耳 -->
-    <path fill="#F18F26" d="M33.641 2.971c-.2-.599-5.348 2.173-6.518 5.404 0 0 3.808 2.624 4.528 4.624 0 0 2.99-7.028 1.99-10.028z"/>
-    <path fill="#FFCC4D" d="M30.02 7.261c0-1.414-5.457 2.733-4.457 3.733s1.255.72 2.255 1.72 2.202-4.453 2.202-5.453z"/>
-    <!-- 眼睛 -->
-    <path fill="#292F33" d="M14.001 20.001c0 1.105-.896 1.999-2 1.999s-2-.894-2-1.999c0-1.104.896-1.999 2-1.999s2 .896 2 1.999zm11.998 0c0 1.105-.896 1.999-2 1.999-1.105 0-2-.894-2-1.999 0-1.104.895-1.999 2-1.999s2 .896 2 1.999z"/>
-    <!-- 嘴 -->
-    <path fill="#67757F" d="M24.736 30.898c-.097-.258-.384-.392-.643-.294-.552.206-1.076.311-1.559.311-1.152 0-1.561-.306-2.033-.659-.451-.338-.956-.715-1.99-.803v-2.339c0-.276-.224-.5-.5-.5s-.5.224-.5.5v2.373c-.81.115-1.346.439-1.816.743-.568.367-1.059.685-2.083.685-.482 0-1.006-.104-1.558-.311-.258-.095-.547.035-.643.294-.097.259.035.547.293.644.664.247 1.306.373 1.907.373 1.319 0 2.014-.449 2.627-.845.524-.339.98-.631 1.848-.635.992.008 1.358.278 1.815.621.538.403 1.147.859 2.633.859.601 0 1.244-.126 1.908-.373.259-.097.391-.385.294-.644z"/>
-    <!-- 鼻子 -->
-    <path fill="#E75A70" d="M19.4 24.807h-2.8c-.64 0-1.163.523-1.163 1.163 0 .639.523 1.163 1.163 1.163h.237v.345c0 .639.523 1.163 1.163 1.163s1.163-.523 1.163-1.163v-.345h.237c.639 0 1.163-.523 1.163-1.163s-.524-1.163-1.163-1.163z"/>
+  <!-- 12 刻度 = 12+ 语种（短而细，避免整圈读成救生圈） -->
+  <g stroke="#FFFFFF" stroke-linecap="round" opacity="0.9">
+    <line x1="64.0" y1="27.0" x2="64.0" y2="21.0" stroke-width="6"/>
+    <line x1="84.5" y1="32.5" x2="87.5" y2="27.3" stroke-width="4"/>
+    <line x1="99.5" y1="47.5" x2="104.7" y2="44.5" stroke-width="4"/>
+    <line x1="105.0" y1="70.0" x2="111.0" y2="70.0" stroke-width="6"/>
+    <line x1="99.5" y1="92.5" x2="104.7" y2="95.5" stroke-width="4"/>
+    <line x1="84.5" y1="107.5" x2="87.5" y2="112.7" stroke-width="4"/>
+    <line x1="64.0" y1="113.0" x2="64.0" y2="119.0" stroke-width="6"/>
+    <line x1="43.5" y1="107.5" x2="40.5" y2="112.7" stroke-width="4"/>
+    <line x1="28.5" y1="92.5" x2="23.3" y2="95.5" stroke-width="4"/>
+    <line x1="23.0" y1="70.0" x2="17.0" y2="70.0" stroke-width="6"/>
+    <line x1="28.5" y1="47.5" x2="23.3" y2="44.5" stroke-width="4"/>
+    <line x1="43.5" y1="32.5" x2="40.5" y2="27.3" stroke-width="4"/>
   </g>
 
-  <!-- 探险帽（斜扣在右耳上，与 docs/mascot.svg 同款，缩放 0.5×） -->
-  <g transform="translate(86 30) rotate(24) scale(0.5)">
-    <path d="M-42 2 A42 30 0 0 1 42 2 Z" fill="#EAC384"/>
-    <path d="M-28 -4 Q0 -20 28 -4" fill="none" stroke="#FF8B3D" stroke-width="7" stroke-linecap="round"/>
-    <ellipse cx="0" cy="4" rx="56" ry="9" fill="#F4DAA3"/>
+  <!-- 面盘 -->
+  <circle cx="64" cy="70" r="39" fill="#F6FCFF" stroke="#C5E4F6" stroke-width="2"/>
+
+  <!-- 表情（略小，给表盘留白，避免读成纯笑脸球） -->
+  <ellipse cx="43" cy="80" rx="6" ry="4" fill="#FFC2CE"/>
+  <ellipse cx="85" cy="80" rx="6" ry="4" fill="#FFC2CE"/>
+  <circle cx="52" cy="67" r="6" fill="#1F2328"/>
+  <circle cx="76" cy="67" r="6" fill="#1F2328"/>
+  <circle cx="50.2" cy="65" r="2.1" fill="#FFFFFF"/>
+  <circle cx="74.2" cy="65" r="2.1" fill="#FFFFFF"/>
+  <path d="M57 80 Q64 87 71 80" fill="none" stroke="#1F2328" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- 指针：画在表壳之后，轴心圆盘才能露在蓝色表圈上 -->
+  <!-- 描边必需：白色半边在浅色背景上无描边会看不见 -->
+  <g transform="translate(64 26) rotate(14)">
+    <path d="M0 -22 L10 0 L0 8 L-10 0 Z" fill="#E75A70" stroke="#C13F53"
+          stroke-width="2.6" stroke-linejoin="round"/>
+    <path d="M0 -22 L10 0 L0 0 Z" fill="#FFFFFF"/>
+    <circle cx="0" cy="0" r="4.2" fill="#F6FCFF" stroke="#2F6FED" stroke-width="2.4"/>
   </g>
 
   <!-- 水印 -->
-  <text x="64" y="121" font-family="Arial, sans-serif" font-size="9" text-anchor="middle"
-        fill="#7FA8C4" opacity="0.55">https://erik.xyz</text>
+  <text x="64" y="126" font-family="Arial, sans-serif" font-size="7" text-anchor="middle"
+        fill="#7FA8C4" opacity="0.6">https://erik.xyz</text>
 </svg>

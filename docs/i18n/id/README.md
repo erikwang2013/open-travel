@@ -1,6 +1,6 @@
 # Open Travel — Platform Wisata Global
 
-<p align="center"><img src="../../mascot.svg" alt="Dora 小途 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><img src="../../mascot.svg" alt="Nannan 南南 — Open Travel Maskot" width="180"></p>
 
 
 [简体中文](../../README.md) | [English](README.md) | [日本語](ja/README.md) | [한국어](ko/README.md) | [Русский](ru/README.md) | [Deutsch](de/README.md) | [Français](fr/README.md) | [Español](es/README.md) | [Português](pt/README.md) | [हिन्दी](hi/README.md) | [العربية](ar/README.md) | [বাংলা](bn/README.md) | [Bahasa Indonesia](id/README.md)
@@ -20,20 +20,20 @@ Open Travel adalah monorepo platform wisata global yang menggunakan **e-cat (see
 | **Internasionalisasi** | Paket bahasa ARB 12+ bahasa, dukungan RTL, tokenisasi multibahasa OpenSearch |
 | **Pembayaran** | WeChat Pay, Alipay |
 
-## Maskot Proyek 「小途」
+## Maskot Proyek 「南南」
 
-Seekor kucing petualang berwarna amber yang mengenakan topi ekspedisi dan menyeret koper penuh stiker sambil mengejar pesawat kertas, “dilahirkan” oleh framework **e-cat (seekor kucing)**. Bentuk wajah kucing dimodifikasi dari [Twemoji](https://github.com/jdecked/twemoji) 1f431 (CC-BY 4.0), sedangkan topi ekspedisi / koper / pesawat kertas adalah karya orisinal. Sumber vektor dan detail lengkapnya ada di [`docs/mascot.svg`](docs/mascot.svg).
+Peri kompas: dial bulat itulah tubuhnya, pada pelingkarnya ada **12 tanda = 12+ bahasa**, sebatang jarum berdiri tegak di atas kepalanya, tangan kanan mengangkat kaca pembesar untuk mencari tujuan, dan di sudut kiri atas sebuah pesawat kertas menarik garis rute. Bentuk geometris datar (blok warna solid + garis tepi tipis, tanpa gradien dan tanpa transparansi), sumber vektor dan detail lengkapnya ada di [`docs/mascot.svg`](../../mascot.svg).
 
 | Lokasi | Bentuk |
 | :--- | :--- |
 | `docs/mascot.svg` | **Sumber vektor tunggal** (gambar seluruh badan 512×512) |
-| `apps/*/web/favicon.svg` | Ikon tab browser (versi close-up wajah, tetap dikenali pada 16px; `favicon.png` 16px sebagai cadangan untuk browser lama) |
+| `apps/*/web/favicon.svg` | Ikon tab browser (versi close-up dial, tetap dikenali pada 16px; `favicon.png` 16px sebagai cadangan untuk browser lama) |
 | `apps/*/web/icons/Icon-*.png` | Ikon PWA / layar utama 192·512 (termasuk versi area aman maskable) |
 | `apps/*/assets/mascot.png` | Ditampilkan di dalam aplikasi Flutter (halaman login admin, halaman profil klien) |
-| `apps/client/harmonyos/.../media/mascot.svg` | Di dalam aplikasi HarmonyOS (`Image` merender SVG secara native; varian yang disederhanakan untuk seluler) |
+| `apps/client/harmonyos/.../media/mascot.svg` | Di dalam aplikasi HarmonyOS (`Image` merender SVG secara native; varian seluler tanpa `opacity`) |
 | README / dokumen crate | Posisi merek di bagian atas halaman |
 
-> Untuk mengubah desain, cukup ubah `docs/mascot.svg`; sisanya adalah turunan: favicon adalah potongan close-up wajahnya (menghapus kumis / garis dahi / bagasi dan goresan lain yang kabur pada ukuran kecil), dan varian HarmonyOS menghapus `<defs>` / gradien lalu memakai warna solid agar cocok dengan perender SVG seluler.
+> Untuk mengubah desain, cukup ubah `docs/mascot.svg`; sisanya adalah turunan: favicon adalah potongan close-up dialnya (menghapus lengan / kaca pembesar / kaki / garis rute dan goresan lain yang kabur pada ukuran kecil), dan varian HarmonyOS mengubah warna semi-transparan menjadi warna solid terlebih dahulu lalu menghapus seluruh `opacity` agar cocok dengan perender SVG seluler. Semua gambar orisinal, tanpa ketergantungan pada materi pihak ketiga.
 
 ## Fitur Utama
 
@@ -69,7 +69,7 @@ Seekor kucing petualang berwarna amber yang mengenakan topi ekspedisi dan menyer
 open-travel/
 ├── apps/                  # Klien multi-platform dan panel admin
 │   ├── client/
-│   │   ├── flutter/       # Flutter: iOS / Android / Web / Desktop (i18n 12+ bahasa, web/favicon.svg adalah ikon 「小途」)
+│   │   ├── flutter/       # Flutter: iOS / Android / Web / Desktop (i18n 12+ bahasa, web/favicon.svg adalah ikon 「南南」)
 │   │   └── harmonyos/     # Klien native HarmonyOS
 │   └── admin/             # Panel admin Flutter Web
 ├── e-cat/                 # Framework e-cat + layanan bisnis (satu Cargo workspace)
@@ -80,7 +80,7 @@ open-travel/
 │   └── CHANGELOG.md       # Catatan perubahan framework + proyek (nomor versi = versi proyek, lihat tags)
 ├── docs/                  # Dokumentasi teknis
 │   ├── api.md             # Referensi API (endpoint, autentikasi, pembatasan laju)
-│   ├── mascot.svg         # Maskot 「小途」 (sumber vektor tunggal, favicon dan ikon tiap platform diturunkan dari sini)
+│   ├── mascot.svg         # Maskot 「南南」 (sumber vektor tunggal, favicon dan ikon tiap platform diturunkan dari sini)
 │   ├── svg/               # Diagram arsitektur / fitur / siklus hidup / keamanan / struktur (termasuk terjemahan 12 bahasa)
 │   ├── i18n/              # README 12 bahasa
 │   └── coin/              # QR code donasi

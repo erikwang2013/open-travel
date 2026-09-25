@@ -4,7 +4,7 @@
 
 # Open Travel — Plataforma Global de Viajes
 
-<p align="center"><img src="../../mascot.svg" alt="Dora 小途 — Open Travel 吉祥物" width="180"></p>
+<p align="center"><img src="../../mascot.svg" alt="Nannan 南南 — Open Travel mascota" width="180"></p>
 
 
 > Una plataforma de reservas de viajes orientada a usuarios globales: backend de microservicios en Rust + clientes multiplataforma en Flutter / HarmonyOS, compatible con **más de 12 idiomas**, pagos internacionales y búsqueda multilingüe.
@@ -22,20 +22,20 @@ Open Travel es un monorepo de una plataforma global de viajes que utiliza **e-ca
 | **Internacionalización** | Paquetes de idiomas ARB en 12+ idiomas, compatibilidad con RTL, segmentación multilingüe de OpenSearch |
 | **Pagos** | WeChat Pay, Alipay |
 
-## La mascota del proyecto «Dora 小途»
+## La mascota del proyecto «Nannan 南南»
 
-Un gato viajero de color ámbar con sombrero de explorador, que arrastra una maleta llena de pegatinas y persigue un avión de papel — «nacido» del framework **e-cat (un gato)**. La forma de la cara del gato está basada en [Twemoji](https://github.com/jdecked/twemoji) 1f431 (CC-BY 4.0); el sombrero de explorador / la maleta / el avión de papel son originales. La fuente vectorial y el diseño completo están en [`docs/mascot.svg`](../../mascot.svg).
+Un espíritu de brújula: la esfera redonda es su cuerpo, en el bisel hay **12 marcas = 12+ idiomas**, sobre la cabeza se alza una aguja, la mano derecha sostiene una lupa que busca el destino y, arriba a la izquierda, un avión de papel arrastra una ruta de vuelo. Estilo geométrico plano (bloques de color sólido + trazos finos, sin degradados ni transparencias); la fuente vectorial y el diseño completo están en [`docs/mascot.svg`](../../mascot.svg).
 
 | Ubicación | Forma |
 | :--- | :--- |
 | `docs/mascot.svg` | **Fuente vectorial única** (figura completa 512×512) |
-| `apps/*/web/favicon.svg` | Icono de pestaña del navegador (primer plano de la cara, aún reconocible a 16px; `favicon.png` a 16px como respaldo para navegadores antiguos) |
+| `apps/*/web/favicon.svg` | Icono de pestaña del navegador (primer plano de la esfera, aún reconocible a 16px; `favicon.png` a 16px como respaldo para navegadores antiguos) |
 | `apps/*/web/icons/Icon-*.png` | Iconos de PWA / pantalla de inicio 192·512 (incluida la variante maskable con zona segura) |
 | `apps/*/assets/mascot.png` | Visualización dentro de las apps Flutter (página de inicio de sesión del admin, página de perfil del cliente) |
-| `apps/client/harmonyos/.../media/mascot.svg` | Dentro de la app HarmonyOS (`Image` renderiza SVG de forma nativa; variante simplificada para móvil) |
+| `apps/client/harmonyos/.../media/mascot.svg` | Dentro de la app HarmonyOS (`Image` renderiza SVG de forma nativa; variante móvil sin `opacity`) |
 | Todos los README / documentación de crates | Posición de marca en la cabecera |
 
-> Para cambiar el diseño solo hay que modificar `docs/mascot.svg`; todo lo demás son derivados: el favicon es un recorte en primer plano de su cara (sin bigotes / marcas de la frente / equipaje y otros trazos que se emborronan a pequeño tamaño), la variante para HarmonyOS elimina los `<defs>`/degradados y usa un color de fondo plano para adaptarse al renderizador SVG móvil.
+> Para cambiar el diseño solo hay que modificar `docs/mascot.svg`; todo lo demás son derivados: el favicon es un primer plano de su esfera (sin brazos / lupa / pies / ruta de vuelo y otros trazos que se emborronan a pequeño tamaño), y la variante para HarmonyOS premultiplica los colores semitransparentes a colores sólidos y elimina todo `opacity` para adaptarse al renderizador SVG móvil. Todos los gráficos son originales, sin dependencias de material de terceros.
 
 ## Características principales
 
@@ -71,7 +71,7 @@ Un gato viajero de color ámbar con sombrero de explorador, que arrastra una mal
 open-travel/
 ├── apps/                  # Clientes multiplataforma y consola de administración
 │   ├── client/
-│   │   ├── flutter/       # Flutter: iOS / Android / Web / Desktop (i18n en 12+ idiomas, web/favicon.svg es el icono «Dora 小途»)
+│   │   ├── flutter/       # Flutter: iOS / Android / Web / Desktop (i18n en 12+ idiomas, web/favicon.svg es el icono «Nannan 南南»)
 │   │   └── harmonyos/     # Cliente nativo HarmonyOS
 │   └── admin/             # Consola de administración Flutter Web
 ├── e-cat/                 # Framework e-cat + servicios de negocio (un único Cargo workspace)
@@ -82,7 +82,7 @@ open-travel/
 │   └── CHANGELOG.md       # Registro de cambios del framework + del proyecto (el número de versión es el del proyecto, ver tags)
 ├── docs/                  # Documentación técnica
 │   ├── api.md             # Referencia de API (endpoints, autenticación, limitación de velocidad)
-│   ├── mascot.svg         # Mascota «Dora 小途» (fuente vectorial única, de ella derivan el favicon y los iconos de las apps)
+│   ├── mascot.svg         # Mascota «Nannan 南南» (fuente vectorial única, de ella derivan el favicon y los iconos de las apps)
 │   ├── svg/               # Diagramas de arquitectura / funcionalidades / ciclo de vida / seguridad / estructura (con traducciones en 12 idiomas)
 │   ├── i18n/              # README en 12 idiomas
 │   └── coin/              # Códigos QR de donación
