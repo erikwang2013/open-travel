@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="南南 · 讨好 Pleasing"><title>南南 · 讨好 Pleasing</title><desc>南南 的 讨好 表情形态 · animated expression form</desc><style>
+.ex-motion { animation: ex-nod 1.7s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 50%; }
+.ex-anim-tear { animation: ex-tear 1.8s ease-in infinite; transform-box: fill-box; transform-origin: center; }
+.ex-anim-sweat { animation: ex-tear 1.5s ease-in infinite; transform-box: fill-box; transform-origin: center; }
+.ex-anim-heart { animation: ex-heart 2.2s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+.ex-anim-spark { animation: ex-spark 1.9s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.ex-anim-rain { animation: ex-rain 1.4s linear infinite; transform-box: fill-box; transform-origin: center; }
+.ex-anim-confetti { animation: ex-confetti 2.4s linear infinite; transform-box: fill-box; transform-origin: center; }
+.ex-anim-pulse { animation: ex-pulse 1.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.ex-anim-knock { animation: ex-knock 0.55s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.ex-anim-knockline { animation: ex-knockline 0.55s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+.ex-anim-palm { animation: ex-palm 0.9s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.ex-anim-steam { animation: ex-steam 1.8s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+.ex-anim-shock { animation: ex-shock 0.5s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.ex-anim-please { animation: ex-please 1.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.ex-anim-drift { animation: ex-drift 4.5s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes ex-nod { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6.4px); } }
+@keyframes ex-tear { 0% { transform: translateY(0); opacity: 0; } 18% { opacity: 1; } 100% { transform: translateY(22px); opacity: 0; } }
+@keyframes ex-heart { 0% { transform: translateY(0) scale(.65); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-36px) scale(1.15); opacity: 0; } }
+@keyframes ex-spark { 0%,100% { transform: scale(.6) rotate(0deg); opacity: .3; } 50% { transform: scale(1.15) rotate(25deg); opacity: 1; } }
+@keyframes ex-rain { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(24px); opacity: 0; } }
+@keyframes ex-confetti { 0% { transform: translateY(-7px) rotate(0deg); opacity: 1; } 100% { transform: translateY(32px) rotate(200deg); opacity: 0; } }
+@keyframes ex-pulse { 0%,100% { transform: scale(1); opacity: .35; } 50% { transform: scale(1.18); opacity: .7; } }
+@keyframes ex-knock { 0%,100% { transform: translateX(9px); } 35% { transform: translateX(0); } }
+@keyframes ex-knockline { 0%,100% { transform: scaleX(.6); opacity: .35; } 35% { transform: scaleX(1); opacity: 1; } }
+@keyframes ex-palm { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-2.4px) rotate(-4deg); } }
+@keyframes ex-steam { 0% { transform: translateY(0); opacity: .7; } 100% { transform: translateY(-18px); opacity: 0; } }
+@keyframes ex-shock { 0%,100% { transform: scaleX(.7); opacity: .4; } 50% { transform: scaleX(1.25); opacity: 1; } }
+@keyframes ex-please { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3.6px); } }
+@keyframes ex-drift { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) {
+  .ex-motion, [class*="ex-anim-"] { animation: none !important; }
+}
+</style><g class="ex-motion ex-pleasing"><g class="ex-base"><ellipse cx="256" cy="472" rx="120" ry="13" fill="#7FB3D6" opacity="0.35"/>
+
+  
+  <path d="M28 210 Q34 128 96 108" fill="none" stroke="#7FB3D6" stroke-width="4"
+        stroke-dasharray="0.1 14" stroke-linecap="round"/>
+  <g transform="translate(94 98) rotate(22)">
+    <path d="M0 0 L50 16 L10 25 L16 16 Z" fill="#7FB3D6"/>
+    <path d="M0 0 L50 16 L16 16 Z" fill="#A9D2EA"/>
+  </g>
+  <path d="M34 300 L36 306 L42 308 L36 310 L34 316 L32 310 L26 308 L32 306 Z" fill="#FFC987"/>
+  <path d="M470 250 L472 256 L478 258 L472 260 L470 266 L468 260 L462 258 L468 256 Z" fill="#FFC987"/>
+
+  
+  <ellipse cx="212" cy="440" rx="38" ry="24" fill="#2F6FED"/>
+  <ellipse cx="300" cy="440" rx="38" ry="24" fill="#2F6FED"/>
+
+  
+  <path d="M120 352 Q78 376 72 404" fill="none" stroke="#2F6FED" stroke-width="30" stroke-linecap="round"/>
+  <circle cx="72" cy="404" r="21" fill="#2F6FED"/>
+
+  
+  <path d="M392 366 Q412 374 428 380" fill="none" stroke="#2F6FED" stroke-width="30" stroke-linecap="round"/>
+  <path d="M479 431 L498 450" stroke="#F18F26" stroke-width="20" stroke-linecap="round"/>
+  <circle cx="452" cy="404" r="38" fill="#C9E8F9" opacity="0.72" stroke="#F18F26" stroke-width="17"/>
+  <path d="M433 385 Q440 378 451 377" fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round" opacity="0.9"/>
+
+  
+  <circle cx="256" cy="262" r="172" fill="#2F6FED"/>
+
+  
+  <g stroke="#FFFFFF" stroke-linecap="round" opacity="0.92">
+    <line x1="256.0" y1="112.0" x2="256.0" y2="95.0" stroke-width="11"/>
+    <line x1="331.0" y1="132.1" x2="339.5" y2="117.4" stroke-width="6"/>
+    <line x1="385.9" y1="187.0" x2="400.6" y2="178.5" stroke-width="6"/>
+    <line x1="406.0" y1="262.0" x2="423.0" y2="262.0" stroke-width="11"/>
+    <line x1="385.9" y1="337.0" x2="400.6" y2="345.5" stroke-width="6"/>
+    <line x1="331.0" y1="391.9" x2="339.5" y2="406.6" stroke-width="6"/>
+    <line x1="256.0" y1="412.0" x2="256.0" y2="429.0" stroke-width="11"/>
+    <line x1="181.0" y1="391.9" x2="172.5" y2="406.6" stroke-width="6"/>
+    <line x1="126.1" y1="337.0" x2="111.4" y2="345.5" stroke-width="6"/>
+    <line x1="106.0" y1="262.0" x2="89.0" y2="262.0" stroke-width="11"/>
+    <line x1="126.1" y1="187.0" x2="111.4" y2="178.5" stroke-width="6"/>
+    <line x1="181.0" y1="132.1" x2="172.5" y2="117.4" stroke-width="6"/>
+  </g>
+
+  
+  <circle cx="256" cy="262" r="146" fill="#F6FCFF" stroke="#C5E4F6" stroke-width="5"/>
+
+  
+  <ellipse cx="192" cy="296" rx="19" ry="12" fill="#FFC2CE"/>
+  <ellipse cx="320" cy="296" rx="19" ry="12" fill="#FFC2CE"/>
+  <circle cx="218" cy="256" r="20" fill="#1F2328"/>
+  <circle cx="294" cy="256" r="20" fill="#1F2328"/>
+  <circle cx="212" cy="249" r="7" fill="#FFFFFF"/>
+  <circle cx="288" cy="249" r="7" fill="#FFFFFF"/>
+  <path d="M236 302 Q256 322 276 302" fill="none" stroke="#1F2328" stroke-width="9" stroke-linecap="round"/>
+
+  
+  
+  <g transform="translate(256 90) rotate(16)">
+    <path d="M0 -84 L25 0 L0 26 L-25 0 Z" fill="#E75A70" stroke="#C13F53"
+          stroke-width="5" stroke-linejoin="round"/>
+    <path d="M0 -84 L25 0 L0 0 Z" fill="#FFFFFF"/>
+    <circle cx="0" cy="0" r="11" fill="#F6FCFF" stroke="#2F6FED" stroke-width="6"/>
+  </g>
+
+  
+  <text x="256" y="502" font-family="Arial, sans-serif" font-size="11" text-anchor="middle"
+        fill="#7FA8C4" opacity="0.75">https://erik.xyz</text></g><g class="ex-face"><circle cx="256" cy="262" r="138" fill="#F6FCFF"/><path d="M 199,236 L 229,224" stroke="#1F2328" stroke-width="2.8" stroke-linecap="round"/><path d="M 313,236 L 283,224" stroke="#1F2328" stroke-width="2.8" stroke-linecap="round"/><ellipse cx="218" cy="256" rx="20" ry="22.8" fill="#FFFFFF" stroke="#1F2328" stroke-width="3.2"/><ellipse cx="218" cy="251.6" rx="11.6" ry="14.59" fill="#1F2328"/><circle cx="213.6" cy="245.22" r="4" fill="#FFFFFF"/><circle cx="222.8" cy="258.44" r="2" fill="#FFFFFF" opacity=".9"/><ellipse cx="294" cy="256" rx="20" ry="22.8" fill="#FFFFFF" stroke="#1F2328" stroke-width="3.2"/><ellipse cx="294" cy="251.6" rx="11.6" ry="14.59" fill="#1F2328"/><circle cx="289.6" cy="245.22" r="4" fill="#FFFFFF"/><circle cx="298.8" cy="258.44" r="2" fill="#FFFFFF" opacity=".9"/><path d="M 242.2,300 Q 256,315.84 269.8,300" fill="none" stroke="#1F2328" stroke-width="3.2" stroke-linecap="round"/><ellipse cx="203" cy="283" rx="15.6" ry="8.4" fill="#FF8FB3" opacity="0.55"/><ellipse cx="309" cy="283" rx="15.6" ry="8.4" fill="#FF8FB3" opacity="0.55"/><g transform="translate(0 0)"><path class="ex-anim-sweat" style="animation-delay:0.2s" d="M 322,224.8 C 328.6,235.36 328.6,245.04 322,245.04 C 315.4,245.04 315.4,235.36 322,224.8 Z" fill="#6FB2F0"/><circle cx="322" cy="234.92" r="1.94" fill="#FFFFFF" opacity=".8"/></g><path class="ex-anim-spark" style="animation-delay:0.3s" d="M 192,200.36 L 193.96,205.4 L 199,207.36 L 193.96,209.32 L 192,214.36 L 190.04,209.32 L 185,207.36 L 190.04,205.4 Z" fill="#5FBF9F"/><path class="ex-anim-spark" style="animation-delay:0.8s" d="M 322.56,211.6 L 324.24,215.92 L 328.56,217.6 L 324.24,219.28 L 322.56,223.6 L 320.88,219.28 L 316.56,217.6 L 320.88,215.92 Z" fill="#5FBF9F"/><g transform="translate(247.75 321) rotate(18)"><g class="ex-anim-please"><ellipse rx="6.3" ry="9.3" fill="#2F6FED" stroke="#1F2328" stroke-width="1.1"/><path d="M 0,-5.25 L 0,4.5" stroke="#1F2328" stroke-width="1" stroke-linecap="round" opacity=".5"/></g></g><g transform="translate(264.25 321) rotate(-18)"><g class="ex-anim-please"><ellipse rx="6.3" ry="9.3" fill="#2F6FED" stroke="#1F2328" stroke-width="1.1"/><path d="M 0,-5.25 L 0,4.5" stroke="#1F2328" stroke-width="1" stroke-linecap="round" opacity=".5"/></g></g></g></g></svg>
