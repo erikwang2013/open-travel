@@ -13,7 +13,7 @@
 - **移除 Twemoji (CC-BY 4.0) 署名**：旧猫脸基于 Twemoji 1f431 修改因而需要署名，新造型为全原创几何、无第三方素材依赖，继续保留署名即失实（12 个 i18n README）
 
 ### Fixed
-- 6 个 i18n README 的既有死链：正文 `[docs/mascot.svg](docs/mascot.svg)` 自 `docs/i18n/<lang>/` 无法解析，改为 `../../mascot.svg`（ar / hi / bn / ja / ko / id）；根 README 的 `docs/mascot.svg` 自根解析正确，保持不变
+- 6 个 i18n README 的既有死链：正文中的 `docs/mascot.svg` 链接自 `docs/i18n/<lang>/` 无法解析，改为 `../../mascot.svg`（ar / hi / bn / ja / ko / id）；根 README 的 `docs/mascot.svg` 自根解析正确，保持不变
 - 设计期渲染发现并修正两处造型缺陷：指针超出 viewBox 被裁（读成断掉的尖刺，调整菱形尺寸与轴心）；指针白色半边无描边时在浅色背景上不可见（整个指针读成偏斜三角形，补 `#C13F53` 描边）—— 两处均同步修进 favicon 版
 
 ## [1.4.2] — 2026-09-26
