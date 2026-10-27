@@ -80,13 +80,13 @@
   <circle cx="256" cy="262" r="146" fill="#F6FCFF" stroke="#C5E4F6" stroke-width="5"/>
 
   
-  <ellipse cx="192" cy="296" rx="19" ry="12" fill="#FFC2CE"/>
-  <ellipse cx="320" cy="296" rx="19" ry="12" fill="#FFC2CE"/>
-  <circle cx="218" cy="256" r="20" fill="#1F2328"/>
-  <circle cx="294" cy="256" r="20" fill="#1F2328"/>
-  <circle cx="212" cy="249" r="7" fill="#FFFFFF"/>
-  <circle cx="288" cy="249" r="7" fill="#FFFFFF"/>
-  <path d="M236 302 Q256 322 276 302" fill="none" stroke="#1F2328" stroke-width="9" stroke-linecap="round"/>
+  
+  
+  
+  
+  
+  
+  
 
   
   
@@ -99,4 +99,4 @@
 
   
   <text x="256" y="502" font-family="Arial, sans-serif" font-size="11" text-anchor="middle"
-        fill="#7FA8C4" opacity="0.75">https://erik.xyz</text></g><g class="ex-face"><circle cx="256" cy="262" r="138" fill="#F6FCFF"/><path d="M 199,261.6 Q 218,233 237,261.6" fill="none" stroke="#1F2328" stroke-width="4" stroke-linecap="round"/><path d="M 275,261.6 Q 294,233 313,261.6" fill="none" stroke="#1F2328" stroke-width="4" stroke-linecap="round"/><path d="M 233,296.4 Q 256,333.12 279,296.4 Z" fill="#4A1D2E" stroke="#1F2328" stroke-width="2.56"/><ellipse cx="256" cy="307.92" rx="10.12" ry="7.92" fill="#FF6B8A"/><ellipse class="ex-anim-pulse" cx="203" cy="283" rx="15.6" ry="8.4" fill="#FF8FB3" opacity="0.6"/><ellipse class="ex-anim-pulse" cx="309" cy="283" rx="15.6" ry="8.4" fill="#FF8FB3" opacity="0.6"/><g transform="translate(313.17 257.67)"><circle class="ex-anim-confetti" style="animation-delay:0.0s" r="3.81" fill="#FF6B9D"/></g><g transform="translate(298.37 282.4)"><rect class="ex-anim-confetti" style="animation-delay:0.16s" x="-2.72" y="-5.44" width="5.44" height="10.88" rx="1.63" fill="#FFD166"/></g><g transform="translate(257.16 292.16)"><circle class="ex-anim-confetti" style="animation-delay:0.32s" r="3.81" fill="#4FA3FF"/></g><g transform="translate(221.52 283.21)"><rect class="ex-anim-confetti" style="animation-delay:0.48s" x="-2.72" y="-5.44" width="5.44" height="10.88" rx="1.63" fill="#5FBF9F"/></g><g transform="translate(189.06 258.99)"><circle class="ex-anim-confetti" style="animation-delay:0.64s" r="3.81" fill="#9B7BFF"/></g><g transform="translate(178.04 228.73)"><rect class="ex-anim-confetti" style="animation-delay:0.8s" x="-2.72" y="-5.44" width="5.44" height="10.88" rx="1.63" fill="#F97316"/></g><g transform="translate(220.15 204)"><circle class="ex-anim-confetti" style="animation-delay:0.96s" r="3.81" fill="#FF6B9D"/></g><g transform="translate(255 194.24)"><rect class="ex-anim-confetti" style="animation-delay:1.12s" x="-2.72" y="-5.44" width="5.44" height="10.88" rx="1.63" fill="#FFD166"/></g><g transform="translate(303.02 203.19)"><circle class="ex-anim-confetti" style="animation-delay:1.28s" r="3.81" fill="#4FA3FF"/></g><g transform="translate(312.64 227.41)"><rect class="ex-anim-confetti" style="animation-delay:1.44s" x="-2.72" y="-5.44" width="5.44" height="10.88" rx="1.63" fill="#5FBF9F"/></g></g></g></svg>
+        fill="#7FA8C4" opacity="0.75">https://erik.xyz</text></g><g class="ex-face"><path d="M 199,261.6 Q 218,233 237,261.6" fill="none" stroke="#1F2328" stroke-width="4" stroke-linecap="round"/><path d="M 275,261.6 Q 294,233 313,261.6" fill="none" stroke="#1F2328" stroke-width="4" stroke-linecap="round"/><path d="M 233,296.4 Q 256,333.12 279,296.4 Z" fill="#4A1D2E" stroke="#1F2328" stroke-width="2.56"/><ellipse cx="256" cy="307.92" rx="10.12" ry="7.92" fill="#FF6B8A"/><ellipse class="ex-anim-pulse" cx="203" cy="283" rx="15.6" ry="8.4" fill="#FF8FB3" opacity="0.6"/><ellipse class="ex-anim-pulse" cx="309" cy="283" rx="15.6" ry="8.4" fill="#FF8FB3" opacity="0.6"/><g transform="translate(313.17 257.67)"><circle class="ex-anim-confetti" style="animation-delay:0.0s" r="3.81" fill="#FF6B9D"/></g><g transform="translate(298.37 282.4)"><rect class="ex-anim-confetti" style="animation-delay:0.16s" x="-2.72" y="-5.44" width="5.44" height="10.88" rx="1.63" fill="#FFD166"/></g><g transform="translate(257.16 292.16)"><circle class="ex-anim-confetti" style="animation-delay:0.32s" r="3.81" fill="#4FA3FF"/></g><g transform="translate(221.52 283.21)"><rect class="ex-anim-confetti" style="animation-delay:0.48s" x="-2.72" y="-5.44" width="5.44" height="10.88" rx="1.63" fill="#5FBF9F"/></g><g transform="translate(189.06 258.99)"><circle class="ex-anim-confetti" style="animation-delay:0.64s" r="3.81" fill="#9B7BFF"/></g><g transform="translate(178.04 228.73)"><rect class="ex-anim-confetti" style="animation-delay:0.8s" x="-2.72" y="-5.44" width="5.44" height="10.88" rx="1.63" fill="#F97316"/></g><g transform="translate(220.15 204)"><circle class="ex-anim-confetti" style="animation-delay:0.96s" r="3.81" fill="#FF6B9D"/></g><g transform="translate(255 194.24)"><rect class="ex-anim-confetti" style="animation-delay:1.12s" x="-2.72" y="-5.44" width="5.44" height="10.88" rx="1.63" fill="#FFD166"/></g><g transform="translate(303.02 203.19)"><circle class="ex-anim-confetti" style="animation-delay:1.28s" r="3.81" fill="#4FA3FF"/></g><g transform="translate(312.64 227.41)"><rect class="ex-anim-confetti" style="animation-delay:1.44s" x="-2.72" y="-5.44" width="5.44" height="10.88" rx="1.63" fill="#5FBF9F"/></g></g></g></svg>

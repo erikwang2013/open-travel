@@ -80,13 +80,13 @@
   <circle cx="256" cy="262" r="146" fill="#F6FCFF" stroke="#C5E4F6" stroke-width="5"/>
 
   
-  <ellipse cx="192" cy="296" rx="19" ry="12" fill="#FFC2CE"/>
-  <ellipse cx="320" cy="296" rx="19" ry="12" fill="#FFC2CE"/>
-  <circle cx="218" cy="256" r="20" fill="#1F2328"/>
-  <circle cx="294" cy="256" r="20" fill="#1F2328"/>
-  <circle cx="212" cy="249" r="7" fill="#FFFFFF"/>
-  <circle cx="288" cy="249" r="7" fill="#FFFFFF"/>
-  <path d="M236 302 Q256 322 276 302" fill="none" stroke="#1F2328" stroke-width="9" stroke-linecap="round"/>
+  
+  
+  
+  
+  
+  
+  
 
   
   
@@ -99,4 +99,4 @@
 
   
   <text x="256" y="502" font-family="Arial, sans-serif" font-size="11" text-anchor="middle"
-        fill="#7FA8C4" opacity="0.75">https://erik.xyz</text></g><g class="ex-face"><circle cx="256" cy="262" r="138" fill="#F6FCFF"/><path d="M 199,225 L 229,237" stroke="#1F2328" stroke-width="3.5" stroke-linecap="round"/><path d="M 313,225 L 283,237" stroke="#1F2328" stroke-width="3.5" stroke-linecap="round"/><ellipse cx="218" cy="256" rx="20" ry="13.2" fill="#FFFFFF" stroke="#1F2328" stroke-width="3.2"/><ellipse cx="218" cy="256" rx="9.6" ry="7.26" fill="#1F2328"/><circle cx="213.6" cy="252.3" r="4" fill="#FFFFFF"/><path d="M 275,261.6 Q 294,233 313,261.6" fill="none" stroke="#1F2328" stroke-width="4" stroke-linecap="round"/><path d="M 239.9,300 L 272.1,300" stroke="#1F2328" stroke-width="3.2" stroke-linecap="round"/><g transform="translate(294 256)"><g class="ex-anim-knock"><rect x="-11" y="-9" width="18" height="18" rx="6" fill="#2F6FED" stroke="#1F2328" stroke-width="2"/><path d="M -5,-2.4 L -5,3 M 0,-3.6 L 0,3 M 5,-2.4 L 5,3" stroke="#1F2328" stroke-width="1.2" stroke-linecap="round"/></g></g><g transform="translate(277 245)"><path class="ex-anim-knockline" style="animation-delay:0.0s" d="M 0 0 L -11 0" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round"/></g><g transform="translate(277 256)"><path class="ex-anim-knockline" style="animation-delay:0.12s" d="M 0 0 L -11 0" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round"/></g><g transform="translate(277 267)"><path class="ex-anim-knockline" style="animation-delay:0.24s" d="M 0 0 L -11 0" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round"/></g><g transform="translate(202.86 198.4)"><circle class="ex-anim-steam" style="animation-delay:0.0s" r="4.95" fill="#D7DEE8" opacity=".72"/></g><g transform="translate(207.36 195.25)"><circle class="ex-anim-steam" style="animation-delay:0.28s" r="6.3" fill="#D7DEE8" opacity=".72"/></g><g transform="translate(211.86 198.85)"><circle class="ex-anim-steam" style="animation-delay:0.56s" r="4.5" fill="#D7DEE8" opacity=".72"/></g></g></g></svg>
+        fill="#7FA8C4" opacity="0.75">https://erik.xyz</text></g><g class="ex-face"><path d="M 199,225 L 229,237" stroke="#1F2328" stroke-width="3.5" stroke-linecap="round"/><path d="M 313,225 L 283,237" stroke="#1F2328" stroke-width="3.5" stroke-linecap="round"/><ellipse cx="218" cy="256" rx="20" ry="13.2" fill="#FFFFFF" stroke="#1F2328" stroke-width="3.2"/><ellipse cx="218" cy="256" rx="9.6" ry="7.26" fill="#1F2328"/><circle cx="213.6" cy="252.3" r="4" fill="#FFFFFF"/><path d="M 275,261.6 Q 294,233 313,261.6" fill="none" stroke="#1F2328" stroke-width="4" stroke-linecap="round"/><path d="M 239.9,300 L 272.1,300" stroke="#1F2328" stroke-width="3.2" stroke-linecap="round"/><g transform="translate(294 256)"><g class="ex-anim-knock"><rect x="-11" y="-9" width="18" height="18" rx="6" fill="#2F6FED" stroke="#1F2328" stroke-width="2"/><path d="M -5,-2.4 L -5,3 M 0,-3.6 L 0,3 M 5,-2.4 L 5,3" stroke="#1F2328" stroke-width="1.2" stroke-linecap="round"/></g></g><g transform="translate(277 245)"><path class="ex-anim-knockline" style="animation-delay:0.0s" d="M 0 0 L -11 0" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round"/></g><g transform="translate(277 256)"><path class="ex-anim-knockline" style="animation-delay:0.12s" d="M 0 0 L -11 0" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round"/></g><g transform="translate(277 267)"><path class="ex-anim-knockline" style="animation-delay:0.24s" d="M 0 0 L -11 0" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round"/></g><g transform="translate(202.86 198.4)"><circle class="ex-anim-steam" style="animation-delay:0.0s" r="4.95" fill="#D7DEE8" opacity=".72"/></g><g transform="translate(207.36 195.25)"><circle class="ex-anim-steam" style="animation-delay:0.28s" r="6.3" fill="#D7DEE8" opacity=".72"/></g><g transform="translate(211.86 198.85)"><circle class="ex-anim-steam" style="animation-delay:0.56s" r="4.5" fill="#D7DEE8" opacity=".72"/></g></g></g></svg>

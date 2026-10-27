@@ -80,13 +80,13 @@
   <circle cx="256" cy="262" r="146" fill="#F6FCFF" stroke="#C5E4F6" stroke-width="5"/>
 
   
-  <ellipse cx="192" cy="296" rx="19" ry="12" fill="#FFC2CE"/>
-  <ellipse cx="320" cy="296" rx="19" ry="12" fill="#FFC2CE"/>
-  <circle cx="218" cy="256" r="20" fill="#1F2328"/>
-  <circle cx="294" cy="256" r="20" fill="#1F2328"/>
-  <circle cx="212" cy="249" r="7" fill="#FFFFFF"/>
-  <circle cx="288" cy="249" r="7" fill="#FFFFFF"/>
-  <path d="M236 302 Q256 322 276 302" fill="none" stroke="#1F2328" stroke-width="9" stroke-linecap="round"/>
+  
+  
+  
+  
+  
+  
+  
 
   
   
@@ -99,4 +99,4 @@
 
   
   <text x="256" y="502" font-family="Arial, sans-serif" font-size="11" text-anchor="middle"
-        fill="#7FA8C4" opacity="0.75">https://erik.xyz</text></g><g class="ex-face"><circle cx="256" cy="262" r="138" fill="#F6FCFF"/><path d="M 199,252 Q 218,278 237,252" fill="none" stroke="#1F2328" stroke-width="4" stroke-linecap="round"/><path d="M 233,300 Q 238.75,279.84 244.5,285.6 Q 250.25,279.84 256,300 Q 261.75,320.16 267.5,314.4 Q 273.25,320.16 279,300" fill="none" stroke="#1F2328" stroke-width="3.2" stroke-linecap="round"/><ellipse cx="203" cy="283" rx="15.6" ry="8.4" fill="#FF8FB3" opacity="0.7"/><ellipse cx="309" cy="283" rx="15.6" ry="8.4" fill="#FF8FB3" opacity="0.7"/><g transform="translate(297 259) rotate(12)"><rect class="ex-anim-palm" x="-17.25" y="-24.15" width="34.5" height="46" rx="12.65" fill="#2F6FED" stroke="#1F2328" stroke-width="2.07"/><path class="ex-anim-palm" d="M -8.28,-17.25 L -8.28,-2.3" stroke="#1F2328" stroke-width="1.26" stroke-linecap="round" opacity=".55"/><path class="ex-anim-palm" d="M 0,-17.25 L 0,-2.3" stroke="#1F2328" stroke-width="1.26" stroke-linecap="round" opacity=".55"/><path class="ex-anim-palm" d="M 8.28,-17.25 L 8.28,-2.3" stroke="#1F2328" stroke-width="1.26" stroke-linecap="round" opacity=".55"/></g><g transform="translate(198.8 194.56)"><circle class="ex-anim-steam" style="animation-delay:0.0s" r="6.6" fill="#D7DEE8" opacity=".72"/></g><g transform="translate(204.8 190.36)"><circle class="ex-anim-steam" style="animation-delay:0.28s" r="8.4" fill="#D7DEE8" opacity=".72"/></g><g transform="translate(210.8 195.16)"><circle class="ex-anim-steam" style="animation-delay:0.56s" r="6" fill="#D7DEE8" opacity=".72"/></g><g transform="translate(0 0)"><path class="ex-anim-sweat" style="animation-delay:0.2s" d="M 323,226 C 329,235.6 329,244.4 323,244.4 C 317,244.4 317,235.6 323,226 Z" fill="#6FB2F0"/><circle cx="323" cy="235.2" r="1.76" fill="#FFFFFF" opacity=".8"/></g></g></g></svg>
+        fill="#7FA8C4" opacity="0.75">https://erik.xyz</text></g><g class="ex-face"><path d="M 199,252 Q 218,278 237,252" fill="none" stroke="#1F2328" stroke-width="4" stroke-linecap="round"/><path d="M 233,300 Q 238.75,279.84 244.5,285.6 Q 250.25,279.84 256,300 Q 261.75,320.16 267.5,314.4 Q 273.25,320.16 279,300" fill="none" stroke="#1F2328" stroke-width="3.2" stroke-linecap="round"/><ellipse cx="203" cy="283" rx="15.6" ry="8.4" fill="#FF8FB3" opacity="0.7"/><ellipse cx="309" cy="283" rx="15.6" ry="8.4" fill="#FF8FB3" opacity="0.7"/><g transform="translate(297 259) rotate(12)"><rect class="ex-anim-palm" x="-17.25" y="-24.15" width="34.5" height="46" rx="12.65" fill="#2F6FED" stroke="#1F2328" stroke-width="2.07"/><path class="ex-anim-palm" d="M -8.28,-17.25 L -8.28,-2.3" stroke="#1F2328" stroke-width="1.26" stroke-linecap="round" opacity=".55"/><path class="ex-anim-palm" d="M 0,-17.25 L 0,-2.3" stroke="#1F2328" stroke-width="1.26" stroke-linecap="round" opacity=".55"/><path class="ex-anim-palm" d="M 8.28,-17.25 L 8.28,-2.3" stroke="#1F2328" stroke-width="1.26" stroke-linecap="round" opacity=".55"/></g><g transform="translate(198.8 194.56)"><circle class="ex-anim-steam" style="animation-delay:0.0s" r="6.6" fill="#D7DEE8" opacity=".72"/></g><g transform="translate(204.8 190.36)"><circle class="ex-anim-steam" style="animation-delay:0.28s" r="8.4" fill="#D7DEE8" opacity=".72"/></g><g transform="translate(210.8 195.16)"><circle class="ex-anim-steam" style="animation-delay:0.56s" r="6" fill="#D7DEE8" opacity=".72"/></g><g transform="translate(0 0)"><path class="ex-anim-sweat" style="animation-delay:0.2s" d="M 323,226 C 329,235.6 329,244.4 323,244.4 C 317,244.4 317,235.6 323,226 Z" fill="#6FB2F0"/><circle cx="323" cy="235.2" r="1.76" fill="#FFFFFF" opacity=".8"/></g></g></g></svg>
