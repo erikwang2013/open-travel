@@ -5,16 +5,16 @@
 
 [English](docs/i18n/en/README.md) | [日本語](docs/i18n/ja/README.md) | [한국어](docs/i18n/ko/README.md) | [Русский](docs/i18n/ru/README.md) | [Deutsch](docs/i18n/de/README.md) | [Français](docs/i18n/fr/README.md) | [Español](docs/i18n/es/README.md) | [Português](docs/i18n/pt/README.md) | [हिन्दी](docs/i18n/hi/README.md) | [العربية](docs/i18n/ar/README.md) | [বাংলা](docs/i18n/bn/README.md) | [Bahasa Indonesia](docs/i18n/id/README.md)
 
-> 一个面向全球用户的旅游预订平台：Rust 微服务后端 + Flutter / HarmonyOS 多端客户端，支持 **12+ 种语言**、国际支付与多语言搜索。
+> 一个面向全球用户的旅游预订平台：Rust 微服务后端 + Flutter 多端客户端，支持 **12+ 种语言**、国际支付与多语言搜索。
 
 ## 项目简介
 
-Open Travel 是一个全球旅游平台 monorepo，采用 **e-cat（一只猫）** —— 对标 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 的 **Rust 微服务框架**（v3.0.3 · 33 crates）—— 构建高性能后端，配合 Flutter 多端与鸿蒙原生客户端，为全球用户提供统一的旅行预订体验。
+Open Travel 是一个全球旅游平台 monorepo，采用 **e-cat（一只猫）** —— 对标 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 的 **Rust 微服务框架**（v3.0.3 · 33 crates）—— 构建高性能后端，配合 Flutter 多端客户端，为全球用户提供统一的旅行预订体验。
 
 | 维度 | 说明 |
 | :--- | :--- |
 | **后端框架** | e-cat（Rust）：HTTP/axum + gRPC/tonic，33 crates 微服务生态 |
-| **多端客户端** | `apps/client/flutter`（iOS / Android / Web / Desktop）、`apps/client/harmonyos`（鸿蒙）、`apps/admin`（Flutter Web 管理端） |
+| **多端客户端** | `apps/client/flutter`（iOS / Android / Web / Desktop）、`apps/admin`（Flutter Web 管理端） |
 | **数据库** | MySQL（库名 `travel`，表前缀 `travel_`）+ Redis 缓存 + OpenSearch 多语言搜索 |
 | **安全** | ecat-security / ecat-auth（JWT）/ ecat-tls：认证、审计、限流、防注入 |
 | **国际化** | 12+ 语种 ARB 语言包，RTL 支持，OpenSearch 多语言分词 |
@@ -30,10 +30,9 @@ Open Travel 是一个全球旅游平台 monorepo，采用 **e-cat（一只猫）
 | `apps/*/web/favicon.svg` | 浏览器标签图标（表盘特写版，16px 下仍可辨认；`favicon.png` 16px 兜底旧浏览器） |
 | `apps/*/web/icons/Icon-*.png` | PWA / 主屏图标 192·512（含 maskable 安全区版） |
 | `apps/*/assets/mascot.png` | Flutter 应用内展示（管理端登录页、客户端个人页） |
-| `apps/client/harmonyos/.../media/mascot.svg` | 鸿蒙应用内（`Image` 原生渲染 SVG；去 opacity 的移动端变体） |
 | 各 README / crate 文档 | 页首品牌位 |
 
-> 改造型只改 `docs/mascot.svg`，其余均为派生件：favicon 是它的表盘特写（去掉手臂 / 放大镜 / 脚 / 航线等小尺寸糊掉的笔画），鸿蒙变体把半透明色预乘为实色并去掉全部 `opacity` 以适配移动端 SVG 渲染器。全部图形为原创，无第三方素材依赖。
+> 改造型只改 `docs/mascot.svg`，其余均为派生件：favicon 是它的表盘特写（去掉手臂 / 放大镜 / 脚 / 航线等小尺寸糊掉的笔画），应用内图标由同一矢量源导出。全部图形为原创，无第三方素材依赖。
 
 
 <!-- pet-expressions:start -->
@@ -156,7 +155,7 @@ curl "http://localhost:8082/api/v1/booking/attractions?destination_id=1"
 - 🌍 12+ 语种独立适配（中、英、日、韩、阿、西、法、德……）
 - 💳 国际支付（微信支付 / 支付宝）
 - 🔐 安全纵深：TLS 1.3、JWT 认证、审计日志、输入过滤、限流、支付回调 HMAC 验签与内部服务鉴权
-- 📱 多端一致体验：Flutter（iOS/Android/Web/Desktop）+ 鸿蒙
+- 📱 多端一致体验：Flutter（iOS/Android/Web/Desktop）
 
 ## 架构设计图
 
@@ -188,8 +187,7 @@ curl "http://localhost:8082/api/v1/booking/attractions?destination_id=1"
 open-travel/
 ├── apps/                  # 多端客户端与管理端
 │   ├── client/
-│   │   ├── flutter/       # Flutter：iOS / Android / Web / Desktop（12+ 语种 i18n，web/favicon.svg 为「南南」图标）
-│   │   └── harmonyos/     # 鸿蒙原生客户端
+│   │   └── flutter/       # Flutter：iOS / Android / Web / Desktop（12+ 语种 i18n，web/favicon.svg 为「南南」图标）
 │   └── admin/             # Flutter Web 管理端
 ├── e-cat/                 # e-cat 框架 + 业务服务（同一 Cargo workspace）
 │   ├── ecat*/             # 33 个 ecat-* 框架 crate

@@ -6,7 +6,7 @@
 
 [简体中文](README.md) | English | [日本語](../docs/i18n/ja/README.md) | [한국어](../docs/i18n/ko/README.md) | [Русский](../docs/i18n/ru/README.md) | [Deutsch](../docs/i18n/de/README.md) | [Français](../docs/i18n/fr/README.md) | [Español](../docs/i18n/es/README.md) | [Português](../docs/i18n/pt/README.md) | [हिन्दी](../docs/i18n/hi/README.md) | [العربية](../docs/i18n/ar/README.md) | [বাংলা](../docs/i18n/bn/README.md) | [Bahasa Indonesia](../docs/i18n/id/README.md)
 
-> A global travel booking platform: Rust microservices backend (built on the **e-cat** framework) + Flutter / HarmonyOS multi-platform clients, supporting **12+ languages**, international payments, and multilingual search.
+> A global travel booking platform: Rust microservices backend (built on the **e-cat** framework) + Flutter multi-platform clients, supporting **12+ languages**, international payments, and multilingual search.
 
 ## Overview
 
@@ -17,7 +17,7 @@ Open Travel is a global travel platform monorepo. The backend is built on **e-ca
 | **Backend** | e-cat (Rust): HTTP/axum + gRPC/tonic, 33-crate microservice ecosystem |
 | **Services** | user-service (:8001) through payment-service (:8009) — 9 services; business logic in `e-cat/ecat/src/business/`, service entries in `e-cat/ecat/src/bin/` |
 | **Gateway** | Nginx (`config/nginx.conf`), prefix-based routing |
-| **Clients** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS) |
+| **Clients** | `apps/client/flutter` (iOS / Android / Web / Desktop) |
 | **Data** | MySQL + Redis cache + OpenSearch multilingual search |
 | **Security** | ecat-security / ecat-auth (JWT) / ecat-tls: auth, audit, rate limiting, injection defense |
 | **i18n** | 12+ languages, RTL support, OpenSearch multilingual tokenization |

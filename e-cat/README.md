@@ -6,7 +6,7 @@
 
 [English](README.en.md) | [日本語](../docs/i18n/ja/README.md) | [한국어](../docs/i18n/ko/README.md) | [Русский](../docs/i18n/ru/README.md) | [Deutsch](../docs/i18n/de/README.md) | [Français](../docs/i18n/fr/README.md) | [Español](../docs/i18n/es/README.md) | [Português](../docs/i18n/pt/README.md) | [हिन्दी](../docs/i18n/hi/README.md) | [العربية](../docs/i18n/ar/README.md) | [বাংলা](../docs/i18n/bn/README.md) | [Bahasa Indonesia](../docs/i18n/id/README.md) | 简体中文
 
-> 一个面向全球用户的旅游预订平台：Rust 微服务后端（**e-cat** 框架） + Flutter / HarmonyOS 多端客户端，支持 **12+ 种语言**、国际支付与多语言搜索。
+> 一个面向全球用户的旅游预订平台：Rust 微服务后端（**e-cat** 框架） + Flutter 多端客户端，支持 **12+ 种语言**、国际支付与多语言搜索。
 
 ## 项目简介
 
@@ -17,7 +17,7 @@ Open Travel 是一个全球旅游平台 monorepo。后端基于 **e-cat（一只
 | **后端** | e-cat（Rust）：HTTP/axum + gRPC/tonic，33 crates 微服务生态 |
 | **业务服务** | user-service（:8001）～ payment-service（:8009）九个服务；业务逻辑在 `e-cat/ecat/src/business/`，服务入口在 `e-cat/ecat/src/bin/` |
 | **网关** | Nginx（`config/nginx.conf`），按 URL 前缀分流 |
-| **多端客户端** | `apps/client/flutter`（iOS / Android / Web / Desktop）、`apps/client/harmonyos`（鸿蒙） |
+| **多端客户端** | `apps/client/flutter`（iOS / Android / Web / Desktop） |
 | **数据源** | MySQL + Redis 缓存 + OpenSearch 多语言搜索 |
 | **安全** | ecat-security / ecat-auth（JWT）/ ecat-tls：认证、审计、限流、防注入、支付回调 HMAC 验签与内部服务鉴权 |
 | **国际化** | 12+ 语种，RTL 支持，OpenSearch 多语言分词 |
