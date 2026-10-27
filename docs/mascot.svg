@@ -3,7 +3,7 @@
      设定：罗盘精灵。表盘即身体，头顶指针是呆毛，右手持放大镜找目的地。
      表圈上 12 个刻度 = 12+ 语种；四正方向刻度加粗 = 导航方位。
      风格：扁平几何（纯色块 + 细描边，无 <defs>/渐变），与项目图表语言一致，
-     并保证移动端 SVG 渲染器（鸿蒙 Image）可直接渲染。
+     并保证移动端 SVG 渲染器可直接渲染。
      猫时代旧形象见 git 历史（v1.4.2 及以前为「南南」）。 -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
   <title id="title">Nannan 南南 — Open Travel 吉祥物</title>

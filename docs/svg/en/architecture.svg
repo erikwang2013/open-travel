@@ -33,9 +33,6 @@
   <rect x="396" y="100" width="168" height="56" class="box"/>
   <text x="480" y="124" text-anchor="middle" class="t-m">Flutter Web / Desktop</text>
   <text x="480" y="144" text-anchor="middle" class="t-s">Web &amp; Desktop Client</text>
-  <rect x="576" y="100" width="168" height="56" class="box"/>
-  <text x="660" y="124" text-anchor="middle" class="t-m">HarmonyOS</text>
-  <text x="660" y="144" text-anchor="middle" class="t-s">HarmonyOS Client</text>
 
   <!-- API Gateway Layer -->
   <rect x="30" y="192" width="720" height="96" class="panel"/>
@@ -55,7 +52,6 @@
   <rect x="396" y="372" width="168" height="66" class="box"/>
   <text x="480" y="396" text-anchor="middle" class="t-m">Booking</text>
   <text x="480" y="418" text-anchor="middle" class="t-s">Popular Destinations · Attractions</text>
-  <text x="480" y="433" text-anchor="middle" class="t-s">Reviews</text>
   <rect x="576" y="372" width="168" height="64" class="box"/>
   <text x="660" y="396" text-anchor="middle" class="t-m">Admin</text>
   <text x="660" y="418" text-anchor="middle" class="t-s">Admin Login · Content CRUD</text>
@@ -125,7 +121,7 @@
   <line x1="770" y1="260" x2="770" y2="645" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="6 4"/>
   <line x1="770" y1="645" x2="786" y2="645" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="6 4"/>
   <rect x="786" y="590" width="168" height="110" class="box" stroke-dasharray="6 4"/>
-  <text x="870" y="618" text-anchor="middle" class="t-m">CDN Static Acceleration</text>
-  <text x="870" y="640" text-anchor="middle" class="t-s">8 provider plugins · static only</text>
+  <text x="870" y="618" text-anchor="middle" class="t-m">Nginx Static Assets</text>
+  <text x="870" y="640" text-anchor="middle" class="t-s">Nginx · static assets</text>
   <text x="870" y="660" text-anchor="middle" class="t-s">docs images · Flutter Web assets</text>
 </svg>

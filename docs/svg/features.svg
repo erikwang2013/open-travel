@@ -62,14 +62,6 @@
   <text x="145" y="378" text-anchor="middle" class="t-s">订单查询 · 状态跟踪</text>
   <text x="145" y="400" text-anchor="middle" class="t-s">退改签 · 通知提醒</text>
 
-  <rect x="265" y="280" width="210" height="150" class="card"/>
-  <rect x="265" y="280" width="210" height="4" class="accent"/>
-  <text x="370" y="322" text-anchor="middle" class="t-m">评价系统</text>
-  <text x="370" y="342" text-anchor="middle" class="t-eng">Review System</text>
-  <line x1="277" y1="354" x2="463" y2="354" stroke="#d0d7de" stroke-width="1"/>
-  <text x="370" y="378" text-anchor="middle" class="t-s">点评 · 评分 · 审核</text>
-  <text x="370" y="400" text-anchor="middle" class="t-s">内容过滤 · 排行榜</text>
-
   <rect x="490" y="280" width="210" height="150" class="card"/>
   <rect x="490" y="280" width="210" height="4" class="accent"/>
   <text x="595" y="322" text-anchor="middle" class="t-m">i18n ARB 语言包</text>
@@ -105,15 +97,15 @@
 
   <rect x="750" y="450" width="210" height="150" class="card"/>
   <rect x="750" y="450" width="210" height="4" class="accent"/>
-  <text x="820" y="492" text-anchor="middle" class="t-m">CDN 云商管理</text>
-  <text x="820" y="512" text-anchor="middle" class="t-eng">CDN Provider Management</text>
+  <text x="820" y="492" text-anchor="middle" class="t-m">静态资源分发</text>
+  <text x="820" y="512" text-anchor="middle" class="t-eng">Static Asset Delivery</text>
   <line x1="762" y1="524" x2="948" y2="524" stroke="#d0d7de" stroke-width="1"/>
-  <text x="820" y="548" text-anchor="middle" class="t-s">八云插件 · 启停开关</text>
-  <text x="820" y="570" text-anchor="middle" class="t-s">配置表单 · 命令预览</text>
+  <text x="820" y="548" text-anchor="middle" class="t-s">Nginx · 文档图片</text>
+  <text x="820" y="570" text-anchor="middle" class="t-s">Flutter Web 产物</text>
   <rect x="40" y="620" width="920" height="80" class="panel"/>
   <text x="60" y="500" class="t-h">核心能力栈</text>
-  <text x="60" y="528" class="t-s">e-cat (Rust) · Flutter · HarmonyOS · MySQL · Redis · OpenSearch · Kafka · 微信支付 · 支付宝</text>
+  <text x="60" y="528" class="t-s">e-cat (Rust) · Flutter · MySQL · Redis · OpenSearch · Kafka · 微信支付 · 支付宝</text>
 
-  <text x="500" y="730" text-anchor="middle" class="t-s">12+ 语种 · 51 crates · 多端覆盖（iOS / Android / Web / Desktop / 鸿蒙）</text>
+  <text x="500" y="730" text-anchor="middle" class="t-s">12+ 语种 · 33 crates · Flutter 多端（iOS / Android / Web / Desktop）</text>
   <text x="988" y="768" text-anchor="end" font-size="12" fill="#8b949e" fill-opacity="0.5" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">https://erik.xyz</text>
 </svg>

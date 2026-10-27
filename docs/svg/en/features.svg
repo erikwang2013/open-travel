@@ -62,14 +62,6 @@
   <text x="145" y="378" text-anchor="middle" class="t-s">Order lookup · Status tracking</text>
   <text x="145" y="400" text-anchor="middle" class="t-s">Cancellation · Changes · Notifications</text>
 
-  <rect x="265" y="280" width="210" height="150" class="card"/>
-  <rect x="265" y="280" width="210" height="4" class="accent"/>
-  <text x="370" y="322" text-anchor="middle" class="t-m">Review System</text>
-  <text x="370" y="342" text-anchor="middle" class="t-eng">Review System</text>
-  <line x1="277" y1="354" x2="463" y2="354" stroke="#d0d7de" stroke-width="1"/>
-  <text x="370" y="378" text-anchor="middle" class="t-s">Reviews · Ratings · Moderation</text>
-  <text x="370" y="400" text-anchor="middle" class="t-s">Content filtering · Rankings</text>
-
   <rect x="490" y="280" width="210" height="150" class="card"/>
   <rect x="490" y="280" width="210" height="4" class="accent"/>
   <text x="595" y="322" text-anchor="middle" class="t-m">i18n ARB Locale</text>
@@ -96,15 +88,15 @@
   <text x="290" y="570" text-anchor="middle" class="t-s">Top destinations &amp; lines · charts</text>
   <rect x="605" y="450" width="210" height="150" class="card"/>
   <rect x="605" y="450" width="210" height="4" class="accent"/>
-  <text x="710" y="492" text-anchor="middle" class="t-m">CDN Provider Management</text>
-  <text x="710" y="512" text-anchor="middle" class="t-eng">CDN Provider Management</text>
+  <text x="710" y="492" text-anchor="middle" class="t-m">Static Asset Delivery</text>
+  <text x="710" y="512" text-anchor="middle" class="t-eng">Static Asset Delivery</text>
   <line x1="617" y1="524" x2="803" y2="524" stroke="#d0d7de" stroke-width="1"/>
-  <text x="710" y="548" text-anchor="middle" class="t-s">8 provider plugins · enable/disable</text>
-  <text x="710" y="570" text-anchor="middle" class="t-s">Config forms · command preview</text>
+  <text x="710" y="548" text-anchor="middle" class="t-s">Nginx · docs images</text>
+  <text x="710" y="570" text-anchor="middle" class="t-s">Flutter Web assets</text>
   <rect x="40" y="620" width="920" height="80" class="panel"/>
   <text x="60" y="500" class="t-h">Core Tech Stack</text>
-  <text x="60" y="528" class="t-s">e-cat (Rust) · Flutter · HarmonyOS · MySQL · Redis · OpenSearch · Kafka · WeChat Pay · Alipay</text>
+  <text x="60" y="528" class="t-s">e-cat (Rust) · Flutter · MySQL · Redis · OpenSearch · Kafka · WeChat Pay · Alipay</text>
 
-  <text x="500" y="730" text-anchor="middle" class="t-s">12+ languages · 51 crates · Multi-platform (iOS / Android / Web / Desktop / HarmonyOS)</text>
+  <text x="500" y="730" text-anchor="middle" class="t-s">12+ languages · 33 crates · Flutter (iOS / Android / Web / Desktop)</text>
   <text x="988" y="768" text-anchor="end" font-size="12" fill="#8b949e" fill-opacity="0.5" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">https://erik.xyz</text>
 </svg>

@@ -13,7 +13,6 @@
 - 订单管理：查询、状态跟踪、退款
 - 用户管理：用户列表与资料
 - 支付渠道配置
-- CDN 云商管理（八云插件：cloudfront/aliyun/gcp/azure/cloudflare/tencent/huawei/bunny）
 
 ## 安装与运行
 
@@ -39,7 +38,6 @@ flutter run -d chrome
 - 默认管理账号：`admin@travel.local` / `Admin@123`（仅本地开发环境）
 - 登录接口：`POST /api/v1/admin/login`
 - 报表接口：`GET /api/v1/admin/reports/sales`、`GET /api/v1/admin/reports/payments`
-- CDN 云凭据不入库，命令需在部署机配置云 CLI 凭据后执行
 
 ## 目录结构
 

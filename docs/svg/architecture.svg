@@ -33,9 +33,6 @@
   <rect x="396" y="100" width="168" height="56" class="box"/>
   <text x="480" y="124" text-anchor="middle" class="t-m">Flutter Web / Desktop</text>
   <text x="480" y="144" text-anchor="middle" class="t-s">网页 · 桌面客户端</text>
-  <rect x="576" y="100" width="168" height="56" class="box"/>
-  <text x="660" y="124" text-anchor="middle" class="t-m">HarmonyOS 鸿蒙</text>
-  <text x="660" y="144" text-anchor="middle" class="t-s">鸿蒙客户端 HarmonyOS</text>
 
   <!-- API Gateway 层 -->
   <rect x="30" y="192" width="720" height="96" class="panel"/>
@@ -55,7 +52,6 @@
   <rect x="396" y="372" width="168" height="66" class="box"/>
   <text x="480" y="396" text-anchor="middle" class="t-m">Booking 预订</text>
   <text x="480" y="418" text-anchor="middle" class="t-s">热门目的地 · 景区</text>
-  <text x="480" y="433" text-anchor="middle" class="t-s">评价</text>
   <rect x="576" y="372" width="168" height="64" class="box"/>
   <text x="660" y="396" text-anchor="middle" class="t-m">Admin 管理</text>
   <text x="660" y="418" text-anchor="middle" class="t-s">管理登录 · 内容 CRUD</text>
@@ -125,7 +121,7 @@
   <line x1="770" y1="260" x2="770" y2="645" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="6 4"/>
   <line x1="770" y1="645" x2="786" y2="645" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="6 4"/>
   <rect x="786" y="590" width="168" height="110" class="box" stroke-dasharray="6 4"/>
-  <text x="870" y="618" text-anchor="middle" class="t-m">CDN 静态资源加速</text>
-  <text x="870" y="640" text-anchor="middle" class="t-s">八云插件 · 仅加速静态资源</text>
+  <text x="870" y="618" text-anchor="middle" class="t-m">Nginx 静态资源</text>
+  <text x="870" y="640" text-anchor="middle" class="t-s">Nginx · 静态资源</text>
   <text x="870" y="660" text-anchor="middle" class="t-s">docs 图片 · Flutter Web 产物</text>
 </svg>

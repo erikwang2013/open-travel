@@ -23,7 +23,7 @@
   <rect x="170" y="86" width="790" height="64" class="box"/>
   <rect x="170" y="86" width="4" height="64" class="accent"/>
   <text x="200" y="112" class="t-m">客户端请求</text>
-  <text x="200" y="134" class="t-s">Flutter / HarmonyOS 客户端发起 HTTP 请求</text>
+  <text x="200" y="134" class="t-s">Flutter 客户端发起 HTTP 请求</text>
   <circle cx="90" cy="118" r="16" class="num"/>
   <text x="90" y="123" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="14" font-weight="700" fill="#ffffff">1</text>
 

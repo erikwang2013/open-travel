@@ -4,7 +4,7 @@
 <p align="center"><img src="../docs/mascot.svg" alt="Nannan 南南 — Open Travel 吉祥物" width="180"></p>
 
 
-[English](README.en.md) | [日本語](../docs/i18n/ja/README.md) | [한국어](../docs/i18n/ko/README.md) | [Русский](../docs/i18n/ru/README.md) | [Deutsch](../docs/i18n/de/README.md) | [Français](../docs/i18n/fr/README.md) | [Español](../docs/i18n/es/README.md) | [Português](../docs/i18n/pt/README.md) | [हिन्दी](../docs/i18n/hi/README.md) | [العربية](../docs/i18n/ar/README.md) | [বাংলা](../docs/i18n/bn/README.md) | [Bahasa Indonesia](../docs/i18n/id/README.md) | 简体中文
+[English](README.en.md) | 简体中文
 
 > 一个面向全球用户的旅游预订平台：Rust 微服务后端（**e-cat** 框架） + Flutter 多端客户端，支持 **12+ 种语言**、国际支付与多语言搜索。
 
@@ -28,8 +28,8 @@ Open Travel 是一个全球旅游平台 monorepo。后端基于 **e-cat（一只
 open-travel/
 ├── apps/                  # client/ 多端客户端 + admin/ 管理端
 ├── config/                # docker-compose.yml、nginx.conf、schema.sql、opensearch.yml
-├── docs/                  # 规划文档、联调/压测报告、SVG 架构图、i18n 翻译
-├── scripts/               # install / up·down / deploy / health_check / opensearch_init / loadtest / reconcile_payments / env_audit / cdn_setup·cdn_upload / gen_arb + 种子数据
+├── docs/                  # 联调/压测报告、SVG 架构图、英文 README
+├── scripts/               # install / up·down / deploy / health_check / opensearch_init / loadtest / reconcile_payments / env_audit / gen_arb
 └── e-cat/                 # e-cat 框架 + 业务服务（同一 Cargo workspace）
     ├── ecat*/             # 33 个 ecat-* 框架 crate
     ├── ecat/              # 主框架 crate：门面 + 业务模块（src/business/）+ 服务入口（src/bin/）
@@ -42,7 +42,7 @@ open-travel/
 | 服务 | 端口 | 说明 |
 |------|------|------|
 | user-service | 8001 | `POST /api/v1/user/register`、`POST /api/v1/user/login`（公开）、`GET /api/v1/user/profile`（需 JWT） |
-| booking-service | 8002 | `GET /api/v1/booking/dates?region_id=N`（公开接口）、`/api/v1/reviews/` 评价 |
+| booking-service | 8002 | `GET /api/v1/booking/dates?region_id=N`（公开接口） |
 | admin-service | 8003 | 管理端：登录 + 目的地/景区 CRUD（`/api/v1/admin/`） |
 | search-service | 8004 | 多语种搜索（`/api/v1/search`） |
 | line-service | 8005 | 旅游线路（`/api/v1/lines`） |
@@ -169,10 +169,7 @@ cargo test --workspace                          # 全 workspace
 |------|------|
 | `scripts/opensearch_init.sh` | 幂等创建 OpenSearch 索引（cjk 分析器） |
 | `scripts/loadtest.sh` | 接口压测 |
-| `scripts/cdn_setup.sh` / `cdn_upload.sh` | CDN 配置与资源上传（`--dry-run` 为默认） |
 | `scripts/release.sh` | 发布流程辅助 |
-
-管理端 CDN 云商管理接口（提供商列表 / 启停 / 配置更新 / dry-run 命令预览）由 admin-service 提供，详见 `../docs/api.md` 管理服务章节；云凭据不入库，命令需在部署机配置云 CLI 凭据后执行。
 
 ### 版本发布流程
 
@@ -319,7 +316,6 @@ Error::new(ErrorCode::InvalidArgument, "bad_request", "user id must be positive"
 ## 设计文档
 
 - [API 参考](../docs/api.md)
-- [项目规划](../docs/travel-project-planning.md)
 
 ## 支持
 
@@ -328,22 +324,6 @@ Error::new(ErrorCode::InvalidArgument, "bad_request", "user id must be positive"
 | 微信支付 | 支付宝 |
 |:---:|:---:|
 | <img src="../docs/weixinpay.png" width="130" height="130" alt="微信支付"> | <img src="../docs/alipay.png" width="130" height="130" alt="支付宝"> |
-
-### 全球转账（银行汇款）
-
-| 项目 | 信息 |
-|------|------|
-| 收款人姓名 | WANG KEXUN |
-| 收款账户号码 | 881015918251 |
-| 收款银行 | ZA Bank Limited |
-| SWIFT Code | AABLHKHHXXX |
-| 银行编号 | 387 |
-| 银行地址 | Core F, Cyberport 3, 100 Cyberport Road, Hong Kong |
-
-> **跨境汇款代理银行（如需）**：此为代理银行（中转银行）信息，非收款银行信息，请向汇款银行查询是否需要提供。
->
-> - 汇入港元、人民币及美元：**Citibank N.A. Hong Kong**（SWIFT：`CITIHKHXXXX`，银行编号：006，分行：Hong Kong Branch，分行编号：391，地址：Citibank Tower, Citibank Plaza, 3 Garden Road, Central, Hong Kong）
-> - 汇入其他币种：**THE BANK OF NEW YORK MELLON**（SWIFT：`IRVTUS3NXXX`，地址：240 GREENWICH STREET, NEW YORK, United States）
 
 ## 许可证
 

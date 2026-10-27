@@ -1,20 +1,20 @@
-[简体中文](../../README.md) | [English](README.md) | [日本語](../ja/README.md) | [한국어](../ko/README.md) | [Русский](../ru/README.md) | [Deutsch](../de/README.md) | [Français](../fr/README.md) | [Español](../es/README.md) | [Português](../pt/README.md) | [हिन्दी](../hi/README.md) | [العربية](../ar/README.md) | [বাংলা](../bn/README.md) | [Bahasa Indonesia](../id/README.md)
+[简体中文](../../../README.md) | English
 
 # Open Travel — Global Travel Platform
 
 <p align="center"><img src="../../mascot.svg" alt="Nannan 南南 — Open Travel mascot" width="180"></p>
 
 
-> A travel booking platform for users worldwide: Rust microservice backend + Flutter / HarmonyOS multi-platform clients, supporting **12+ languages**, international payments, and multilingual search.
+> A travel booking platform for users worldwide: Rust microservice backend + Flutter multi-platform clients, supporting **12+ languages**, international payments, and multilingual search.
 
 ## Introduction
 
-Open Travel is a global travel platform monorepo built on **e-cat (a cat)** — a **Rust microservice framework** (v3.0.3 · 52 crates) modeled after [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 — delivering a high-performance backend, paired with Flutter multi-platform and HarmonyOS native clients, to offer a unified travel booking experience to users around the globe.
+Open Travel is a global travel platform monorepo built on **e-cat (a cat)** — a **Rust microservice framework** (v3.0.3 · 33 crates) modeled after [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 — delivering a high-performance backend, paired with Flutter multi-platform clients, to offer a unified travel booking experience to users around the globe.
 
 | Dimension | Description |
 | :--- | :--- |
-| **Backend framework** | e-cat (Rust): HTTP/axum + gRPC/tonic, a 52-crate microservice ecosystem |
-| **Multi-platform clients** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS), `apps/admin` (Flutter Web admin console) |
+| **Backend framework** | e-cat (Rust): HTTP/axum + gRPC/tonic, a 33-crate microservice ecosystem |
+| **Multi-platform clients** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/admin` (Flutter Web admin console) |
 | **Database** | MySQL (database `travel`, table prefix `travel_`) + Redis cache + OpenSearch multilingual search |
 | **Security** | ecat-security / ecat-auth (JWT) / ecat-tls: authentication, audit, rate limiting, injection prevention |
 | **Internationalization** | 12+ language ARB locale packs, RTL support, OpenSearch multilingual tokenization |
@@ -30,10 +30,9 @@ A compass sprite: the round dial is its body, the bezel carries **12 tick marks 
 | `apps/*/web/favicon.svg` | Browser tab icon (dial close-up, still legible at 16px; `favicon.png` 16px fallback for old browsers) |
 | `apps/*/web/icons/Icon-*.png` | PWA / home screen icons 192·512 (including maskable safe-zone variants) |
 | `apps/*/assets/mascot.png` | In-app display in Flutter (admin login page, client profile page) |
-| `apps/client/harmonyos/.../media/mascot.svg` | In-app on HarmonyOS (`Image` renders SVG natively; mobile variant with `opacity` removed) |
 | Each README / crate doc | Header branding slot |
 
-> To restyle the mascot, edit only `docs/mascot.svg` — everything else is derived: the favicon is a close-up of its dial (dropping the arms / magnifier / feet / flight path and other strokes that blur at small sizes), and the HarmonyOS variant premultiplies semi-transparent colors into solid ones and removes all `opacity` to suit mobile SVG renderers. All artwork is original, with no third-party asset dependencies.
+> To restyle the mascot, edit only `docs/mascot.svg` — everything else is derived: the favicon is a close-up of its dial (dropping the arms / magnifier / feet / flight path and other strokes that blur at small sizes), and mobile raster variants are derived from the same vector source. All artwork is original, with no third-party asset dependencies.
 
 ## Key Features
 
@@ -41,7 +40,7 @@ A compass sprite: the round dial is its body, the bezel carries **12 tick marks 
 - 🌍 12+ languages independently adapted (Chinese, English, Japanese, Korean, Arabic, Spanish, French, German…)
 - 💳 International payments (WeChat Pay / Alipay)
 - 🔐 Defense in depth: TLS 1.3, JWT authentication, audit logs, input filtering, rate limiting, payment callback HMAC verification, internal service auth
-- 📱 Consistent experience across platforms: Flutter (iOS/Android/Web/Desktop) + HarmonyOS
+- 📱 Consistent experience across platforms: Flutter (iOS/Android/Web/Desktop)
 
 ## Architecture Design Diagram
 
@@ -70,7 +69,6 @@ open-travel/
 ├── apps/                  # Multi-platform clients and admin console
 │   ├── client/
 │   │   ├── flutter/       # Flutter: iOS / Android / Web / Desktop (12+ language i18n; web/favicon.svg is the "Nannan 南南" icon)
-│   │   └── harmonyos/     # HarmonyOS native client
 │   └── admin/             # Flutter Web admin console
 ├── e-cat/                 # e-cat framework + business services (single Cargo workspace)
 │   ├── ecat*/             # 52 ecat-* framework crates
@@ -83,9 +81,8 @@ open-travel/
 │   ├── mascot.svg         # Mascot "Nannan 南南" (single vector source; favicon and per-platform icons are derived from it)
 │   ├── svg/               # Architecture / feature / lifecycle / security / structure diagrams (with 12 language translations)
 │   ├── i18n/              # READMEs in 12 languages
-│   └── coin/              # Donation QR codes
 ├── config/                # Environment and deployment config (nginx.conf, docker-compose.yml, schema.sql)
-├── scripts/               # Install / deploy / health check / load test / CDN / seed data
+├── scripts/               # Install / deploy / health check / load test / payment reconciliation
 ├── .github/workflows/     # CI
 └── README.md
 ```
@@ -93,10 +90,8 @@ open-travel/
 ## Database
 
 - Database name: `travel`
-- Table prefix: `travel_` (e.g. `travel_users`, `travel_orders`, `travel_reviews`)
+- Table prefix: `travel_` (e.g. `travel_users`, `travel_orders`, `travel_bookings`)
 - Companion storage: Redis (sessions / hot caches), OpenSearch (multilingual search index)
-
-> See [docs/travel-project-planning.md](../../travel-project-planning.md) for detailed technical planning.
 
 ## One-Click Install
 
@@ -119,7 +114,7 @@ cargo check -p ecat --bins   # compile check for business services
 | Service | Port | Description |
 |---|---|---|
 | user-service | 8001 | User registration / login / profile |
-| booking-service | 8002 | Popular destination dates + attraction list / detail + reviews |
+| booking-service | 8002 | Popular destination dates + attraction list / detail |
 | admin-service | 8003 | Admin: login + destination / attraction CRUD |
 | search-service | 8004 | Multilingual search |
 | line-service | 8005 | Travel lines |
@@ -140,7 +135,6 @@ The admin Flutter Web console lives in `apps/admin/`; the development default ad
 |---|---|
 | `scripts/opensearch_init.sh` | Idempotently creates the OpenSearch index (cjk analyzer) |
 | `scripts/loadtest.sh` | Load testing |
-| `scripts/cdn_setup.sh` / `cdn_upload.sh` | CDN configuration and upload (`--provider` eight-cloud plugin: cloudfront/aliyun/gcp/azure/cloudflare/tencent/huawei/bunny, `--dry-run` by default) |
 | `scripts/release.sh` | Release process helper |
 
 ---
@@ -155,47 +149,3 @@ If this project has helped you, feel free to buy the author a coffee ☕
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <img src="../../alipay.png" alt="Alipay QR Code" width="130" height="130" />
 </p>
-
-### Global Bank Transfer
-
-**Payee Information**
-
-- Payee Name: WANG KEXUN
-- Payee Account Number: 881015918251
-
-**Receiving Bank**
-
-- ZA Bank SWIFT Code: AABLHKHHXXX
-- Bank Name: ZA Bank Limited
-- Bank Code: 387
-- Bank Address: Core F, Cyberport 3, 100 Cyberport Road, Hong Kong
-
-**Cross-Border Correspondent Bank (If Required)**
-
-Please note that this is the cross-border correspondent (intermediary) bank information, not the receiving bank information. Please check with your remitting bank whether the correspondent bank information is required.
-
-For remittances in HKD, CNY, and USD, the correspondent bank is **Citibank** —
-
-- Bank Name: Citibank N.A. Hong Kong
-- SWIFT Code: CITIHKHXXXX
-- Bank Code: 006
-- Branch Name: Hong Kong Branch
-- Branch Code: 391
-- Bank Address: Citibank Tower, Citibank Plaza, 3 Garden Road, Central, Hong Kong
-
-For remittances in other currencies, the correspondent bank is **BNY Mellon** —
-
-- Bank Name: THE BANK OF NEW YORK MELLON
-- SWIFT Code: IRVTUS3NXXX
-- Bank Address: THE BANK OF NEW YORK MELLON, 240 GREENWICH STREET, NEW YORK, United States
-
-### Crypto Donation
-
-If this project helps you, scan the QR code to donate, thank you!
-
-| <img src="../../coin/1.jpg" width="200" alt="BNB Smart Chain (BEP20)"><br>**BNB Smart Chain (BEP20)**<br>`0x355d429f97511897ccb4e271ec888205f9ab6629` | <img src="../../coin/2.jpg" width="200" alt="Tron (TRC20)"><br>**Tron (TRC20)**<br>`TEdDHWLajt1XvqtPDWmQctdrJaC3pzZZzz` |
-| <img src="../../coin/3.jpg" width="200" alt="Ethereum (ERC20)"><br>**Ethereum (ERC20)**<br>`0x355d429f97511897ccb4e271ec888205f9ab6629` | <img src="../../coin/4.jpg" width="200" alt="Aptos"><br>**Aptos**<br>`0x836e3780edfc3f7b2372b39e2a1a3a5d7adfaccd96c726f21cfde1b50dd68030` |
-| <img src="../../coin/5.jpg" width="200" alt="Plasma"><br>**Plasma**<br>`0x355d429f97511897ccb4e271ec888205f9ab6629` | <img src="../../coin/6.jpg" width="200" alt="Polygon POS"><br>**Polygon POS**<br>`0x355d429f97511897ccb4e271ec888205f9ab6629` |
-| <img src="../../coin/7.jpg" width="200" alt="Solana"><br>**Solana**<br>`2hfhboHdmdrYsY25XfQSsEWxq5ip4EQsR7f4AzSRMUyr` | <img src="../../coin/8.jpg" width="200" alt="The Open Network (TON)"><br>**The Open Network (TON)**<br>`UQB9kFQohzmXUir9QSSZq01iwl9aQZIDdBpNmDklljRtCoGK` |
-| <img src="../../coin/9.jpg" width="200" alt="Arbitrum One"><br>**Arbitrum One**<br>`0x355d429f97511897ccb4e271ec888205f9ab6629` | <img src="../../coin/10.jpg" width="200" alt="AVAX C-Chain"><br>**AVAX C-Chain**<br>`0x355d429f97511897ccb4e271ec888205f9ab6629` |
-

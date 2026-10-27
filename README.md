@@ -3,7 +3,7 @@
 <p align="center"><img src="docs/mascot.svg" alt="Nannan 南南 — Open Travel 吉祥物" width="180"></p>
 <p align="center"><sub>罗盘精灵「南南」· 全原创矢量图形，扁平几何（无渐变 / 无第三方素材）</sub></p>
 
-[English](docs/i18n/en/README.md) | [日本語](docs/i18n/ja/README.md) | [한국어](docs/i18n/ko/README.md) | [Русский](docs/i18n/ru/README.md) | [Deutsch](docs/i18n/de/README.md) | [Français](docs/i18n/fr/README.md) | [Español](docs/i18n/es/README.md) | [Português](docs/i18n/pt/README.md) | [हिन्दी](docs/i18n/hi/README.md) | [العربية](docs/i18n/ar/README.md) | [বাংলা](docs/i18n/bn/README.md) | [Bahasa Indonesia](docs/i18n/id/README.md)
+[English](docs/i18n/en/README.md)
 
 > 一个面向全球用户的旅游预订平台：Rust 微服务后端 + Flutter 多端客户端，支持 **12+ 种语言**、国际支付与多语言搜索。
 
@@ -98,7 +98,7 @@ docker compose -f config/docker-compose.yml up -d   # 启动数据源 + 服务 +
 | 服务 | 端口 | 说明 |
 |------|------|------|
 | user-service | 8001 | 用户注册 / 登录 / 资料 |
-| booking-service | 8002 | 热门目的地日期 + 景区列表/详情 + 评价 |
+| booking-service | 8002 | 热门目的地日期 + 景区列表/详情 |
 | admin-service | 8003 | 管理端：登录 + 目的地/景区 CRUD |
 | search-service | 8004 | 多语种搜索 |
 | line-service | 8005 | 旅游线路 |
@@ -142,7 +142,6 @@ curl "http://localhost:8082/api/v1/booking/attractions?destination_id=1"
 | `scripts/loadtest.sh` | 压测 |
 | `scripts/reconcile_payments.sh` | 支付订单对账 |
 | `scripts/env_audit.sh` | 环境变量与配置审计 |
-| `scripts/cdn_setup.sh` / `cdn_upload.sh` | CDN 配置与上传（`--provider` 八云插件：cloudfront/aliyun/gcp/azure/cloudflare/tencent/huawei/bunny，`--dry-run` 默认） |
 
 ### 后端文档
 
@@ -179,7 +178,7 @@ curl "http://localhost:8082/api/v1/booking/attractions?destination_id=1"
 
 ![项目结构图](docs/svg/project.svg)
 
-> 上列各图均有 12 语种译本，位于 `docs/svg/<lang>/`，由对应语言 README 引用。
+> 图表英文版位于 `docs/svg/en/`。
 
 ## 项目结构
 
@@ -197,12 +196,13 @@ open-travel/
 │   └── CHANGELOG.md       # 框架 + 项目版本变更日志（版本号即项目版本，见 tags）
 ├── docs/                  # 技术文档
 │   ├── api.md             # API 参考（端点、鉴权、限流）
+│   ├── integration-report.md # 联调报告
+│   ├── loadtest-report.md    # 压测报告
 │   ├── mascot.svg         # 吉祥物「南南」（矢量唯一源，favicon 与各端图标由此派生）
-│   ├── svg/               # 架构 / 功能 / 生命周期 / 安全 / 结构 图（含 12 语种译本）
-│   ├── i18n/              # 12 语种 README
-│   └── coin/              # 打赏二维码
+│   ├── svg/               # 架构 / 功能 / 生命周期 / 安全 / 结构 图（英文版见 svg/en/）
+│   └── i18n/              # 英文 README（en/）
 ├── config/                # 环境与部署配置（nginx.conf、docker-compose.yml、schema.sql）
-├── scripts/               # 安装 / 部署 / 巡检 / 压测 / CDN / 种子数据
+├── scripts/               # 安装 / 部署 / 巡检 / 压测
 ├── .github/workflows/     # CI
 └── README.md
 ```
@@ -210,10 +210,8 @@ open-travel/
 ## 数据库
 
 - 数据库名：`travel`
-- 表前缀：`travel_`（例如 `travel_users`、`travel_orders`、`travel_reviews`）
+- 表前缀：`travel_`（例如 `travel_users`、`travel_orders`、`travel_bookings`）
 - 配套存储：Redis（会话 / 热门缓存）、OpenSearch（多语言搜索索引）
-
-> 详细技术规划见 [docs/travel-project-planning.md](docs/travel-project-planning.md)。
 
 ---
 
@@ -228,52 +226,15 @@ open-travel/
   <img src="docs/alipay.png" alt="支付宝二维码" width="130" height="130" />
 </p>
 
-### 全球转账打赏（Global Bank Transfer）
 
-**收款人信息**
+## 项目授权 / Project License
 
-- 收款人姓名：WANG KEXUN
-- 收款账户号码：881015918251
+Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
 
-**收款银行**
+- 本项目仅供个人学习、研究使用。
+- 未经作者书面授权，禁止任何形式的商业使用（包括但不限于商业部署、付费服务、二次销售、SaaS 运营及以本项目为基础提供商业服务）。
+- 商业授权请联系 **erik@erik.xyz**。
+- 未经授权的商业使用，作者将在全球范围内依法追究法律责任，并保留终身追责的权利。
+- 第三方组件仍遵循其各自原有的许可证；视觉资产适用仓库内的 ASSETS-LICENSE.md（如适用）。
 
-- ZA Bank SWIFT Code：AABLHKHHXXX
-- 银行名称：ZA Bank Limited
-- 银行编号：387
-- 银行地址：Core F, Cyberport 3, 100 Cyberport Road, Hong Kong
-
-**跨境汇款代理银行（如需）**
-
-请留意，此为跨境汇款代理银行（中转银行）信息，非收款银行信息。请向汇款银行查询是否需要提供跨境汇款代理银行信息。
-
-汇入港元、人民币及美元的代理银行为 **Citibank** ——
-
-- 银行名称：Citibank N.A. Hong Kong
-- SWIFT Code：CITIHKHXXXX
-- 银行编号：006
-- 分行名称：Hong Kong Branch
-- 分行编号：391
-- 银行地址：Citibank Tower, Citibank Plaza, 3 Garden Road, Central, Hong Kong
-
-汇入其他币种时的代理银行为 **BNY Mellon** ——
-
-- 银行名称：THE BANK OF NEW YORK MELLON
-- SWIFT Code：IRVTUS3NXXX
-- 银行地址：THE BANK OF NEW YORK MELLON, 240 GREENWICH STREET, NEW YORK, United States
-
-### 虚拟币打赏 (Crypto Donation)
-
-如果这个项目对你有帮助，欢迎扫描二维码打赏支持，谢谢！
-
-| 主网 (Network) | 二维码 (QR Code) | 钱包地址 (Wallet Address) |
-|---|---|---|
-| BNB Smart Chain (BEP20) | [<img src="docs/coin/1.jpg" width="150" alt="BNB Smart Chain (BEP20)">](docs/coin/1.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
-| Tron (TRC20) | [<img src="docs/coin/2.jpg" width="150" alt="Tron (TRC20)">](docs/coin/2.jpg) | `TEdDHWLajt1XvqtPDWmQctdrJaC3pzZZzz` |
-| Ethereum (ERC20) | [<img src="docs/coin/3.jpg" width="150" alt="Ethereum (ERC20)">](docs/coin/3.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
-| Aptos | [<img src="docs/coin/4.jpg" width="150" alt="Aptos">](docs/coin/4.jpg) | `0x836e3780edfc3f7b2372b39e2a1a3a5d7adfaccd96c726f21cfde1b50dd68030` |
-| Plasma | [<img src="docs/coin/5.jpg" width="150" alt="Plasma">](docs/coin/5.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
-| Polygon POS | [<img src="docs/coin/6.jpg" width="150" alt="Polygon POS">](docs/coin/6.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
-| Solana | [<img src="docs/coin/7.jpg" width="150" alt="Solana">](docs/coin/7.jpg) | `2hfhboHdmdrYsY25XfQSsEWxq5ip4EQsR7f4AzSRMUyr` |
-| The Open Network (TON) | [<img src="docs/coin/8.jpg" width="150" alt="The Open Network (TON)">](docs/coin/8.jpg) | `UQB9kFQohzmXUir9QSSZq01iwl9aQZIDdBpNmDklljRtCoGK` |
-| Arbitrum One | [<img src="docs/coin/9.jpg" width="150" alt="Arbitrum One">](docs/coin/9.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
-| AVAX C-Chain | [<img src="docs/coin/10.jpg" width="150" alt="AVAX C-Chain">](docs/coin/10.jpg) | `0x355d429f97511897ccb4e271ec888205f9ab6629` |
+**English:** This project is provided for personal study and research only. Commercial use of any kind requires prior written authorization from the author (erik@erik.xyz). Unauthorized commercial use will be pursued for legal liability worldwide, and the author reserves the right to pursue such liability for life. Third-party components remain under their original licenses; visual assets are governed by ASSETS-LICENSE.md where applicable.

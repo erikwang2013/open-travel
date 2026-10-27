@@ -4,7 +4,7 @@
 <p align="center"><img src="../docs/mascot.svg" alt="Nannan 南南 — Open Travel 吉祥物" width="180"></p>
 
 
-[简体中文](README.md) | English | [日本語](../docs/i18n/ja/README.md) | [한국어](../docs/i18n/ko/README.md) | [Русский](../docs/i18n/ru/README.md) | [Deutsch](../docs/i18n/de/README.md) | [Français](../docs/i18n/fr/README.md) | [Español](../docs/i18n/es/README.md) | [Português](../docs/i18n/pt/README.md) | [हिन्दी](../docs/i18n/hi/README.md) | [العربية](../docs/i18n/ar/README.md) | [বাংলা](../docs/i18n/bn/README.md) | [Bahasa Indonesia](../docs/i18n/id/README.md)
+[简体中文](README.md) | English
 
 > A global travel booking platform: Rust microservices backend (built on the **e-cat** framework) + Flutter multi-platform clients, supporting **12+ languages**, international payments, and multilingual search.
 
@@ -28,8 +28,8 @@ Open Travel is a global travel platform monorepo. The backend is built on **e-ca
 open-travel/
 ├── apps/                  # client/ multi-platform clients + admin/ admin console
 ├── config/                # docker-compose.yml, nginx.conf, schema.sql, opensearch.yml
-├── docs/                  # Planning docs, integration/loadtest reports, SVG diagrams, i18n
-├── scripts/               # install / up·down / deploy / health_check / opensearch_init / loadtest / reconcile_payments / env_audit / cdn_setup·cdn_upload / gen_arb + seed data
+├── docs/                  # Integration/loadtest reports, SVG diagrams, English README
+├── scripts/               # install / up·down / deploy / health_check / opensearch_init / loadtest / reconcile_payments / env_audit / gen_arb
 └── e-cat/                 # e-cat framework + business services (single Cargo workspace)
     ├── ecat*/             # 33 ecat-* framework crates
     ├── ecat/              # Main framework crate: facade + business modules (src/business/) + service entries (src/bin/)
@@ -42,7 +42,7 @@ open-travel/
 | Service | Port | Description |
 |---------|------|-------------|
 | user-service | 8001 | `POST /api/v1/user/register`, `POST /api/v1/user/login` (public), `GET /api/v1/user/profile` (JWT required) |
-| booking-service | 8002 | `GET /api/v1/booking/dates?region_id=N` (public), `/api/v1/reviews/` reviews |
+| booking-service | 8002 | `GET /api/v1/booking/dates?region_id=N` (public) |
 | admin-service | 8003 | Admin: login + destination/attraction CRUD (`/api/v1/admin/`) |
 | search-service | 8004 | Multilingual search (`/api/v1/search`) |
 | line-service | 8005 | Travel lines (`/api/v1/lines`) |
@@ -169,7 +169,6 @@ cargo test --workspace                          # full workspace
 |--------|---------|
 | `scripts/opensearch_init.sh` | Idempotently create OpenSearch indexes (cjk analyzer) |
 | `scripts/loadtest.sh` | Load testing |
-| `scripts/cdn_setup.sh` / `cdn_upload.sh` | CDN setup and asset upload (`--dry-run` by default) |
 | `scripts/release.sh` | Release workflow helper |
 
 ### Release Workflow
@@ -317,7 +316,6 @@ Error::new(ErrorCode::InvalidArgument, "bad_request", "user id must be positive"
 ## Documentation
 
 - [API Reference](../docs/api.md)
-- [Project Planning](../docs/travel-project-planning.md)
 
 ## Support
 
@@ -326,22 +324,6 @@ Your support is welcome!
 | WeChat Pay | Alipay |
 |:---:|:---:|
 | <img src="../docs/weixinpay.png" width="130" height="130" alt="WeChat Pay"> | <img src="../docs/alipay.png" width="130" height="130" alt="Alipay"> |
-
-### Global Transfer (Bank Wire)
-
-| Field | Value |
-|-------|-------|
-| Beneficiary Name | WANG KEXUN |
-| Account Number | 881015918251 |
-| Bank | ZA Bank Limited |
-| SWIFT Code | AABLHKHHXXX |
-| Bank Code | 387 |
-| Bank Address | Core F, Cyberport 3, 100 Cyberport Road, Hong Kong |
-
-> **Cross-border remittance agent bank (if required)**: this is the agent (intermediary) bank information, NOT the receiving bank. Ask your remitting bank whether it is required.
->
-> - For HKD, CNY and USD remittances: **Citibank N.A. Hong Kong** (SWIFT: `CITIHKHXXXX`, Bank Code: 006, Branch: Hong Kong Branch, Branch Code: 391, Address: Citibank Tower, Citibank Plaza, 3 Garden Road, Central, Hong Kong)
-> - For other currencies: **THE BANK OF NEW YORK MELLON** (SWIFT: `IRVTUS3NXXX`, Address: 240 GREENWICH STREET, NEW YORK, United States)
 
 ## License
 
