@@ -233,7 +233,6 @@ curl "http://localhost:8082/api/v1/booking/attractions?destination_id=1&lang=zh"
 公开接口，无鉴权。仅返回上架景区（`status=1`）。`description` 为 JSON 对象（键为语言代码），按 `lang` 取键，缺失或为空回退 `en`。
 
 - `404`：景区不存在或已下架
-- `reviews` 返回该景区最近 20 条真实评价（按 id 倒序），`rating_avg` 为读时 `AVG(rating)` 聚合，无评价时保留表内字段
 
 ```bash
 curl "http://localhost:8082/api/v1/booking/attractions/1?lang=zh"
@@ -243,42 +242,8 @@ curl "http://localhost:8082/api/v1/booking/attractions/1?lang=zh"
 {
   "code": 0,
   "message": "ok",
-  "data": { "id": 1, "destination_id": 1, "name": "东京塔", "description": "东京地标", "price_cents": 5000, "open_hours": "09:00-22:00", "rating_avg": 4.5, "cover_url": "https://...", "reviews": [ { "id": 1, "attraction_id": 1, "user_id": 2, "rating": 5, "comment": "非常棒的体验", "nickname": "alice", "created_at": "2026-08-29T10:00:00Z" } ] }
+  "data": { "id": 1, "destination_id": 1, "name": "东京塔", "description": "东京地标", "price_cents": 5000, "open_hours": "09:00-22:00", "rating_avg": 4.5, "cover_url": "https://..." }
 }
-```
-
-#### `POST /api/v1/reviews` — 提交评价
-
-鉴权：**需要 JWT**（`Authorization: Bearer <JWT>`，由登录接口签发）。请求体 JSON：
-
-```json
-{ "attraction_id": 1, "rating": 5, "comment": "非常棒的体验" }
-```
-
-| 字段 | 必填 | 说明 |
-|------|------|------|
-| `attraction_id` | 是 | 目标景区 ID，景区不存在或已下架返回 404 |
-| `rating` | 是 | 评分，1-5 整数，越界返回 400 |
-| `comment` | 否 | 评价内容，最多 500 字符，超长返回 400 |
-
-- `400`：`attraction_id` 缺失 / `rating` 越界 / `comment` 超长
-- `401`：无 token / token 无效
-- `404`：景区不存在或已下架
-- 成功返回 `201`，`data` 为创建后的评价对象（含 `id` / `created_at`）
-
-```bash
-curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X POST \
-  http://localhost:8082/api/v1/reviews -d '{"attraction_id":1,"rating":5,"comment":"非常棒的体验"}'
-```
-
-#### `GET /api/v1/reviews?attraction_id=N&page=&page_size=` — 评价列表
-
-公开接口，无鉴权。`attraction_id` 必填（缺失返回 400），按 `id` 倒序分页（`page` 默认 1，`page_size` 默认 10、上限 50）。
-
-响应 `data` 为裸数组：`[ { "id", "attraction_id", "user_id", "rating", "comment", "nickname", "created_at" } ]`。
-
-```bash
-curl "http://localhost:8082/api/v1/reviews?attraction_id=1&page=1&page_size=10"
 ```
 
 ### 管理服务

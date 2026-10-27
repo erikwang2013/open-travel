@@ -290,12 +290,6 @@ ALTER TABLE travel_reviews
   ADD COLUMN attraction_id BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '景区ID' AFTER user_id,
   ADD INDEX idx_attraction (attraction_id);
 
--- 种子评价（幂等：固定 ID，重复执行被 INSERT IGNORE 忽略）
-INSERT IGNORE INTO travel_reviews (id, user_id, attraction_id, destination_id, rating, content, lang) VALUES
-(1, 1, 100000, 2, 5, 'Amazing views from the top!', 'en'),
-(2, 1, 100000, 2, 4, 'Great experience, a bit crowded.', 'en'),
-(3, 1, 100000, 2, 5, 'Beautiful at sunset.', 'en');
-
 -- ===== Phase 7 增量（雪花 ID 迁移）=====
 -- 主键去 AUTO_INCREMENT：业务代码已显式生成雪花 id 写入（漏带 id 即硬错误）。
 -- 新装库由上方 CREATE TABLE 直接生效；已初始化的运行库需手动执行同样 DDL，
