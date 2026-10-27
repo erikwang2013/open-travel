@@ -229,7 +229,7 @@ open-travel/
 
 ## 开源版 vs 商业版
 
-> 本仓库是开源版，面向个人学习与研究；`open-project/open-travel` 对应商业版，面向商业部署与交付。商业版授权与交付条款请联系 **erik@erik.xyz**。
+> 本仓库是开源版，面向个人学习与研究；商业版由作者单独提供，面向商业部署与交付。商业版授权与交付条款请联系 **erik@erik.xyz**。
 
 | 维度 | 开源版（本仓库） | 商业版 |
 |---|---:|---:|
@@ -262,7 +262,7 @@ open-travel/
 - 核心预订、订单、支付、搜索、用户、库存与后台管理链路，33 个 e-cat 核心 crate。
 - 与商业版相同的项目授权条款（个人学习/研究；商业使用需授权）。
 
-**English:** This repository is the open-source edition for personal study and research. The commercial edition in `open-project/open-travel` adds 21 e-cat crates, a HarmonyOS client, a CDN console, a reviews backend and demo seed data. For commercial licensing and delivery terms, contact **erik@erik.xyz**.
+**English:** This repository is the open-source edition for personal study and research. The commercial edition adds 21 e-cat crates, a HarmonyOS client, a CDN console, a reviews backend and demo seed data. For commercial licensing and delivery terms, contact **erik@erik.xyz**.
 
 ## 项目授权 / Project License
 
