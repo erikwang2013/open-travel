@@ -248,6 +248,21 @@ open-travel/
 | 评论后端 | — | 有（`/api/v1/reviews`） |
 | 演示种子数据 | — | 3 个 SQL（景点/线路/Phase4） |
 
+### 多维度对比 / Multi-dimensional comparison
+
+| 维度 / Dimension | 开源版 / Open source | 商业版 / Commercial |
+|---|---|---|
+| 功能覆盖 / Features | 9 个 Rust 微服务、33 个 e-cat crate；预订/订单/支付/搜索/用户/库存/后台；Flutter 客户端 12 页 + 管理端 17 页 | 同源 9 个服务 + 21 个扩展 crate；额外 HarmonyOS 20 页、CDN 控制台、评论 API、演示种子；管理端 18 页 |
+| 安全防护 / Security | JWT/OAuth2/API Key、`require_admin` 角色守卫、审计事件、Redis/内存限流、CORS、TLS、超时/重试/恢复；10 个安全源文件、9 个中间件文件 | 与开源版同源同文件，无额外安全模块；未增加独立 RBAC/CSRF/CSP 实现（管理端仍以 `role=admin` 守卫） |
+| 性能与规模 / Performance & scale | axum/tonic 异步 9 服务、Redis 限流/缓存、OpenSearch 检索失败回退 MySQL、自带 loadtest 脚本 | 核心链路一致；额外编译 21 个数据/MQ/注册中心 crate 与 CDN 刷新/预热；未提供压测对比数据，不能据此宣称更快 |
+| 数据与检索 / Data & search | 15 张表；OpenSearch 全文检索 + MySQL LIKE 回退；Redis 缓存 | 16 张表（+`travel_cdn_providers`）；核心 15 表结构一致；检索链路一致 |
+| 测试与质量 / Tests & quality | 14 个 Rust 测试文件、578 个 `#[test]`；2 个 Flutter 测试文件；1 个 CI workflow | 16 个 Rust 测试文件、807 个 `#[test]`；2 个 Flutter 测试文件；1 个 CI workflow；均未在本次审计中运行 |
+| 部署与运维 / Deployment & ops | 15 个 compose 服务（MySQL 主从/Kafka/Redis/OpenSearch/Nginx + 9 个 ecat 服务）；install/up/down/deploy/health_check/loadtest/opensearch_init | compose 服务与运维脚本一致；额外提供 CDN setup/upload 脚本与 3 个演示种子 SQL |
+| 多端与国际化 / Clients & i18n | Flutter 客户端 12 页、管理端 17 页；13 个 ARB 语言包；文档语言仅 en | 增加 HarmonyOS 客户端 20 页（13 套语言资源）；Flutter 端一致；文档 12 种语言 |
+| 扩展性与二次开发 / Extensibility | 33 个 crate、9 个服务、59 个 API 路径；标准 e-cat 扩展点 | 54 个 crate、9 个服务、64 个 API 路径；多 21 个数据/MQ/注册中心 crate、GraphQL/OpenAPI/调度/版本化/压测模块 |
+| 授权与支持 / License & support | 个人学习/研究；商业使用需书面授权；无付费支持 | 同一授权条款；商业授权、交付与支持联系 `erik@erik.xyz` |
+| 适用场景 / Use cases | 学习、研究、原型、小规模自建；核心预订闭环可运行 | 商业部署与运营、多区域/CDN、HarmonyOS/多语言交付、需要厂商支持与完整扩展组件 |
+
 **商业版额外提供**
 
 - 21 个扩展 e-cat crate：ArangoDB / ClickHouse / Elasticsearch / InfluxDB / IoTDB / Memcached / MongoDB / NebulaGraph / Neo4j / QuestDB / S3 / TDengine 数据后端，MQTT / NATS / RabbitMQ 消息队列，etcd 注册中心，GraphQL、OpenAPI、调度器、版本化与压测模块。
@@ -262,7 +277,7 @@ open-travel/
 - 核心预订、订单、支付、搜索、用户、库存与后台管理链路，33 个 e-cat 核心 crate。
 - 与商业版相同的项目授权条款（个人学习/研究；商业使用需授权）。
 
-**English:** This repository is the open-source edition for personal study and research. The commercial edition adds 21 e-cat crates, a HarmonyOS client, a CDN console, a reviews backend and demo seed data. For commercial licensing and delivery terms, contact **erik@erik.xyz**.
+**English:** This repository is the open-source edition for personal study and research. The commercial edition adds 21 e-cat crates, a HarmonyOS client, a CDN console, a reviews backend and demo seed data. Both editions share the same security stack (JWT/OAuth2/API Key, `role=admin` guard, audit events, Redis/memory rate limiting, CORS, TLS, timeout/retry/recovery), the same 15 core tables and OpenSearch-to-MySQL fallback, the same 15-service compose topology, and the same 13 app locales. Differences are concentrated in feature coverage (54 vs 33 crates, 64 vs 59 API paths), test volume (807 vs 578 `#[test]`), HarmonyOS clients, CDN tooling and 12-language documentation. For commercial licensing and delivery terms, contact **erik@erik.xyz**.
 
 ## 项目授权 / Project License
 
