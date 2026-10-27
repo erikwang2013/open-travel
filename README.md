@@ -118,7 +118,7 @@ docker compose -f config/docker-compose.yml up -d   # 启动数据源 + 服务 +
 ```bash
 curl http://localhost:8082/health
 curl "http://localhost:8082/api/v1/booking/dates?region_id=1"
-# {"code":0,"message":"ok","data":[{"region_id":1,"name_en":"placeholder-destination"}]}
+# {"code":0,"message":"ok","data":[]}
 
 # 管理端登录（admin@travel.local / Admin@123 为开发环境默认账号，仅本地使用）
 curl -X POST http://localhost:8082/api/v1/admin/login -H "Content-Type: application/json" \

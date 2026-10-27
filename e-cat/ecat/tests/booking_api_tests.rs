@@ -29,8 +29,8 @@ async fn body_json(resp: impl IntoResponse) -> (StatusCode, serde_json::Value) {
 }
 
 #[tokio::test]
-async fn available_dates_placeholder_fallback_without_datasource() {
-    // 无 DB/Redis 时返回占位目的地，保证接口可响应（Phase 2 前的兜底语义）
+async fn available_dates_empty_without_datasource() {
+    // 无 DB/Redis 时返回空列表，不伪造数据
     let (status, body) = body_json(available_dates(
         State(state()),
         Query(RegionQuery { region_id: 7 }),
@@ -39,10 +39,7 @@ async fn available_dates_placeholder_fallback_without_datasource() {
     assert_eq!(body["code"], 0);
     assert_eq!(body["message"], "ok");
     let rows = body["data"].as_array().unwrap();
-    assert_eq!(rows.len(), 1);
-    assert_eq!(rows[0]["region_id"], 7);
-    assert_eq!(rows[0]["name_en"], "placeholder-destination");
-    assert_eq!(rows[0]["name_zh"], "占位目的地");
+    assert!(rows.is_empty());
 }
 
 #[tokio::test]
@@ -52,7 +49,7 @@ async fn available_dates_missing_region_param_defaults_zero() {
     assert_eq!(q.region_id, 0);
     let (status, body) = body_json(available_dates(State(state()), Query(q)).await).await;
     assert_eq!(status, StatusCode::OK);
-    assert_eq!(body["data"][0]["region_id"], 0);
+    assert!(body["data"].as_array().unwrap().is_empty());
 }
 
 #[tokio::test]

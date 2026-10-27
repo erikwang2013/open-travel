@@ -116,7 +116,7 @@ curl 直连服务：
 ```bash
 curl http://localhost:8002/health                 # OK
 curl "http://localhost:8002/api/v1/booking/dates?region_id=1"
-# {"code":0,"message":"ok","data":[{"region_id":1,"name_en":"placeholder-destination"}]}
+# {"code":0,"message":"ok","data":[]}
 curl -H "Content-Type: application/json" -X POST \
   http://localhost:8001/api/v1/user/register -d '{"email":"a@b.com","password":"secret1"}'
 # {"code":0,"message":"ok","data":{"user_id":1,"email":"a@b.com","lang":"en"}}

@@ -386,15 +386,6 @@ pub(crate) async fn available_dates(
         }
     }
 
-    // 4. 占位数据兜底，保证接口在无数据源环境可响应
-    if rows.is_empty() {
-        rows.push(DestRow {
-            id: q.region_id,
-            region_id: q.region_id,
-            name_en: "placeholder-destination".into(),
-            name_zh: "占位目的地".into(),
-        });
-    }
     Json(ApiResponse { code: 0, message: "ok".into(), data: Some(rows) })
 }
 
