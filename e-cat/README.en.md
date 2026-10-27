@@ -10,11 +10,11 @@
 
 ## Overview
 
-Open Travel is a global travel platform monorepo. The backend is built on **e-cat** (a.k.a. 一只猫), a Rust microservices framework (v3.0.3 · 52 crates) inspired by [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 — API-first development, pluggable component architecture, and a unified HTTP/gRPC middleware abstraction.
+Open Travel is a global travel platform monorepo. The backend is built on **e-cat** (a.k.a. 一只猫), a Rust microservices framework (v3.0.3 · 33 crates) inspired by [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 — API-first development, pluggable component architecture, and a unified HTTP/gRPC middleware abstraction.
 
 | Dimension | Description |
 | :--- | :--- |
-| **Backend** | e-cat (Rust): HTTP/axum + gRPC/tonic, 52-crate microservice ecosystem |
+| **Backend** | e-cat (Rust): HTTP/axum + gRPC/tonic, 33-crate microservice ecosystem |
 | **Services** | user-service (:8001) through payment-service (:8009) — 9 services; business logic in `e-cat/ecat/src/business/`, service entries in `e-cat/ecat/src/bin/` |
 | **Gateway** | Nginx (`config/nginx.conf`), prefix-based routing |
 | **Clients** | `apps/client/flutter` (iOS / Android / Web / Desktop), `apps/client/harmonyos` (HarmonyOS) |
@@ -31,7 +31,7 @@ open-travel/
 ├── docs/                  # Planning docs, integration/loadtest reports, SVG diagrams, i18n
 ├── scripts/               # install / up·down / deploy / health_check / opensearch_init / loadtest / reconcile_payments / env_audit / cdn_setup·cdn_upload / gen_arb + seed data
 └── e-cat/                 # e-cat framework + business services (single Cargo workspace)
-    ├── ecat*/             # 52 ecat-* framework crates
+    ├── ecat*/             # 33 ecat-* framework crates
     ├── ecat/              # Main framework crate: facade + business modules (src/business/) + service entries (src/bin/)
     ├── config/            # Framework config examples
     └── examples/          # Framework examples

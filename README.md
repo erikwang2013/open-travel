@@ -9,11 +9,11 @@
 
 ## 项目简介
 
-Open Travel 是一个全球旅游平台 monorepo，采用 **e-cat（一只猫）** —— 对标 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 的 **Rust 微服务框架**（v3.0.3 · 52 crates）—— 构建高性能后端，配合 Flutter 多端与鸿蒙原生客户端，为全球用户提供统一的旅行预订体验。
+Open Travel 是一个全球旅游平台 monorepo，采用 **e-cat（一只猫）** —— 对标 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3 的 **Rust 微服务框架**（v3.0.3 · 33 crates）—— 构建高性能后端，配合 Flutter 多端与鸿蒙原生客户端，为全球用户提供统一的旅行预订体验。
 
 | 维度 | 说明 |
 | :--- | :--- |
-| **后端框架** | e-cat（Rust）：HTTP/axum + gRPC/tonic，52 crates 微服务生态 |
+| **后端框架** | e-cat（Rust）：HTTP/axum + gRPC/tonic，33 crates 微服务生态 |
 | **多端客户端** | `apps/client/flutter`（iOS / Android / Web / Desktop）、`apps/client/harmonyos`（鸿蒙）、`apps/admin`（Flutter Web 管理端） |
 | **数据库** | MySQL（库名 `travel`，表前缀 `travel_`）+ Redis 缓存 + OpenSearch 多语言搜索 |
 | **安全** | ecat-security / ecat-auth（JWT）/ ecat-tls：认证、审计、限流、防注入 |
@@ -192,7 +192,7 @@ open-travel/
 │   │   └── harmonyos/     # 鸿蒙原生客户端
 │   └── admin/             # Flutter Web 管理端
 ├── e-cat/                 # e-cat 框架 + 业务服务（同一 Cargo workspace）
-│   ├── ecat*/             # 52 个 ecat-* 框架 crate
+│   ├── ecat*/             # 33 个 ecat-* 框架 crate
 │   ├── ecat/              # 主框架 crate：门面 + 业务模块（src/business/）+ 服务入口（src/bin/ 9 个服务）
 │   ├── config/            # 框架配置示例
 │   ├── examples/          # 框架示例项目

@@ -10,11 +10,11 @@
 
 ## 项目简介
 
-Open Travel 是一个全球旅游平台 monorepo。后端基于 **e-cat（一只猫）** Rust 微服务框架（v3.0.3 · 52 crates）构建 —— 对标 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3，提供 API-first 开发体验、可插拔组件架构与统一的 HTTP/gRPC 中间件抽象。
+Open Travel 是一个全球旅游平台 monorepo。后端基于 **e-cat（一只猫）** Rust 微服务框架（v3.0.3 · 33 crates）构建 —— 对标 [go-kratos/kratos](https://github.com/go-kratos/kratos) v3，提供 API-first 开发体验、可插拔组件架构与统一的 HTTP/gRPC 中间件抽象。
 
 | 维度 | 说明 |
 | :--- | :--- |
-| **后端** | e-cat（Rust）：HTTP/axum + gRPC/tonic，52 crates 微服务生态 |
+| **后端** | e-cat（Rust）：HTTP/axum + gRPC/tonic，33 crates 微服务生态 |
 | **业务服务** | user-service（:8001）～ payment-service（:8009）九个服务；业务逻辑在 `e-cat/ecat/src/business/`，服务入口在 `e-cat/ecat/src/bin/` |
 | **网关** | Nginx（`config/nginx.conf`），按 URL 前缀分流 |
 | **多端客户端** | `apps/client/flutter`（iOS / Android / Web / Desktop）、`apps/client/harmonyos`（鸿蒙） |
@@ -31,7 +31,7 @@ open-travel/
 ├── docs/                  # 规划文档、联调/压测报告、SVG 架构图、i18n 翻译
 ├── scripts/               # install / up·down / deploy / health_check / opensearch_init / loadtest / reconcile_payments / env_audit / cdn_setup·cdn_upload / gen_arb + 种子数据
 └── e-cat/                 # e-cat 框架 + 业务服务（同一 Cargo workspace）
-    ├── ecat*/             # 52 个 ecat-* 框架 crate
+    ├── ecat*/             # 33 个 ecat-* 框架 crate
     ├── ecat/              # 主框架 crate：门面 + 业务模块（src/business/）+ 服务入口（src/bin/）
     ├── config/            # 框架配置示例
     └── examples/          # 框架示例项目
