@@ -227,6 +227,43 @@ open-travel/
 </p>
 
 
+## 开源版 vs 商业版
+
+> 本仓库是开源版，面向个人学习与研究；`open-project/open-travel` 对应商业版，面向商业部署与交付。商业版授权与交付条款请联系 **erik@erik.xyz**。
+
+| 维度 | 开源版（本仓库） | 商业版 |
+|---|---:|---:|
+| 定位 | 核心旅游预订平台，个人学习/研究 | 完整商业交付，含扩展客户端与运维控制台 |
+| e-cat crate | 33 | 54 |
+| Rust 微服务 | 9 | 9 |
+| 后端 API 路径 | 59 | 64 |
+| 后端路由注册 | 80 | 86 |
+| 后端异步 handler | 156 | 165 |
+| 源码文件 / 行数 | 162 / 36,778 | 220 / 50,926 |
+| 数据表 | 15 | 16 |
+| Flutter 客户端页面 | 12 | 12 |
+| Flutter 管理端页面 | 17 | 18 |
+| HarmonyOS 客户端 | — | 20 个 ArkTS 页面 |
+| CDN 管理控制台 | — | 有（4 个后台接口 + 管理页 + 8 云厂商脚本） |
+| 评论后端 | — | 有（`/api/v1/reviews`） |
+| 演示种子数据 | — | 3 个 SQL（景点/线路/Phase4） |
+
+**商业版额外提供**
+
+- 21 个扩展 e-cat crate：ArangoDB / ClickHouse / Elasticsearch / InfluxDB / IoTDB / Memcached / MongoDB / NebulaGraph / Neo4j / QuestDB / S3 / TDengine 数据后端，MQTT / NATS / RabbitMQ 消息队列，etcd 注册中心，GraphQL、OpenAPI、调度器、版本化与压测模块。
+- HarmonyOS ArkTS 原生客户端（20 页）。
+- CDN 控制台：供应商配置、状态/方案、管理端页面与 `cdn_setup.sh` / `cdn_upload.sh` 八云厂商脚本。
+- 评论后端：`/api/v1/reviews` 与景点详情评论聚合。
+- 景点/线路/Phase4 演示种子数据。
+
+**开源版保留**
+
+- 9 个 Rust 微服务（user / booking / flight / hotel / line / order / payment / search / admin）、Flutter 客户端与 Flutter 管理端。
+- 核心预订、订单、支付、搜索、用户、库存与后台管理链路，33 个 e-cat 核心 crate。
+- 与商业版相同的项目授权条款（个人学习/研究；商业使用需授权）。
+
+**English:** This repository is the open-source edition for personal study and research. The commercial edition in `open-project/open-travel` adds 21 e-cat crates, a HarmonyOS client, a CDN console, a reviews backend and demo seed data. For commercial licensing and delivery terms, contact **erik@erik.xyz**.
+
 ## 项目授权 / Project License
 
 Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz
