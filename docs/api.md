@@ -630,26 +630,6 @@ curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X POS
 
 `data.items`：`[ { "day"（YYYY-MM-DD）, "orders" } ]`，恒定 7 行（含当日，无单日补零）。
 
-### CDN 云商管理（admin-service，P5-08）
-
-鉴权同管理服务。**服务端不存储云凭据**：接口仅管理配置并生成 dry-run 命令预览文本，真实执行需在部署机配置对应云 CLI 凭据。
-
-#### `GET /api/v1/admin/cdn/providers` — 提供商列表
-
-全量返回（含禁用项），按 `provider_code` 升序。`data.items` 字段：`provider_code`、`name`、`enabled`（bool）、`bucket`、`region`、`domain`、`endpoint`、`updated_at`。
-
-#### `PATCH /api/v1/admin/cdn/providers/{code}/status` — 启停
-
-请求体 `{ "enabled": true | false }`。`404`：提供商不存在；成功返回更新后对象。
-
-#### `PUT /api/v1/admin/cdn/providers/{code}` — 更新配置
-
-请求体可选字段 `bucket` / `region` / `domain` / `endpoint`（null 跳过，空串表示清空；`region` 不允许为空）。`400`：无可更新字段 / region 为空；`404`：提供商不存在。
-
-#### `POST /api/v1/admin/cdn/providers/{code}/plan` — dry-run 命令预览
-
-`404`：提供商不存在；`400`：bucket 未配置（`configure bucket first`）。成功返回 `{ "provider_code", "commands": ["cdn_setup.sh ...", "cdn_upload.sh ..."], "hint" }`——命令仅输出预览，本服务不执行。
-
 ### 订单扩展（order-service，P4-12）
 
 #### `POST /api/v1/orders` — 下单（用户 JWT，支持 type 1/2/3）

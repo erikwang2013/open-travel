@@ -74,17 +74,4 @@ class Api {
     final resp = await http.delete(Uri.parse('$baseUrl$path'), headers: _headers());
     return _unwrap(resp);
   }
-
-  static Future<dynamic> fetchCdnProviders() => get('/api/v1/admin/cdn/providers');
-
-  static Future<dynamic> updateCdnProviderStatus(
-          String providerCode, bool enabled) =>
-      patch('/api/v1/admin/cdn/providers/$providerCode/status', {'enabled': enabled});
-
-  static Future<dynamic> saveCdnProvider(
-          String providerCode, Map<String, dynamic> config) =>
-      put('/api/v1/admin/cdn/providers/$providerCode', config);
-
-  static Future<dynamic> getCdnPlan(String providerCode) =>
-      post('/api/v1/admin/cdn/providers/$providerCode/plan', const {});
 }
