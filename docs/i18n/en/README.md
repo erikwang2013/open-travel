@@ -2,7 +2,7 @@
 
 # Open Travel — Global Travel Platform
 
-<p align="center"><img src="../../mascot.svg" alt="Nannan 南南 — Open Travel mascot" width="180"></p>
+![Nannan 南南 — Open Travel mascot](../../mascot.svg)
 
 
 > A travel booking platform for users worldwide: Rust microservice backend + Flutter multi-platform clients, supporting **12+ languages**, international payments, and multilingual search.
@@ -143,9 +143,8 @@ The admin Flutter Web console lives in `apps/admin/`; the development default ad
 
 If this project has helped you, feel free to buy the author a coffee ☕
 
-<p align="center">
-  <strong>WeChat Pay</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Alipay</strong><br/>
-  <img src="../../weixinpay.png" alt="WeChat Pay QR Code" width="130" height="130" />
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="../../alipay.png" alt="Alipay QR Code" width="130" height="130" />
-</p>
+**WeChat Pay**  **Alipay**
+
+| WeChat Pay | Alipay |
+|---|---|
+| ![WeChat Pay QR Code](../../weixinpay.png) | ![Alipay QR Code](../../alipay.png) |
