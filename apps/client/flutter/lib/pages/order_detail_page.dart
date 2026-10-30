@@ -9,7 +9,7 @@ import 'payment_page.dart';
 class OrderDetailPage extends StatefulWidget {
   const OrderDetailPage({super.key, required this.orderId});
 
-  final int orderId;
+  final String orderId;
 
   @override
   State<OrderDetailPage> createState() => _OrderDetailPageState();
@@ -136,7 +136,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   ],
                 ),
                 const Divider(height: 24),
-                _DetailRow(label: loc.getString('order.orderNo'), value: '${order.id}'),
+                _DetailRow(label: loc.getString('order.orderNo'), value: order.id),
                 if (title.isNotEmpty) _DetailRow(label: loc.getString('order.product'), value: title),
                 _DetailRow(label: loc.getString('order.amount'), value: formatYuan(order.amountCents)),
                 if (order.createdAt.isNotEmpty)

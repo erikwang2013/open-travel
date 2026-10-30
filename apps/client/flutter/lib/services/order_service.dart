@@ -117,7 +117,7 @@ class OrderService {
       queryParameters: {
         'from': from,
         'to': to,
-        'depart_date': departDate,
+        'date': departDate,
         'cabin': cabin,
       },
     );
@@ -164,15 +164,15 @@ class OrderService {
       queryParameters: {'lang': _lang},
     );
     final data = res.data?['data'];
-    if (data is! Map<String, dynamic>) return const [];
+    if (data is! List) return const [];
     return [
-      for (final item in (data['items'] as List? ?? const []))
+      for (final item in data)
         if (item is Map<String, dynamic>) PaymentChannel.fromJson(item, _lang),
     ];
   }
 
   Future<PaymentResult> createPayment({
-    required int orderId,
+    required String orderId,
     required String channelCode,
   }) async {
     final res = await ApiClient.instance.dio.post<Map<String, dynamic>>(
@@ -196,21 +196,17 @@ class OrderService {
       options: _auth,
     );
     final data = res.data?['data'];
-    if (data is! Map<String, dynamic>) {
+    if (data is! List) {
       return OrderPage(total: 0, page: page, pageSize: pageSize, items: const []);
     }
-    return OrderPage(
-      total: (data['total'] as num?)?.toInt() ?? 0,
-      page: (data['page'] as num?)?.toInt() ?? page,
-      pageSize: (data['page_size'] as num?)?.toInt() ?? pageSize,
-      items: [
-        for (final item in (data['items'] as List? ?? const []))
-          if (item is Map<String, dynamic>) Order.fromJson(item, _lang),
-      ],
-    );
+    final items = [
+      for (final item in data)
+        if (item is Map<String, dynamic>) Order.fromJson(item, _lang),
+    ];
+    return OrderPage(total: items.length, page: page, pageSize: pageSize, items: items);
   }
 
-  Future<Order> fetchOrder(int id) async {
+  Future<Order> fetchOrder(String id) async {
     final res = await ApiClient.instance.dio
         .get<Map<String, dynamic>>('/api/v1/orders/$id', options: _auth);
     final data = res.data?['data'];
@@ -218,7 +214,7 @@ class OrderService {
     return Order.fromJson(data, _lang);
   }
 
-  Future<Order> cancelOrder(int id) async {
+  Future<Order> cancelOrder(String id) async {
     final res = await ApiClient.instance.dio
         .post<Map<String, dynamic>>('/api/v1/orders/$id/cancel', options: _auth);
     final data = res.data?['data'];

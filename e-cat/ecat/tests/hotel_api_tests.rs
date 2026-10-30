@@ -40,6 +40,7 @@ fn search_query(city: &str, page: Option<u64>, page_size: Option<u64>) -> Search
         city: if city.is_empty() { None } else { Some(city.into()) },
         check_in: None,
         check_out: None,
+        star: None,
         page,
         page_size,
     }
@@ -72,6 +73,24 @@ async fn hotels_search_city_too_long_returns_400() {
     let (status, body) = body_json(hotels_search(State(state()), Query(search_query("ABCD", None, None))).await).await;
     assert_eq!(status, StatusCode::BAD_REQUEST);
     assert_eq!(body["code"], 400);
+}
+
+#[tokio::test]
+async fn hotels_search_rejects_bad_page_size_and_star() {
+    // page_size 越界（0 / >100）→ 400
+    for ps in [0u64, 101] {
+        let (status, body) = body_json(hotels_search(State(state()), Query(search_query("", None, Some(ps)))).await).await;
+        assert_eq!(status, StatusCode::BAD_REQUEST, "page_size={ps} must be rejected");
+        assert_eq!(body["code"], 400);
+    }
+    // star 越界（0 / 6）→ 400
+    for star in [0u64, 6] {
+        let mut q = search_query("", None, None);
+        q.star = Some(star);
+        let (status, body) = body_json(hotels_search(State(state()), Query(q)).await).await;
+        assert_eq!(status, StatusCode::BAD_REQUEST, "star={star} must be rejected");
+        assert_eq!(body["code"], 400);
+    }
 }
 
 #[tokio::test]
@@ -131,6 +150,32 @@ async fn hotels_search_filters_by_city_and_sorts_by_star_with_real_db() {
     assert!(!items[0]["name_en"].as_str().unwrap().is_empty());
     assert!(!items[0]["name_zh"].as_str().unwrap().is_empty());
     assert!(!items[0]["name_ja"].as_str().unwrap().is_empty());
+}
+
+/// 星级过滤：star=N 只返回星级 N 的酒店（此前参数被静默忽略）。
+#[tokio::test]
+async fn hotels_search_filters_by_star_with_real_db() {
+    let Some(db) = test_db().await else { return; };
+    let (_, all) = body_json(hotels_search(
+        State(AppState { db: Some(db.clone()), replica: None, cache: None }),
+        Query(search_query("", None, None)),
+    ).await).await;
+    let all_items = all["data"]["items"].as_array().unwrap();
+    if all_items.is_empty() { return; }
+    let star = all_items[0]["star"].as_u64().unwrap();
+    // 首页星级单一则无法区分过滤是否生效，跳过
+    if all_items.iter().all(|h| h["star"] == star) { return; }
+
+    let mut q = search_query("", None, None);
+    q.star = Some(star);
+    let (status, body) = body_json(hotels_search(
+        State(AppState { db: Some(db), replica: None, cache: None }),
+        Query(q),
+    ).await).await;
+    assert_eq!(status, StatusCode::OK);
+    let items = body["data"]["items"].as_array().unwrap();
+    assert!(!items.is_empty(), "star={star} should match seeded hotels");
+    assert!(items.iter().all(|h| h["star"] == star), "star filter must apply");
 }
 
 /// 无结果：未知城市返回 200 + 空 items + total 0。

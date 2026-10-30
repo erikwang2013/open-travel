@@ -127,7 +127,6 @@ fn idgen_probe() {
 /// 用不可达 URL 验证同一语义；本文件无并发写 env，安全。
 #[tokio::test]
 async fn claim_worker_id_fails_closed_when_redis_unreachable() {
-    let _ = test_cache().await.expect("其他用例需 Redis，此处应已连通");
     // 指向未监听端口：确定性失败，不依赖网络抖动。env 是本测试二进制私有的
     // （每个 cargo test target 独立进程），改完即还原，不影响同进程其他用例。
     let real = test_redis_url();

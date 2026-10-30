@@ -4,7 +4,7 @@
 // order 8006 / payment 8007 / 本服务 8008。网关已配置 /api/v1/hotels/ → ecat-hotel:8008。
 //
 // 只做查询（下单在 order-service P4-07）；房价本期固定，check_in/check_out
-// 仅展示用、不参与计价。search 结果 Redis 缓存 travel:hotels:{city}:{page}
+// 仅展示用、不参与计价。search 结果 Redis 缓存 travel:hotels:{city}:{page}:{page_size}:{star}
 // （TTL 60s），详情不缓存（库存实时）；无 Redis 降级直查。
 //
 // sqlx Any 坑（同 line/booking）：TINYINT 列（star/breakfast/status）与
@@ -56,6 +56,8 @@ pub(crate) struct SearchQuery {
     // 入住/离店日期，本期不参与计价，仅记录展示
     pub(crate) check_in: Option<String>,
     pub(crate) check_out: Option<String>,
+    // 星级过滤（1..=5），可选
+    pub(crate) star: Option<u64>,
     pub(crate) page: Option<u64>,
     pub(crate) page_size: Option<u64>,
 }
@@ -188,12 +190,16 @@ async fn fetch_rooms(db: &SqlxClient, hotel_ids: &[u64]) -> Vec<RoomRow> {
 }
 
 /// 搜索：总数 + 分页酒店 + 房型（同一从库/主库），star DESC, id ASC。
-async fn fetch_search(db: &SqlxClient, city: &str, page: u64, page_size: u64) -> Option<HotelList> {
+async fn fetch_search(db: &SqlxClient, city: &str, star: Option<u64>, page: u64, page_size: u64) -> Option<HotelList> {
     let mut where_sql = String::from("WHERE status = 1");
     let mut params: Vec<serde_json::Value> = Vec::new();
     if !city.is_empty() {
         where_sql.push_str(" AND city_code = ?");
         params.push(json!(city));
+    }
+    if let Some(s) = star {
+        where_sql.push_str(" AND star = ?");
+        params.push(json!(s));
     }
     let offset = (page - 1) * page_size;
     let mut limit_params = params.clone();
@@ -257,11 +263,20 @@ pub(crate) async fn hotels_search(
     if city.len() > 3 {
         return err(StatusCode::BAD_REQUEST, 400, "city code must be at most 3 characters");
     }
+    let star = match q.star {
+        None => None,
+        Some(s) if (1..=5).contains(&s) => Some(s),
+        Some(_) => return err(StatusCode::BAD_REQUEST, 400, "star must be 1..=5"),
+    };
     let page = q.page.unwrap_or(1).max(1);
-    let page_size = q.page_size.unwrap_or(20).max(1);
-    tracing::info!(event = "hotel.search", city = %city, page, page_size,
+    let page_size = q.page_size.unwrap_or(20);
+    if page_size < 1 || page_size > 100 {
+        return err(StatusCode::BAD_REQUEST, 400, "page_size must be 1..=100");
+    }
+    tracing::info!(event = "hotel.search", city = %city, star, page, page_size,
         check_in = ?q.check_in, check_out = ?q.check_out);
-    let cache_key = format!("travel:hotels:{}:{page}", if city.is_empty() { "all" } else { &city });
+    let star_key = star.map(|s| s.to_string()).unwrap_or_else(|| "all".into());
+    let cache_key = format!("travel:hotels:{}:{page}:{page_size}:{star_key}", if city.is_empty() { "all" } else { &city });
 
     // 1. Redis 缓存优先（TTL 60s）
     if let Some(cache) = &state.cache {
@@ -275,7 +290,7 @@ pub(crate) async fn hotels_search(
     // 2. 未命中 → MySQL 回源（从库优先，失败/为空回退主库）
     let mut list: Option<HotelList> = None;
     for db in [state.replica.as_ref(), state.db.as_ref()].into_iter().flatten() {
-        list = fetch_search(db, &city, page, page_size).await;
+        list = fetch_search(db, &city, star, page, page_size).await;
         if list.as_ref().is_some_and(|l| !l.items.is_empty()) {
             break;
         }

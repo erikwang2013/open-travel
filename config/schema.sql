@@ -29,21 +29,6 @@ CREATE TABLE IF NOT EXISTS travel_destinations (
   INDEX idx_region (region_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='旅游目的地表';
 
--- 预订表
-CREATE TABLE IF NOT EXISTS travel_bookings (
-  id             BIGINT UNSIGNED PRIMARY KEY COMMENT '预订ID',
-  user_id        BIGINT UNSIGNED NOT NULL COMMENT '用户ID',
-  destination_id BIGINT UNSIGNED NOT NULL COMMENT '目的地ID',
-  check_in       DATE NOT NULL COMMENT '入住日期',
-  check_out      DATE NOT NULL COMMENT '离店日期',
-  guests         SMALLINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '入住人数',
-  status         TINYINT NOT NULL DEFAULT 0 COMMENT '状态（0待确认/1已确认/2已完成/3已取消）',
-  amount_cents   BIGINT NOT NULL COMMENT '金额（分）',
-  created_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  INDEX idx_user (user_id),
-  INDEX idx_status_created (status, created_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='酒店/行程预订表';
-
 -- 订单表
 CREATE TABLE IF NOT EXISTS travel_orders (
   id             BIGINT UNSIGNED PRIMARY KEY COMMENT '订单ID',
@@ -57,18 +42,6 @@ CREATE TABLE IF NOT EXISTS travel_orders (
   INDEX idx_user_created (user_id, created_at),
   INDEX idx_status_created (status, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='支付订单表';
-
--- 评论表
-CREATE TABLE IF NOT EXISTS travel_reviews (
-  id             BIGINT UNSIGNED PRIMARY KEY COMMENT '评论ID',
-  user_id        BIGINT UNSIGNED NOT NULL COMMENT '用户ID',
-  destination_id BIGINT UNSIGNED NOT NULL COMMENT '目的地ID',
-  rating         TINYINT NOT NULL COMMENT '评分（1-5）',
-  content        TEXT COMMENT '评论内容',
-  lang           VARCHAR(8) NOT NULL DEFAULT 'en' COMMENT '评论语言',
-  created_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间',
-  INDEX idx_destination (destination_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='目的地评论表';
 
 -- 示例种子数据（空数据卷首次初始化时写入；已初始化的库手动执行或忽略）
 -- id 显式指定（主键已去 AUTO_INCREMENT）；id 域 1..5 与雪花 id（约 2^47 起、随基准 2020-02-20 单调增大）无交集
@@ -191,11 +164,12 @@ ALTER TABLE travel_orders
   ADD COLUMN expire_at        DATETIME NULL COMMENT '待支付超时时间（超时自动取消）' AFTER amount_cents,
   MODIFY COLUMN status TINYINT NOT NULL DEFAULT 0 COMMENT '状态（0待支付/1已支付/2已确认/3已完成/4已取消）';
 
+-- 超时扫描覆盖索引（expire_at 上一步才加列，索引必须在其后创建）
+ALTER TABLE travel_orders ADD INDEX idx_status_expire (status, expire_at);
+
 -- P3-07 状态重映射迁移（幂等：旧编号已迁移后不再触发）
 -- travel_orders：旧 2=已取消 → 新 4
 UPDATE travel_orders SET status = 4 WHERE status = 2;
--- travel_bookings：旧 0待确认/1已确认/2已完成/3已取消 → 新 0待支付/1已支付/2已确认/3已完成/4已取消
-UPDATE travel_bookings SET status = CASE status WHEN 1 THEN 2 WHEN 2 THEN 3 WHEN 3 THEN 4 ELSE status END;
 
 -- ===== Phase 4 机票/酒店与支付 =====
 
@@ -210,7 +184,8 @@ CREATE TABLE IF NOT EXISTS travel_payments (
   paid_at       DATETIME NULL COMMENT '支付完成时间',
   created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   UNIQUE KEY uk_txn_no (txn_no),
-  INDEX idx_order (order_id)
+  -- 一单一流水：并发 create_payment 由唯一键兜底，失败重试复用原行
+  UNIQUE KEY uk_order (order_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='支付流水表';
 
 -- P4-01 航班表：舱位分价格，余票随下单预占扣减（同 travel_line_dates）
@@ -283,22 +258,13 @@ CREATE TABLE IF NOT EXISTS travel_payment_channels (
   UNIQUE KEY uk_channel (channel_code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='支付渠道表';
 
--- ===== Phase 6 增量（P5-01 评价体系）=====
--- 评论表补景区维度列（travel_reviews 原为目的地评论，P5-01 落景区评价）；
--- 已初始化的运行库需手动执行同样 DDL
-ALTER TABLE travel_reviews
-  ADD COLUMN attraction_id BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '景区ID' AFTER user_id,
-  ADD INDEX idx_attraction (attraction_id);
-
 -- ===== Phase 7 增量（雪花 ID 迁移）=====
 -- 主键去 AUTO_INCREMENT：业务代码已显式生成雪花 id 写入（漏带 id 即硬错误）。
 -- 新装库由上方 CREATE TABLE 直接生效；已初始化的运行库需手动执行同样 DDL，
 -- 主库与从库（travel-mysql-replica 为无复制静态快照）两端都要打。MODIFY 幂等，可重复执行。
 ALTER TABLE travel_users MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '用户ID';
 ALTER TABLE travel_destinations MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '目的地ID';
-ALTER TABLE travel_bookings MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '预订ID';
 ALTER TABLE travel_orders MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '订单ID';
-ALTER TABLE travel_reviews MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '评论ID';
 ALTER TABLE travel_attractions MODIFY id BIGINT UNSIGNED NOT NULL;
 ALTER TABLE travel_admins MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '管理员ID';
 ALTER TABLE travel_lines MODIFY id BIGINT UNSIGNED NOT NULL COMMENT '线路ID';

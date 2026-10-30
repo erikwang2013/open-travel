@@ -2,8 +2,9 @@
 //
 // 端口 8009（网关 /api/v1/payments/ → ecat-payment:8009）。
 // travel_payments.status：0待支付 → 1成功 → 2失败（3已退款，本期不使用）。
-// 幂等：同订单发起支付已存在流水直接返回；回调按 txn_no 更新且仅接受 status=0，
-//      重复回调（已终态 1/2/3）直接返回成功不重复入账。
+// 幂等：同订单发起支付已存在流水直接返回（最近一次失败则复用该行重新发起）；
+//      回调按 txn_no 更新且仅接受 status=0，重复回调不重复入账；已成功流水
+//      重复回调会重试 order-service 确认（确认接口幂等）。
 // 验签：开发环境模拟——X-Signature = HMAC-SHA256(原始请求体, "sandbox-secret")，
 //      验签失败 401 且不入账。
 // 渠道抽象（P4-15）：本期所有渠道统一走模拟实现（sandbox 收银台 + 模拟验签）；
@@ -19,6 +20,7 @@ use axum::{Json, Router};
 use ecat::App;
 use ecat_auth::{AuthClaims, JwtAuthLayer};
 use ecat_circuit_breaker::CircuitBreakerLayer;
+use ecat_data_redis::RedisCache;
 use ecat_data_sqlx::SqlxClient;
 use ecat_middleware::LoggingLayer;
 use ecat_security::SecurityLayer;
@@ -80,6 +82,7 @@ pub(crate) fn internal_token() -> String {
 #[derive(Clone)]
 pub(crate) struct AppState {
     pub(crate) db: Option<Arc<SqlxClient>>,
+    pub(crate) cache: Option<Arc<RedisCache>>,
     pub(crate) confirm: Arc<dyn OrderConfirm>,
     pub(crate) jwt: JwtAuthLayer,
 }
@@ -135,6 +138,20 @@ pub(crate) async fn ready(State(state): State<AppState>) -> Json<ApiResponse<boo
     Json(ApiResponse { code: 0, message: "ready".into(), data: Some(state.db.is_some()) })
 }
 
+async fn connect_cache() -> Option<Arc<RedisCache>> {
+    let url = std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://localhost:6379".into());
+    match RedisCache::connect(&url).await {
+        Ok(cache) => {
+            tracing::info!("redis connected");
+            Some(Arc::new(cache))
+        }
+        Err(e) => {
+            tracing::warn!("redis connect failed, continuing without cache: {e}");
+            None
+        }
+    }
+}
+
 /// 业务路由 + 中间件链；独立成函数便于集成测试直接构造。
 /// JWT 只挂在 /api/v1/payments（用户接口）；callback/sandbox/channels 公开。
 pub(crate) fn api_router(state: AppState) -> Router {
@@ -162,7 +179,7 @@ pub(crate) fn api_router(state: AppState) -> Router {
                 .map_err(no_error)
                 .layer(SecurityLayer::new())
                 .map_err(no_error)
-                .layer(RedisRateLimitLayer::new(None, "payment-service", 100, 60)),
+                .layer(RedisRateLimitLayer::new(state.cache.clone(), "payment-service", 100, 60)),
         )
         .with_state(state)
 }
@@ -173,6 +190,7 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         std::env::var("ORDER_SERVICE_URL").unwrap_or_else(|_| "http://ecat-order:8006".into());
     let state = AppState {
         db: connect_primary().await,
+        cache: connect_cache().await,
         confirm: Arc::new(HttpOrderConfirm { client: reqwest::Client::new(), url: order_url }),
         jwt: jwt.clone(),
     };

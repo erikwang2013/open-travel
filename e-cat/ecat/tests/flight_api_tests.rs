@@ -79,6 +79,16 @@ async fn search_returns_empty_without_datasource() {
     assert_eq!(body["data"]["items"].as_array().unwrap().len(), 0);
 }
 
+/// 缓存 key 含 page/page_size：page 2 不会复用 page 1 的整页缓存。
+#[test]
+fn cache_key_includes_page_and_page_size() {
+    let k1 = cache_key("HND", "HKG", None, None, 1, 20);
+    assert_eq!(k1, "travel:flights:HND:HKG:all:all:1:20");
+    assert_eq!(cache_key("HND", "HKG", Some("2026-09-10"), Some(1), 1, 20), "travel:flights:HND:HKG:2026-09-10:1:1:20");
+    assert_ne!(cache_key("HND", "HKG", None, None, 2, 20), k1);
+    assert_ne!(cache_key("HND", "HKG", None, None, 1, 10), k1);
+}
+
 #[tokio::test]
 async fn detail_returns_404_without_datasource() {
     let (status, body) = body_json(flight_detail(State(state()), Path(40001001u64)).await).await;
@@ -221,13 +231,14 @@ async fn detail_returns_flight_and_404_with_real_db() {
     assert_eq!(b404["code"], 404);
 }
 
-/// search 写 Redis 缓存（TTL 60s），二次请求命中缓存（无 DB 也返回数据）。
+/// search 写 Redis 缓存（TTL 60s），二次请求命中缓存（无 DB 也返回数据）；
+/// key 含 page/page_size，page 2 不得复用 page 1 的缓存。
 #[tokio::test]
 async fn search_caches_in_redis_on_miss() {
     let Ok(cache) = RedisCache::connect(&std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://localhost:6381".into())).await else { return; };
     let Some(db) = connect_primary().await else { return; };
     let cache = Arc::new(cache);
-    let key = "travel:flights:HND:HKG:all:all";
+    let key = "travel:flights:HND:HKG:all:all:1:20";
     let _ = cache.delete(key).await;
     let (status, _) = body_json(flights_search(
         State(AppState { db: Some(db), replica: None, cache: Some(cache.clone()) }),
@@ -239,10 +250,22 @@ async fn search_caches_in_redis_on_miss() {
 
     // 缓存命中路径：无 DB 也返回数据
     let (status2, body2) = body_json(flights_search(
-        State(AppState { db: None, replica: None, cache: Some(cache) }),
+        State(AppState { db: None, replica: None, cache: Some(cache.clone()) }),
         Query(q("HND", "HKG", None, None)),
     ).await).await;
     assert_eq!(status2, StatusCode::OK);
     assert_eq!(body2["message"], "cache hit");
     assert_eq!(body2["data"]["items"][0]["price_cents"], 158000);
+
+    // page 2 的 key 不同 → 未命中 page 1 缓存（无 DB 返回空，而不是 page 1 数据）
+    let mut q2 = q("HND", "HKG", None, None);
+    q2.page = Some(2);
+    let (status3, body3) = body_json(flights_search(
+        State(AppState { db: None, replica: None, cache: Some(cache) }),
+        Query(q2),
+    ).await).await;
+    assert_eq!(status3, StatusCode::OK);
+    assert_ne!(body3["message"], "cache hit");
+    assert_eq!(body3["data"]["page"], 2);
+    assert_eq!(body3["data"]["items"].as_array().unwrap().len(), 0);
 }

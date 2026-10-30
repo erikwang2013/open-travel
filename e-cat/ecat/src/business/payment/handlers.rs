@@ -63,8 +63,26 @@ pub(crate) fn hmac_hex(body: &[u8]) -> String {
 
 #[derive(Deserialize)]
 pub(crate) struct CreatePaymentReq {
+    // Flutter Web 雪花 id 以字符串传递，兼容 JSON 数字与数字字符串
+    #[serde(deserialize_with = "de_u64_or_string")]
     pub(crate) order_id: u64,
     pub(crate) channel_code: String,
+}
+
+fn de_u64_or_string<'de, D>(deserializer: D) -> Result<u64, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let v = Value::deserialize(deserializer)?;
+    match v {
+        Value::Number(n) => n
+            .as_u64()
+            .ok_or_else(|| serde::de::Error::custom("invalid order_id")),
+        Value::String(s) => s
+            .parse()
+            .map_err(|_| serde::de::Error::custom("invalid order_id")),
+        _ => Err(serde::de::Error::custom("invalid order_id")),
+    }
 }
 
 #[derive(Deserialize)]
@@ -114,9 +132,27 @@ fn payment_from_row(row: &ecat_data::Row) -> PaymentOut {
         status: col_u64(row, "status") as u8,
         txn_no: txn_no.clone(),
         created_at: col_str(row, "created_at"),
-        // 模拟收银台经网关（8082）访问；真实渠道接入点见 create_payment 注释
-        checkout_url: format!("http://localhost:8082/api/v1/payments/sandbox/{txn_no}"),
+        // 模拟收银台经网关访问；真实渠道接入点见 create_payment 注释
+        checkout_url: format!(
+            "{}/api/v1/payments/sandbox/{txn_no}",
+            std::env::var("PUBLIC_BASE_URL").unwrap_or_else(|_| "http://localhost:8082".into())
+        ),
     }
+}
+
+/// txn_no = 渠道_时间戳_自增，足够唯一。
+fn new_txn_no(channel_code: &str) -> String {
+    static TXN_SEQ: AtomicU64 = AtomicU64::new(0);
+    let ts = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_millis())
+        .unwrap_or(0);
+    format!(
+        "{}_{}_{}",
+        channel_code,
+        ts,
+        TXN_SEQ.fetch_add(1, Ordering::Relaxed)
+    )
 }
 
 /// P4-06 发起支付（用户）：校验订单归属/待支付状态与渠道启用，幂等（同订单已有
@@ -174,7 +210,8 @@ pub(crate) async fn create_payment(
     if col_u64(ch_row, "enabled") != 1 {
         return err(StatusCode::BAD_REQUEST, 400, "channel disabled");
     }
-    // 3. 幂等：同订单已有流水（含已终态，供前端轮询）直接返回，不重复建
+    // 3. 幂等：同订单已有流水（含已终态，供前端轮询）直接返回，不重复建；
+    //    最近一次失败则复用该行重新发起（order_id 唯一键禁止再插一行）
     let existing = db
         .query_with(
             &format!(
@@ -185,20 +222,42 @@ pub(crate) async fn create_payment(
         )
         .await;
     if let Some(row) = existing.ok().and_then(|rows| rows.first().cloned()) {
-        return (StatusCode::OK, ApiResponse::ok(payment_from_row(&row)));
+        if col_u64(&row, "status") != 2 {
+            return (StatusCode::OK, ApiResponse::ok(payment_from_row(&row)));
+        }
+        let payment_id = col_u64(&row, "id");
+        if let Err(e) = db
+            .execute_with(
+                "UPDATE travel_payments SET status = 0, txn_no = ?, paid_at = NULL \
+                 WHERE id = ? AND status = 2",
+                &[json!(new_txn_no(&body.channel_code)), json!(payment_id)],
+            )
+            .await
+        {
+            tracing::warn!(error = %e, "failed payment reset failed");
+            return err(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error");
+        }
+        // 读回（并发下可能已被其他请求重置为另一 txn_no）
+        let rows = match db
+            .query_with(
+                &format!("SELECT {PAYMENT_COLS} FROM travel_payments WHERE id = ?"),
+                &[json!(payment_id)],
+            )
+            .await
+        {
+            Ok(rows) => rows,
+            Err(e) => {
+                tracing::warn!(error = %e, "payment readback failed");
+                return err(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error");
+            }
+        };
+        return match rows.first() {
+            Some(row) => (StatusCode::OK, ApiResponse::ok(payment_from_row(row))),
+            None => err(StatusCode::INTERNAL_SERVER_ERROR, 500, "internal error"),
+        };
     }
-    // 4. 生成 txn_no（渠道_时间戳_自增，足够唯一）并插入
-    static TXN_SEQ: AtomicU64 = AtomicU64::new(0);
-    let ts = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map(|d| d.as_millis())
-        .unwrap_or(0);
-    let txn_no = format!(
-        "{}_{}_{}",
-        body.channel_code,
-        ts,
-        TXN_SEQ.fetch_add(1, Ordering::Relaxed)
-    );
+    // 4. 生成 txn_no 并插入
+    let txn_no = new_txn_no(&body.channel_code);
     // 主键去 AUTO_INCREMENT 后显式生成雪花 id
     let payment_id = ecat::business::shared::snowflake_id().await;
     if let Err(e) = db
@@ -325,8 +384,9 @@ pub(crate) async fn confirm_order_paid(
     state.confirm.confirm(order_id, txn_no).await
 }
 
-/// P4-06 渠道异步回调（公开）：验签（模拟 HMAC）→ 幂等（已终态直接成功）→
-/// 入账（仅 status=0 可更新）→ 成功回调后调 order-service 确认（失败 500，渠道可重试）。
+/// P4-06 渠道异步回调（公开）：验签（模拟 HMAC）→ 幂等（已终态直接成功；
+/// 已入账但订单确认失败的回调重试确认）→ 入账（仅 status=0 可更新）→
+/// 成功回调后调 order-service 确认（失败 500，渠道可重试）。
 pub(crate) async fn payment_callback(
     State(state): State<AppState>,
     Path(_channel_code): Path<String>,
@@ -368,7 +428,19 @@ pub(crate) async fn payment_callback(
     };
     let order_id = col_u64(row, "order_id");
     let cur = col_u64(row, "status");
-    if cur == 1 || cur == 2 || cur == 3 {
+    if cur == 1 {
+        // 已入账但上次订单确认失败：重试确认，失败仍 500 让渠道继续重试
+        if let Err(e) = confirm_order_paid(&state, order_id, &parsed.txn_no).await {
+            tracing::error!(error = %e, order_id, "order confirm retry failed");
+            return err(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                500,
+                "order confirm failed, retry later",
+            );
+        }
+        return (StatusCode::OK, ApiResponse::ok(Value::Null));
+    }
+    if cur == 2 || cur == 3 {
         return (StatusCode::OK, ApiResponse::ok(Value::Null));
     }
     // 3. 入账：仅 status=0 可更新（并发重复回调只有一个生效），成功置 paid_at

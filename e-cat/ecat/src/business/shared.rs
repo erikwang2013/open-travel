@@ -1,7 +1,7 @@
 //! open-travel 业务服务共享代码：JWT 密钥解析、Redis 分布式限流、雪花 ID 初始化、axum Error 归一。
 
 use axum::body::Body;
-use axum::http::{Request, StatusCode};
+use axum::http::{HeaderMap, Request, StatusCode};
 use axum::response::Response;
 use ecat_data::Cache;
 use ecat_data_redis::RedisCache;
@@ -225,11 +225,11 @@ pub fn no_error<E>(_: E) -> NoError {
 
 /// Redis 固定窗口分布式限流（替换 Phase 1 的进程内限流，多实例共享计数）。
 ///
-/// key = `rl:{service}:{window_start}`，窗口内第一个请求建 key 并设 TTL，
-/// 后续请求 INCR；计数超过 max 返回 429。
+/// key = `rl:{service}:{client}:{window_start}`，窗口内第一个请求建 key 并设 TTL，
+/// 后续请求 INCR；计数超过 max 返回 429。client 取网关重写的 `X-Real-IP`，
+/// 回退 `X-Forwarded-For` 首跳；两者都缺失时归入共享的 `unknown` 桶。
+/// 前提：服务端口不对外直连，客户端无法伪造这两个头绕过限流。
 /// fail-open：Redis 不可用时放行并告警，避免限流组件拖垮业务。
-/// ponytail: 全局窗口按服务维度计数（未区分客户端 IP），需要按 IP 限流时
-/// 在 key 中拼接入 IP 即可。
 #[derive(Clone)]
 pub struct RedisRateLimitLayer {
     cache: Option<Arc<RedisCache>>,
@@ -291,11 +291,13 @@ where
     }
 
     fn call(&mut self, req: Request<Body>) -> Self::Future {
+        // 限流键必须在请求移交 inner 之前算出（header 随 req 一起 move）。
+        let client = client_id(req.headers());
         let fut = self.inner.call(req);
         let Some(cache) = self.cache.clone() else {
             return Box::pin(async move { fut.await });
         };
-        let key = rate_key(self.service, self.window_secs);
+        let key = rate_key(self.service, &client, self.window_secs);
         let max = self.max;
         let ttl = self.window_secs + 1;
         Box::pin(async move {
@@ -320,11 +322,60 @@ where
     }
 }
 
-fn rate_key(service: &str, window_secs: u64) -> String {
+fn client_id(headers: &HeaderMap) -> String {
+    headers
+        .get("x-real-ip")
+        .or_else(|| headers.get("x-forwarded-for"))
+        .and_then(|v| v.to_str().ok())
+        .and_then(|v| v.split(',').next())
+        .map(str::trim)
+        .filter(|v| !v.is_empty())
+        .unwrap_or("unknown")
+        .to_string()
+}
+
+fn rate_key(service: &str, client: &str, window_secs: u64) -> String {
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map(|d| d.as_secs())
         .unwrap_or(0);
+    rate_key_at(service, client, window_secs, now)
+}
+
+fn rate_key_at(service: &str, client: &str, window_secs: u64, now: u64) -> String {
     let window_start = now / window_secs * window_secs;
-    format!("rl:{service}:{window_start}")
+    format!("rl:{service}:{client}:{window_start}")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn rate_key_scopes_by_client_and_window() {
+        assert_eq!(
+            rate_key_at("payment-service", "1.2.3.4", 60, 120),
+            "rl:payment-service:1.2.3.4:120"
+        );
+        assert_ne!(
+            rate_key_at("payment-service", "1.2.3.4", 60, 120),
+            rate_key_at("payment-service", "5.6.7.8", 60, 120),
+            "不同客户端不得共享计数"
+        );
+        assert_ne!(
+            rate_key_at("payment-service", "1.2.3.4", 60, 120),
+            rate_key_at("payment-service", "1.2.3.4", 60, 180),
+            "跨窗口必须换 key"
+        );
+    }
+
+    #[test]
+    fn client_id_prefers_real_ip_then_first_forwarded() {
+        let mut headers = HeaderMap::new();
+        assert_eq!(client_id(&headers), "unknown");
+        headers.insert("x-forwarded-for", "1.1.1.1, 2.2.2.2".parse().unwrap());
+        assert_eq!(client_id(&headers), "1.1.1.1");
+        headers.insert("x-real-ip", "9.9.9.9".parse().unwrap());
+        assert_eq!(client_id(&headers), "9.9.9.9");
+    }
 }

@@ -13,8 +13,8 @@
 //   ponytail: 补偿非原子，崩溃窗口（扣减成功、订单未插入）会少卖一个位，
 //   后台扫描修复不了（无订单可查），可接受；后续接入事务/出库对账再收紧。
 //
-// 超时释放：惰性（列表/详情前扫 expire_at < NOW() 且 status=0 → 置 4 并回补
-// 余位与 Redis）+ 启动后台任务每 60s 扫一轮。
+// 超时释放：启动后台任务每 60s 扫一轮（expire_at < NOW() 且 status=0 →
+// 置 4 并回补余位与 Redis）。
 //
 // 中间件链（外层 → 内层）：CircuitBreaker → Security → RateLimit
 // → [仅 /api/v1/orders/*] JWT。JWT 与 user-service 同一密钥，claims.sub 为 user_id。
@@ -117,6 +117,8 @@ pub(crate) struct CreateOrderReq {
 #[derive(Serialize)]
 pub(crate) struct OrderOut {
     id: u64,
+    /// 雪花 id 的字符串形式（Flutter Web 的 JS 数字精度只有 2^53，不能直接解析 id）
+    id_str: String,
     order_type: u8,
     product_id: u64,
     status: u8,

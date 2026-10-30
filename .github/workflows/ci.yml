@@ -14,8 +14,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo check -p ecat --bins
-      - run: cargo test -p ecat --bins
+      - run: cargo check -p ecat --all-targets
+      - run: cargo test -p ecat --tests
 
   flutter:
     runs-on: ubuntu-latest

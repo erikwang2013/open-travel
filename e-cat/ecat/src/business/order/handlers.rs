@@ -37,8 +37,11 @@ fn snapshot_value(row: &ecat_data::Row) -> serde_json::Value {
 }
 
 fn order_from_row(row: &ecat_data::Row) -> OrderOut {
+    let id = col_u64(row, "id");
     OrderOut {
-        id: col_u64(row, "id"),
+        id,
+        // Flutter Web（JS 数字精度 2^53）用字符串接收雪花 id
+        id_str: id.to_string(),
         order_type: col_u64(row, "order_type") as u8,
         product_id: col_u64(row, "product_id"),
         status: col_u64(row, "status") as u8,
@@ -116,8 +119,8 @@ fn snapshot_order_type(snap: &serde_json::Value) -> u8 {
     snap.get("order_type").and_then(|v| v.as_u64()).unwrap_or(1) as u8
 }
 
-/// 过期订单惰性清理：expire_at 已过且仍待支付 → 置 4 并回补余位。
-/// 列表/详情前调用 + 启动后台任务每 60s 一轮。
+/// 过期订单清理：expire_at 已过且仍待支付 → 置 4 并回补余位。
+/// 启动后台任务每 60s 一轮。
 pub(crate) async fn expire_pending_orders(state: &AppState) {
     let Some(db) = state.db.clone() else { return };
     let rows = match db
@@ -143,15 +146,19 @@ pub(crate) async fn expire_pending_orders(state: &AppState) {
         } else {
             col_u64(&row, "product_id")
         };
-        restore_stock(state, ot, pid, snap.get("quantity").and_then(|v| v.as_u64()).unwrap_or(0)).await;
-        if let Err(e) = db
+        // 先抢占状态（status=0→4）再回补：并发取消/支付下只有一个请求能回补
+        match db
             .execute_with(
                 "UPDATE travel_orders SET status = 4 WHERE id = ? AND status = 0",
                 &[json!(id)],
             )
             .await
         {
-            tracing::warn!(error = %e, "expiry sweep update failed");
+            Ok(1) => {
+                restore_stock(state, ot, pid, snap.get("quantity").and_then(|v| v.as_u64()).unwrap_or(0)).await;
+            }
+            Ok(_) => {}
+            Err(e) => tracing::warn!(error = %e, "expiry sweep update failed"),
         }
     }
 }
@@ -421,13 +428,12 @@ pub(crate) async fn create_order(
     (StatusCode::OK, ApiResponse::ok(out))
 }
 
-/// P3-09 订单列表：当前用户订单倒序；先跑惰性过期扫描。
+/// P3-09 订单列表：当前用户订单倒序。
 pub(crate) async fn list_orders(
     State(state): State<AppState>,
     UserGuard(user_id): UserGuard,
     Query(q): Query<ListQuery>,
 ) -> (StatusCode, Json<ApiResponse<Vec<OrderOut>>>) {
-    expire_pending_orders(&state).await;
     let Some(db) = state.db.clone() else {
         return err(StatusCode::SERVICE_UNAVAILABLE, 503, "database unavailable");
     };
@@ -471,7 +477,6 @@ pub(crate) async fn order_detail(
     UserGuard(user_id): UserGuard,
     Path(id): Path<u64>,
 ) -> (StatusCode, Json<ApiResponse<OrderOut>>) {
-    expire_pending_orders(&state).await;
     let Some(db) = state.db.clone() else {
         return err(StatusCode::SERVICE_UNAVAILABLE, 503, "database unavailable");
     };
@@ -586,7 +591,7 @@ pub(crate) async fn cancel_order(
     };
     let qty = snap.get("quantity").and_then(|v| v.as_u64()).unwrap_or(0);
 
-    restore_stock(&state, ot, pid, qty).await;
+    // 先抢占状态（status=0→4）再回补：并发取消/支付/过期下只有一个请求能回补
     let affected = match db
         .execute_with(
             "UPDATE travel_orders SET status = 4 WHERE id = ? AND status = 0",
@@ -601,9 +606,10 @@ pub(crate) async fn cancel_order(
         }
     };
     if affected == 0 {
-        // 并发下已被其他请求取消（回补已重复执行，UPDATE + 幂等无害）
+        // 并发下已被其他请求取消/支付，未回补库存
         return err(StatusCode::BAD_REQUEST, 400, "order already cancelled");
     }
+    restore_stock(&state, ot, pid, qty).await;
     let mut out = order_from_row(&row);
     out.status = 4;
     if let Some(mq) = &state.mq {

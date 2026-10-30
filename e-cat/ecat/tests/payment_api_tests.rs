@@ -136,6 +136,9 @@ impl MockConfirm {
     fn call_count(&self) -> usize {
         self.calls.load(Ordering::SeqCst)
     }
+    fn set_result(&self, result: Result<(), String>) {
+        *self.result.lock().unwrap() = result;
+    }
 }
 
 impl OrderConfirm for MockConfirm {
@@ -149,6 +152,7 @@ impl OrderConfirm for MockConfirm {
 fn state_with(db: Arc<SqlxClient>, confirm: MockConfirm) -> AppState {
     AppState {
         db: Some(db),
+        cache: None,
         confirm: Arc::new(confirm),
         jwt: JwtAuthLayer::new(jwt_secret()).unwrap(),
     }
@@ -202,6 +206,42 @@ async fn create_payment_idempotent_same_txn() {
         .await
         .unwrap();
     assert_eq!(rows[0].get("c").and_then(|v| v.as_u64()).unwrap(), 1);
+    cleanup(&db, order_id).await;
+}
+
+#[tokio::test]
+async fn create_payment_accepts_string_order_id() {
+    let Some(db) = connect_test_db().await else { return };
+    let order_id = insert_order(&db, 900109, 1200).await;
+    let r = router(state_with(db.clone(), MockConfirm::new(Ok(()))));
+    // Flutter Web 以字符串传雪花 id
+    let body = json!({ "order_id": order_id.to_string(), "channel_code": "stripe" });
+    let (status, body) = call(r, "POST", "/api/v1/payments", Some(&sign("900109")), Some(body)).await;
+    assert_eq!(status, StatusCode::OK, "body: {body}");
+    assert_eq!(body["data"]["order_id"], json!(order_id));
+    cleanup(&db, order_id).await;
+}
+
+#[tokio::test]
+async fn create_payment_retries_after_failure() {
+    let Some(db) = connect_test_db().await else { return };
+    let order_id = insert_order(&db, 900110, 7700).await;
+    let r = router(state_with(db.clone(), MockConfirm::new(Ok(()))));
+    let token = sign("900110");
+    let (_, b1) = call(r.clone(), "POST", "/api/v1/payments", Some(&token), Some(pay_body(order_id, "stripe"))).await;
+    let txn1 = b1["data"]["txn_no"].as_str().unwrap().to_string();
+    let (status, _) = callback(r.clone(), "stripe", &txn1, 2, true).await;
+    assert_eq!(status, StatusCode::OK);
+    // 失败后重新发起：复用同一行、换新 txn_no、回到待支付
+    let (status, b2) = call(r, "POST", "/api/v1/payments", Some(&token), Some(pay_body(order_id, "stripe"))).await;
+    assert_eq!(status, StatusCode::OK, "body: {b2}");
+    assert_eq!(b2["data"]["status"], 0);
+    assert_ne!(b2["data"]["txn_no"].as_str().unwrap(), txn1);
+    let rows = db
+        .query_with("SELECT COUNT(*) AS c FROM travel_payments WHERE order_id = ?", &[json!(order_id)])
+        .await
+        .unwrap();
+    assert_eq!(rows[0].get("c").and_then(|v| v.as_u64()).unwrap(), 1, "不得插入第二行");
     cleanup(&db, order_id).await;
 }
 
@@ -303,7 +343,7 @@ async fn callback_success_books_and_confirms() {
 }
 
 #[tokio::test]
-async fn callback_idempotent_no_double_confirm() {
+async fn callback_repeat_success_reconfirms_order() {
     let Some(db) = connect_test_db().await else { return };
     let order_id = insert_order(&db, 900106, 6600).await;
     let confirm = MockConfirm::new(Ok(()));
@@ -312,14 +352,39 @@ async fn callback_idempotent_no_double_confirm() {
     let txn = body["data"]["txn_no"].as_str().unwrap().to_string();
     let (s1, b1) = callback(r.clone(), "stripe", &txn, 1, true).await;
     let (s2, b2) = callback(r.clone(), "stripe", &txn, 1, true).await;
-    assert_eq!(s1, StatusCode::OK);
-    assert_eq!(s2, StatusCode::OK, "重复回调应返回成功: {b1} {b2}");
+    assert_eq!(s1, StatusCode::OK, "body: {b1}");
+    assert_eq!(s2, StatusCode::OK, "重复回调应返回成功: {b2}");
     let rows = db
         .query_with("SELECT CAST(status AS CHAR) AS status FROM travel_payments WHERE order_id = ?", &[json!(order_id)])
         .await
         .unwrap();
     assert_eq!(rows[0].get("status").and_then(|v| v.as_str()).unwrap(), "1");
-    assert_eq!(confirm.call_count(), 1, "重复回调不重复入账、不重复确认");
+    // 不重复入账，但已入账的重复成功回调会再确认一次（订单侧幂等）
+    assert_eq!(confirm.call_count(), 2, "重复成功回调应重试订单确认");
+    cleanup(&db, order_id).await;
+}
+
+#[tokio::test]
+async fn callback_retry_after_confirm_failure_confirms_order() {
+    let Some(db) = connect_test_db().await else { return };
+    let order_id = insert_order(&db, 900108, 5400).await;
+    let confirm = MockConfirm::new(Err("order service down".into()));
+    let r = router(state_with(db.clone(), confirm.clone()));
+    let (_, body) = call(r.clone(), "POST", "/api/v1/payments", Some(&sign("900108")), Some(pay_body(order_id, "stripe"))).await;
+    let txn = body["data"]["txn_no"].as_str().unwrap().to_string();
+    // 首次成功回调：流水入账成功，但订单确认失败 → 500 让渠道重试
+    let (s1, b1) = callback(r.clone(), "stripe", &txn, 1, true).await;
+    assert_eq!(s1, StatusCode::INTERNAL_SERVER_ERROR, "body: {b1}");
+    // 重试：流水已是 status=1，仍必须重新确认订单（原实现直接 200 导致订单永久待支付）
+    confirm.set_result(Ok(()));
+    let (s2, b2) = callback(r, "stripe", &txn, 1, true).await;
+    assert_eq!(s2, StatusCode::OK, "body: {b2}");
+    assert_eq!(confirm.call_count(), 2, "重试应再次调用订单确认");
+    let rows = db
+        .query_with("SELECT CAST(status AS CHAR) AS status FROM travel_payments WHERE order_id = ?", &[json!(order_id)])
+        .await
+        .unwrap();
+    assert_eq!(rows[0].get("status").and_then(|v| v.as_str()).unwrap(), "1");
     cleanup(&db, order_id).await;
 }
 
@@ -346,6 +411,7 @@ async fn callback_failure_marks_failed() {
 fn state_with_db_or_none() -> AppState {
     AppState {
         db: None,
+        cache: None,
         confirm: Arc::new(MockConfirm::new(Ok(()))),
         jwt: JwtAuthLayer::new(jwt_secret()).unwrap(),
     }

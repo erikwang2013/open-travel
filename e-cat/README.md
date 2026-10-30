@@ -73,7 +73,7 @@ git clone <仓库地址> && cd open-travel
 
 ### 前提条件
 
-- Rust 1.85+（stable 工具链，edition 2024）+ [protoc](https://github.com/protocolbuffers/protobuf)
+- Rust 1.88+（stable 工具链，edition 2024）+ [protoc](https://github.com/protocolbuffers/protobuf)
 - Docker + Docker Compose
 
 ### 构建
@@ -159,23 +159,25 @@ curl -H "Authorization: Bearer <JWT>" http://localhost:8082/api/v1/user/profile
 
 ```bash
 cd e-cat
-cargo test -p ecat --bins                        # 业务服务
+cargo test -p ecat --tests                       # 业务服务 + 集成测试（无 MySQL/Redis 时相关用例跳过）
 cargo test --workspace                          # 全 workspace
 ```
+
+> 本地开发环境 Redis 映射在宿主机 6381 时，跑依赖雪花 ID 的用例需带 `REDIS_URL=redis://localhost:6381`。
 
 ### 脚本
 
 | 脚本 | 用途 |
 |------|------|
-| `scripts/opensearch_init.sh` | 幂等创建 OpenSearch 索引（cjk 分析器） |
-| `scripts/loadtest.sh` | 接口压测 |
-| `scripts/release.sh` | 发布流程辅助 |
+| `../scripts/opensearch_init.sh` | 幂等创建 OpenSearch 索引（cjk 分析器） |
+| `../scripts/loadtest.sh` | 接口压测 |
+| `scripts/release.sh` | e-cat 框架版本号同步辅助（项目版本发布见下方流程） |
 
 ### 版本发布流程
 
-项目版本（当前 v1.0.0，按 semver 演进）**独立于** e-cat 框架版本（当前 3.0.3）。
+项目版本（当前 v1.5.6，按 semver 演进）**独立于** e-cat 框架版本（当前 3.0.3）。
 
-1. `CHANGELOG.md` 顶部新增版本节，格式 `## [x.y.z] — YYYY-MM-DD`，记录变更
+1. 根目录 `CHANGELOG.md` 顶部新增版本节，格式 `## [x.y.z] — YYYY-MM-DD`，记录变更
 2. 打 annotated tag：`git tag -a vX.Y.Z -m "vX.Y.Z"`，`git push origin vX.Y.Z`
 3. 创建 release：`gh release create vX.Y.Z --title vX.Y.Z --notes-file <节>`，body 取自 CHANGELOG 对应节；最新版本自动置为 Latest
 
@@ -263,7 +265,7 @@ cargo test --workspace                          # 全 workspace
 
 业务路由版本在 URL 前缀 `/api/v1/`，无版本前缀路由即 404。
 
-**限流**：每服务 100 req/60s，Redis 分布式固定窗口；未认证请求也计入限流（防暴力请求耗尽资源），超限返回 429。
+**限流**：每服务、每客户端 100 req/60s，Redis 分布式固定窗口；未认证请求也计入限流（防暴力请求耗尽资源），超限返回 429。客户端地址取 `X-Real-IP`，回退 `X-Forwarded-For` 首跳。
 
 ## e-cat 框架速览
 

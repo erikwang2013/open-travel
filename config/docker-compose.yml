@@ -275,6 +275,7 @@ services:
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
       KAFKA_BROKERS: kafka:9092
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:-dev-internal-secret}
     ports:
       - "8006:8006"
 
@@ -344,6 +345,7 @@ services:
       JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-32-bytes-minimum-secret}
       KAFKA_BROKERS: kafka:9092
       INTERNAL_TOKEN: ${INTERNAL_TOKEN:-dev-internal-secret}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8082}
     ports:
       - "8009:8009"
 

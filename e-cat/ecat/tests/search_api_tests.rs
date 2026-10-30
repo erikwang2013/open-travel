@@ -84,8 +84,9 @@ fn build_os_query_combines_filters() {
     assert_eq!(must[1]["term"]["destination_id"], 2);
     assert_eq!(must[2]["range"]["price_cents"]["gte"], 100);
     assert_eq!(must[2]["range"]["price_cents"]["lte"], 5000);
-    assert_eq!(v["from"], 40);
-    assert_eq!(v["size"], 20);
+    // 单索引从 0 取前 page*PAGE_SIZE 条，合并后在应用层切页
+    assert_eq!(v["from"], 0);
+    assert_eq!(v["size"], 60);
 }
 
 #[test]
@@ -143,6 +144,53 @@ async fn fallback_search_filters_destination_with_real_db() {
     }
 }
 
+/// 分页：两索引合并后统一切页，page 1/2 不重叠且每页不超过 PAGE_SIZE。
+/// 两索引各造 20 条（唯一关键词），旧实现 page 1 会拼出 40 条、page 2 为空。
+#[tokio::test]
+async fn fallback_search_paginates_without_overlap_with_real_db() {
+    let Some(db) = test_db().await else { return };
+    let tag = format!("pagetest{}", std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH).unwrap().as_millis());
+    for i in 0..20u64 {
+        let dest_id = ecat::business::shared::snowflake_id().await;
+        db.query_with(
+            "INSERT INTO travel_destinations (id, name_en, name_zh, name_ja, latitude, longitude, region_id, sort_order) \
+             VALUES (?, ?, ?, ?, 0, 0, 0, ?)",
+            &[serde_json::json!(dest_id), serde_json::json!(format!("{tag} d{i}")),
+              serde_json::json!(format!("{tag} d{i}")), serde_json::json!(format!("{tag} d{i}")),
+              serde_json::json!(i)],
+        ).await.unwrap();
+        db.query_with(
+            "INSERT INTO travel_attractions (id, destination_id, name_en, name_zh, name_ja) VALUES (?, 1, ?, ?, ?)",
+            &[serde_json::json!(ecat::business::shared::snowflake_id().await),
+              serde_json::json!(format!("{tag} a{i}")), serde_json::json!(format!("{tag} a{i}")),
+              serde_json::json!(format!("{tag} a{i}"))],
+        ).await.unwrap();
+    }
+    let mk = |page| SearchQuery { q: tag.clone(), destination_id: None, lang: "en".into(), price_min: None, price_max: None, page };
+    let (_, p1) = body_json(search(
+        State(AppState { db: Some(db.clone()), replica: None, cache: None, os: None }),
+        Query(mk(1)),
+    ).await).await;
+    let (_, p2) = body_json(search(
+        State(AppState { db: Some(db.clone()), replica: None, cache: None, os: None }),
+        Query(mk(2)),
+    ).await).await;
+    let _ = db.query_with("DELETE FROM travel_destinations WHERE name_en LIKE ?", &[serde_json::json!(format!("%{tag}%"))]).await;
+    let _ = db.query_with("DELETE FROM travel_attractions WHERE name_en LIKE ?", &[serde_json::json!(format!("%{tag}%"))]).await;
+
+    let a1 = p1["data"]["items"].as_array().unwrap();
+    let a2 = p2["data"]["items"].as_array().unwrap();
+    assert_eq!(p1["data"]["total"], 40);
+    assert_eq!(a1.len(), 20, "page 1 must hold PAGE_SIZE items, not 2x");
+    assert_eq!(a2.len(), 20, "page 2 must hold the next PAGE_SIZE items");
+    assert!(a1.iter().all(|i| i["type"] == "destination"), "page 1 must be destinations first");
+    assert!(a2.iter().all(|i| i["type"] == "attraction"), "page 2 must continue with attractions");
+    let key = |i: &serde_json::Value| (i["type"].as_str().unwrap().to_string(), i["id"].as_u64().unwrap());
+    let page1: Vec<_> = a1.iter().map(key).collect();
+    assert!(a2.iter().map(key).all(|k| !page1.contains(&k)), "page 2 must not repeat page 1");
+}
+
 /// 价格过滤：命中项价格在区间内（目的地无价格字段被排除）。
 #[tokio::test]
 async fn fallback_search_price_range_with_real_db() {
@@ -179,6 +227,27 @@ async fn search_logs_to_travel_searches_with_real_db() {
     assert_eq!(body["code"], 0);
     let after = log_count(&db, "tokyo_log_test").await;
     assert_eq!(after, before + 1, "search log row should be inserted");
+}
+
+/// 缓存命中不写检索日志（未命中才写，避免缓存命中放大 MySQL 写入）。
+#[tokio::test]
+async fn cache_hit_does_not_log_search_with_real_db() {
+    let Ok(cache) = RedisCache::connect(&std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://localhost:6381".into())).await else { return };
+    let Some(db) = test_db().await else { return };
+    let kw = format!("cache_log_test_{}", std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs());
+    let state = AppState { db: Some(db.clone()), replica: None, cache: Some(Arc::new(cache)), os: None };
+    let query = || SearchQuery { q: kw.clone(), destination_id: None, lang: "en".into(), price_min: None, price_max: None, page: 1 };
+
+    let (_, _) = body_json(search(State(state.clone()), Query(query())).await).await;
+    let after_miss = log_count(&db, &kw).await;
+    assert_eq!(after_miss, 1, "cache miss should log once");
+
+    let (status, body) = body_json(search(State(state), Query(query())).await).await;
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(body["message"], "cache hit");
+    assert_eq!(log_count(&db, &kw).await, after_miss, "cache hit must not log");
+    let _ = db.query_with("DELETE FROM travel_searches WHERE keyword = ?", &[serde_json::json!(kw)]).await;
 }
 
 /// 热词聚合（P5-03）：自造 keyword 写入 travel_searches，all 周期应包含该词。

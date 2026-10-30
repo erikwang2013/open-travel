@@ -71,16 +71,16 @@ open-travel/
 │   │   ├── flutter/       # Flutter: iOS / Android / Web / Desktop (12+ language i18n; web/favicon.svg is the "Nannan 南南" icon)
 │   └── admin/             # Flutter Web admin console
 ├── e-cat/                 # e-cat framework + business services (single Cargo workspace)
-│   ├── ecat*/             # 52 ecat-* framework crates
+│   ├── ecat*/             # 33 ecat-* framework crates
 │   ├── ecat/              # Main framework crate: facade + business modules (src/business/) + service entries (src/bin/, 9 services)
 │   ├── config/            # Framework config examples
 │   ├── examples/          # Framework example projects
-│   └── CHANGELOG.md       # Framework + project version changelog
+│   └── CHANGELOG.md       # Framework changelog (project versions: root CHANGELOG.md + tags)
 ├── docs/                  # Technical documentation
 │   ├── api.md             # API reference (endpoints, auth, rate limiting)
 │   ├── mascot.svg         # Mascot "Nannan 南南" (single vector source; favicon and per-platform icons are derived from it)
-│   ├── svg/               # Architecture / feature / lifecycle / security / structure diagrams (with 12 language translations)
-│   ├── i18n/              # READMEs in 12 languages
+│   ├── svg/               # Architecture / feature / lifecycle / security / structure diagrams (English versions in svg/en/)
+│   ├── i18n/              # English README
 ├── config/                # Environment and deployment config (nginx.conf, docker-compose.yml, schema.sql)
 ├── scripts/               # Install / deploy / health check / load test / payment reconciliation
 ├── .github/workflows/     # CI
@@ -90,7 +90,7 @@ open-travel/
 ## Database
 
 - Database name: `travel`
-- Table prefix: `travel_` (e.g. `travel_users`, `travel_orders`, `travel_bookings`)
+- Table prefix: `travel_` (e.g. `travel_users`, `travel_orders`, `travel_attractions`)
 - Companion storage: Redis (sessions / hot caches), OpenSearch (multilingual search index)
 
 ## One-Click Install
@@ -122,7 +122,7 @@ cargo check -p ecat --bins   # compile check for business services
 | flight-service | 8007 | Flights |
 | hotel-service | 8008 | Hotels |
 | payment-service | 8009 | Payments |
-| Nginx gateway | 8082→80 | Routes `/api/user/`, `/api/booking/`, `/api/admin/`, `/api/search`, `/api/lines`, `/api/orders`, `/api/flights`, `/api/hotels`, `/api/payments` prefixes |
+| Nginx gateway | 8082→80 | Routes `/api/v1/user/`, `/api/v1/booking/`, `/api/v1/admin/`, `/api/v1/search`, `/api/v1/lines`, `/api/v1/orders`, `/api/v1/flights`, `/api/v1/hotels`, `/api/v1/payments` prefixes |
 | MySQL | 3308→3306 | Data source |
 | Redis | 6381→6379 | Cache / rate limiting |
 | OpenSearch | 9201→9200 | Multilingual search |
@@ -133,9 +133,14 @@ The admin Flutter Web console lives in `apps/admin/`; the development default ad
 
 | Script | Description |
 |---|---|
+| `scripts/install.sh` | One-click install: environment check → start all services → init search indexes → health check → print URLs and default account (idempotent) |
+| `scripts/up.sh` / `down.sh` | Start / stop the compose stack |
+| `scripts/deploy.sh` | Rebuild and restart services |
+| `scripts/health_check.sh` | Service health check |
 | `scripts/opensearch_init.sh` | Idempotently creates the OpenSearch index (cjk analyzer) |
 | `scripts/loadtest.sh` | Load testing |
-| `scripts/release.sh` | Release process helper |
+| `scripts/reconcile_payments.sh` | Payment reconciliation |
+| `scripts/env_audit.sh` | Environment variable and config audit |
 
 ---
 

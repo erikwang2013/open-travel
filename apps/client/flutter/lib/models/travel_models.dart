@@ -45,7 +45,8 @@ class Attraction {
   final String coverUrl;
 
   static Attraction fromJson(Map<String, dynamic> json, String lang) {
-    final name = localizedName(json, lang) ?? 'ID ${json['id']}';
+    // booking 接口返回已本地化的单字段 name，无 name_* 列
+    final name = localizedName(json, lang) ?? (json['name'] as String?) ?? 'ID ${json['id']}';
     return Attraction(
       id: (json['id'] as num?)?.toInt() ?? 0,
       destinationId: (json['destination_id'] as num?)?.toInt() ?? 0,
@@ -215,7 +216,7 @@ class Order {
     this.productSnapshot,
   });
 
-  final int id;
+  final String id;
   final int orderType;
   final int productId;
   final int amountCents;
@@ -228,13 +229,15 @@ class Order {
   bool get isPending => status == 0;
 
   static Order fromJson(Map<String, dynamic> json, String lang) => Order(
-        id: (json['id'] as num?)?.toInt() ?? 0,
+        // id_str 保精度（Web 上 int 超过 2^53 会丢位），缺失时才回落 id。
+        id: (json['id_str'] as String?) ?? json['id']?.toString() ?? '',
         orderType: (json['order_type'] as num?)?.toInt() ?? 0,
         productId: (json['product_id'] as num?)?.toInt() ?? 0,
         amountCents: (json['amount_cents'] as num?)?.toInt() ?? 0,
         status: (json['status'] as num?)?.toInt() ?? 0,
         createdAt: (json['created_at'] as String?) ?? '',
-        productSnapshot: json['product_snapshot'],
+        // 后端订单响应用 snapshot，兼容旧字段名 product_snapshot
+        productSnapshot: json['snapshot'] ?? json['product_snapshot'],
       );
 }
 
@@ -386,7 +389,7 @@ class PaymentChannel {
     required this.channelCode,
     this.name = '',
     this.type = '',
-    this.enabled = false,
+    this.enabled = true,
     this.priority = 0,
   });
 
@@ -404,8 +407,12 @@ class PaymentChannel {
     return PaymentChannel(
       channelCode: (json['channel_code'] as String?) ?? '',
       name: name is String ? name : '',
-      type: (json['type'] as String?) ?? '',
-      enabled: (json['enabled'] as bool?) ?? false,
+      type: switch (json['type']) {
+        num n => n.toString(),
+        String s => s,
+        _ => '',
+      },
+      enabled: (json['enabled'] as bool?) ?? true,
       priority: (json['priority'] as num?)?.toInt() ?? 0,
     );
   }

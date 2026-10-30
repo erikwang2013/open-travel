@@ -56,6 +56,9 @@ void main() {
     final b = Attraction.fromJson({'id': 1}, 'en');
     expect(b.rating, 0.0);
     expect(b.name, 'ID 1');
+    // booking 接口返回单字段 name（已本地化）
+    final named = Attraction.fromJson({'id': 2, 'name': 'Tokyo Tower'}, 'en');
+    expect(named.name, 'Tokyo Tower');
   });
 
   test('Order.fromJson tolerant and status keys map', () {
@@ -66,18 +69,25 @@ void main() {
       'amount_cents': 88800,
       'status': 4,
       'created_at': '2026-08-29 10:00:00',
-      'product_snapshot': {'title': 'Tokyo Tour', 'cover_url': 'http://x/1.jpg'},
+      'snapshot': {'title': 'Tokyo Tour', 'cover_url': 'http://x/1.jpg'},
     }, 'zh');
-    expect(o.id, 9);
+    expect(o.id, '9');
     expect(o.amountCents, 88800);
     expect(o.status, 4);
     expect(o.isPending, isFalse);
     expect(snapshotTitle(o.productSnapshot, 'zh'), 'Tokyo Tour');
+    // 兼容旧字段名 product_snapshot
+    final legacy = Order.fromJson({'product_snapshot': {'title': 'Old'}}, 'zh');
+    expect(snapshotTitle(legacy.productSnapshot, 'zh'), 'Old');
     expect(orderStatusKey(0), 'booking.status.pending');
     expect(orderStatusKey(1), 'booking.status.paid');
     expect(orderStatusKey(2), 'order.status.confirmed');
     expect(orderStatusKey(3), 'order.status.completed');
     expect(orderStatusKey(4), 'booking.status.cancelled');
+
+    // id_str 优先，避免 Web 上大整数精度丢失
+    final precise = Order.fromJson({'id': 1, 'id_str': '9007199254740993'}, 'zh');
+    expect(precise.id, '9007199254740993');
   });
 
   test('snapshotTitle parses JSON string and falls back', () {

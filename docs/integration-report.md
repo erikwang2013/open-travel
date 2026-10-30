@@ -3,6 +3,8 @@
 日期：2026-08-28
 环境：docker compose（project 名 `open-travel`），Rust e-cat 微服务（user 8001 / booking 8002），nginx 网关，MySQL + Redis + OpenSearch
 
+> 注（v1.5.6）：限流已改为按客户端 100 req/60s，本报告为历史联调记录。
+
 ## 1. 环境与端口调整记录
 
 本机已有 open-novel 项目容器及宿主进程占用端口，open-travel compose 的 host 端口做了临时调整（容器内网端口不变，nginx 内网转发不受影响）：

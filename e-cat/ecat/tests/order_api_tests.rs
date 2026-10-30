@@ -148,6 +148,11 @@ async fn create_order_success_decrements_seats() {
     assert_eq!(body["data"]["amount_cents"], price * 2);
     assert_eq!(body["data"]["snapshot"]["quantity"], 2);
     assert!(body["data"]["expire_at"].is_string());
+    // 雪花 id 同时以字符串返回，避免 Flutter Web 2^53 精度丢失
+    assert_eq!(
+        body["data"]["id_str"].as_str().unwrap(),
+        body["data"]["id"].as_u64().unwrap().to_string()
+    );
     let rows = db
         .query_with("SELECT seats_left FROM travel_line_dates WHERE id = ?", &[json!(ld_id)])
         .await
@@ -220,6 +225,30 @@ async fn cancel_success_restores_seats() {
 }
 
 #[tokio::test]
+async fn cancel_twice_does_not_restore_stock_twice() {
+    let Some(db) = real_db().await else { return };
+    let _g = lock().await;
+    let (ld_id, line_id, _) = pick_line_date(&db, 10).await;
+    let r = router(state_with(db.clone()));
+    let token = sign("1");
+    let (_, body) = call(r.clone(), "POST", "/api/v1/orders", Some(&token), Some(order_body(line_id, ld_id, 2))).await;
+    let order_id = body["data"]["id"].as_u64().unwrap();
+    let (s1, _) = call(r.clone(), "POST", &format!("/api/v1/orders/{order_id}/cancel"), Some(&token), None).await;
+    let (s2, body2) = call(r, "POST", &format!("/api/v1/orders/{order_id}/cancel"), Some(&token), None).await;
+    assert_eq!(s1, StatusCode::OK, "body: {body2}");
+    assert_eq!(s2, StatusCode::BAD_REQUEST, "body: {body2}");
+    let rows = db
+        .query_with("SELECT seats_left FROM travel_line_dates WHERE id = ?", &[json!(ld_id)])
+        .await
+        .unwrap();
+    assert_eq!(
+        rows[0].get("seats_left").and_then(|v| v.as_u64()).unwrap(),
+        10,
+        "重复取消不得再次回补余位"
+    );
+}
+
+#[tokio::test]
 async fn cancel_non_pending_returns_400() {
     let Some(db) = real_db().await else { return };
     let _g = lock().await;
@@ -280,14 +309,15 @@ async fn expired_pending_order_is_cancelled_and_stock_restored() {
     let Some(db) = real_db().await else { return };
     let _g = lock().await;
     let (ld_id, line_id, _) = pick_line_date(&db, 10).await;
-    // 清掉本行跨运行遗留的 pending 订单：它们过期后会被本用例的惰性清理取消并回补余位
+    // 清掉本行跨运行遗留的 pending 订单：它们过期后会被本用例的清理取消并回补余位
     db.execute_with(
         "DELETE FROM travel_orders WHERE status = 0 AND JSON_EXTRACT(product_snapshot, '$.line_date_id') = ?",
         &[json!(ld_id)],
     )
     .await
     .unwrap();
-    let r = router(state_with(db.clone()));
+    let state = state_with(db.clone());
+    let r = router(state.clone());
     let token = sign("1");
     let (_, body) = call(r.clone(), "POST", "/api/v1/orders", Some(&token), Some(order_body(line_id, ld_id, 2))).await;
     let order_id = body["data"]["id"].as_u64().unwrap();
@@ -297,7 +327,8 @@ async fn expired_pending_order_is_cancelled_and_stock_restored() {
     )
     .await
     .unwrap();
-    // 触发惰性清理：列表前扫描过期订单
+    // 后台任务同款清理（列表/详情已不再触发扫描）
+    service::handlers::expire_pending_orders(&state).await;
     let (_, list_body) = call(r, "GET", "/api/v1/orders", Some(&token), None).await;
     let items = list_body["data"].as_array().unwrap();
     let expired = items.iter().find(|i| i["id"] == json!(order_id)).unwrap();

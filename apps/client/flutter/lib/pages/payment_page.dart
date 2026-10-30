@@ -12,7 +12,7 @@ import 'order_detail_page.dart';
 class PaymentPage extends StatefulWidget {
   const PaymentPage({super.key, required this.orderId});
 
-  final int orderId;
+  final String orderId;
 
   @override
   State<PaymentPage> createState() => _PaymentPageState();
@@ -51,7 +51,7 @@ class _PaymentPageState extends State<PaymentPage> {
       final channels = await OrderService.instance.fetchPaymentChannels();
       if (!mounted) return;
       setState(() {
-        _channels = [for (final c in channels) if (c.enabled) c];
+        _channels = channels;
         _loading = false;
       });
     } on Exception {

@@ -157,7 +157,7 @@ cd e-cat && cargo check -p ecat --bins
 - 提交：改动完成且验证通过后提交（不添加 Co-Authored-By，除非 settings.json 显式配置）
 - 推送：push 到 origin/main，确认远程同步
 - 版本发布流程：
-  1. 版本号是**项目版本**（当前 v1.0.0，按 semver 演进），独立于 e-cat 框架版本
+  1. 版本号是**项目版本**（当前 v1.5.6，按 semver 演进），独立于 e-cat 框架版本
   2. CHANGELOG.md 顶部新增版本节（格式 `## [x.y.z] — YYYY-MM-DD`），记录变更
   3. 打 annotated tag：`git tag -a vX.Y.Z -m "vX.Y.Z"`，`git push origin vX.Y.Z`
   4. 创建 release：`gh release create vX.Y.Z --title vX.Y.Z --notes-file <节>`，body 取自 CHANGELOG 对应节；最新版本自动置为 Latest

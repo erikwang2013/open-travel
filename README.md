@@ -84,7 +84,7 @@ git clone <仓库地址> && cd open-travel
 
 ### 环境要求
 
-- Rust 1.85+（stable 工具链，edition 2024）
+- Rust 1.88+（stable 工具链，edition 2024）
 - Docker + Docker Compose
 
 ### 构建与启动
@@ -179,7 +179,7 @@ curl "http://localhost:8082/api/v1/booking/attractions?destination_id=1"
 
 ![安全架构图](docs/svg/security-architecture.svg)
 
-> 分层防护：Tracing → CircuitBreaker → Security → RateLimit(Redis，100 req/60s) → JWT（仅受保护路由）；API 版本在 URL 前缀 `/api/v1/`，未知版本由网关 404；支付回调 HMAC 验签 + 内部 X-Internal-Token 鉴权。
+> 分层防护：Tracing → CircuitBreaker → Security → RateLimit(Redis，每客户端 100 req/60s) → JWT（仅受保护路由）；API 版本在 URL 前缀 `/api/v1/`，未知版本由网关 404；支付回调 HMAC 验签 + 内部 X-Internal-Token 鉴权。
 
 ## 项目结构图
 
@@ -200,7 +200,7 @@ open-travel/
 │   ├── ecat/              # 主框架 crate：门面 + 业务模块（src/business/）+ 服务入口（src/bin/ 9 个服务）
 │   ├── config/            # 框架配置示例
 │   ├── examples/          # 框架示例项目
-│   └── CHANGELOG.md       # 框架 + 项目版本变更日志（版本号即项目版本，见 tags）
+│   └── CHANGELOG.md       # 框架版本变更日志（项目版本见根目录 CHANGELOG.md 与 tags）
 ├── docs/                  # 技术文档
 │   ├── api.md             # API 参考（端点、鉴权、限流）
 │   ├── integration-report.md # 联调报告
@@ -217,7 +217,7 @@ open-travel/
 ## 数据库
 
 - 数据库名：`travel`
-- 表前缀：`travel_`（例如 `travel_users`、`travel_orders`、`travel_bookings`）
+- 表前缀：`travel_`（例如 `travel_users`、`travel_orders`、`travel_attractions`）
 - 配套存储：Redis（会话 / 热门缓存）、OpenSearch（多语言搜索索引）
 
 ---
@@ -244,7 +244,7 @@ open-travel/
 | 后端路由注册 | 80 | 86 |
 | 后端异步 handler | 156 | 165 |
 | 源码文件 / 行数 | 162 / 36,778 | 220 / 50,926 |
-| 数据表 | 15 | 16 |
+| 数据表 | 13 | 16 |
 | Flutter 客户端页面 | 12 | 12 |
 | Flutter 管理端页面 | 17 | 18 |
 | HarmonyOS 客户端 | — | 20 个 ArkTS 页面 |
@@ -259,8 +259,8 @@ open-travel/
 | 功能覆盖 / Features | 9 个 Rust 微服务、33 个 e-cat crate；预订/订单/支付/搜索/用户/库存/后台；Flutter 客户端 12 页 + 管理端 17 页 | 同源 9 个服务 + 21 个扩展 crate；额外 HarmonyOS 20 页、CDN 控制台、评论 API、演示种子；管理端 18 页 |
 | 安全防护 / Security | JWT/OAuth2/API Key、`require_admin` 角色守卫、审计事件、Redis/内存限流、CORS、TLS、超时/重试/恢复；10 个安全源文件、9 个中间件文件 | 与开源版同源同文件，无额外安全模块；未增加独立 RBAC/CSRF/CSP 实现（管理端仍以 `role=admin` 守卫） |
 | 性能与规模 / Performance & scale | axum/tonic 异步 9 服务、Redis 限流/缓存、OpenSearch 检索失败回退 MySQL、自带 loadtest 脚本 | 核心链路一致；额外编译 21 个数据/MQ/注册中心 crate 与 CDN 刷新/预热；未提供压测对比数据，不能据此宣称更快 |
-| 数据与检索 / Data & search | 15 张表；OpenSearch 全文检索 + MySQL LIKE 回退；Redis 缓存 | 16 张表（+`travel_cdn_providers`）；核心 15 表结构一致；检索链路一致 |
-| 测试与质量 / Tests & quality | 14 个 Rust 测试文件、578 个 `#[test]`；2 个 Flutter 测试文件；1 个 CI workflow | 16 个 Rust 测试文件、807 个 `#[test]`；2 个 Flutter 测试文件；1 个 CI workflow；均未在本次审计中运行 |
+| 数据与检索 / Data & search | 13 张表；OpenSearch 全文检索 + MySQL LIKE 回退；Redis 缓存 | 16 张表（+`travel_cdn_providers`）；核心 13 表结构一致；检索链路一致 |
+| 测试与质量 / Tests & quality | 14 个 Rust 测试文件、589 个 `#[test]`；2 个 Flutter 测试文件；1 个 CI workflow | 16 个 Rust 测试文件、807 个 `#[test]`；2 个 Flutter 测试文件；1 个 CI workflow；均未在本次审计中运行 |
 | 部署与运维 / Deployment & ops | 15 个 compose 服务（MySQL 主从/Kafka/Redis/OpenSearch/Nginx + 9 个 ecat 服务）；install/up/down/deploy/health_check/loadtest/opensearch_init | compose 服务与运维脚本一致；额外提供 CDN setup/upload 脚本与 3 个演示种子 SQL |
 | 多端与国际化 / Clients & i18n | Flutter 客户端 12 页、管理端 17 页；13 个 ARB 语言包；文档语言仅 en | 增加 HarmonyOS 客户端 20 页（13 套语言资源）；Flutter 端一致；文档 12 种语言 |
 | 扩展性与二次开发 / Extensibility | 33 个 crate、9 个服务、59 个 API 路径；标准 e-cat 扩展点 | 54 个 crate、9 个服务、64 个 API 路径；多 21 个数据/MQ/注册中心 crate、GraphQL/OpenAPI/调度/版本化/压测模块 |

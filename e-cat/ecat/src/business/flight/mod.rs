@@ -3,7 +3,7 @@
 // 端口约定：user 8001 / booking 8002 / admin 8003 / search 8004 / line 8005 / order 8006 / 本服务 8007。
 //
 // 本服务只做查询（下单在 order-service P4-07）。查询链路（与 line 一致）：
-//   1. search：Redis 缓存 travel:flights:{from}:{to}:{date}:{cabin}（TTL 60s），未命中回源
+//   1. search：Redis 缓存 travel:flights:{from}:{to}:{date}:{cabin}:{page}:{page_size}（TTL 60s），未命中回源
 //   2. 详情：不缓存——余票随 order-service 预占实时扣减，必须读实时值
 //   3. 从库优先、失败/为空回退主库
 //
@@ -136,6 +136,22 @@ fn valid_code(s: &str) -> bool {
     s.len() == 3 && s.bytes().all(|b| b.is_ascii_alphabetic())
 }
 
+/// 缓存 key 含 page/page_size：缓存值是整页 SearchData，分页参数必须参与 key。
+pub(crate) fn cache_key(
+    from: &str,
+    to: &str,
+    date: Option<&str>,
+    cabin: Option<u64>,
+    page: u64,
+    page_size: u64,
+) -> String {
+    format!(
+        "travel:flights:{from}:{to}:{}:{}:{page}:{page_size}",
+        date.unwrap_or("all"),
+        cabin.map(|c| c.to_string()).unwrap_or_else(|| "all".into())
+    )
+}
+
 /// 校验 YYYY-MM-DD。
 fn valid_date(s: &str) -> bool {
     let b = s.as_bytes();
@@ -264,9 +280,9 @@ pub(crate) async fn flights_search(
     tracing::info!(event = "flight.flights.searched", from = %from, to = %to, date = ?date, cabin, page, page_size);
 
     // 2. Redis 缓存优先
-    let cache_key = format!("travel:flights:{from}:{to}:{}:{}", date.as_deref().unwrap_or("all"), cabin.map(|c| c.to_string()).unwrap_or_else(|| "all".into()));
+    let key = cache_key(&from, &to, date.as_deref(), cabin, page, page_size);
     if let Some(cache) = &state.cache {
-        if let Ok(Some(raw)) = cache.get(&cache_key).await {
+        if let Ok(Some(raw)) = cache.get(&key).await {
             if let Ok(data) = serde_json::from_str::<SearchData>(&String::from_utf8_lossy(&raw)) {
                 return (StatusCode::OK, Json(ApiResponse { code: 0, message: "cache hit".into(), data: Some(data) }));
             }
@@ -290,7 +306,7 @@ pub(crate) async fn flights_search(
         if let Some(cache) = &state.cache {
             let data = SearchData { total, page, page_size, items: items.clone() };
             let raw = serde_json::to_string(&data).unwrap_or_default();
-            if let Err(e) = cache.set(&cache_key, raw.as_bytes(), Duration::from_secs(SEARCH_CACHE_TTL)).await {
+            if let Err(e) = cache.set(&key, raw.as_bytes(), Duration::from_secs(SEARCH_CACHE_TTL)).await {
                 tracing::warn!("flights cache set failed: {e}");
             }
         }

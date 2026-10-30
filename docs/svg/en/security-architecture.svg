@@ -44,7 +44,7 @@
   <text x="676" y="158" class="t-eng">Rate Limiting</text>
   <line x1="676" y1="170" x2="944" y2="170" class="line"/>
   <text x="810" y="200" text-anchor="middle" class="t-kw">Redis fixed window</text>
-  <text x="810" y="232" text-anchor="middle" class="t-s">100 req / 60s per service</text>
+  <text x="810" y="232" text-anchor="middle" class="t-s">100 req / 60s per client</text>
   <text x="810" y="254" text-anchor="middle" class="t-s">Exceeded → 429 · Anti-abuse · DDoS</text>
 
   <!-- 第二行 -->

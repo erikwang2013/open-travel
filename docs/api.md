@@ -1,7 +1,7 @@
 <!-- Copyright (c) 2026 erik <erik@erik.xyz> — https://erik.xyz -->
 # Open Travel API 参考
 
-本页汇总 Open Travel 后端（user-service / booking-service / admin-service）的 HTTP 接口。服务基于 e-cat 框架构建，业务路由由各服务注册，经 Nginx 网关统一暴露。
+本页汇总 Open Travel 后端（user / booking / admin / search / line / order / flight / hotel / payment 共 9 个服务）的 HTTP 接口。服务基于 e-cat 框架构建，业务路由由各服务注册，经 Nginx 网关统一暴露。
 
 ## 访问入口
 
@@ -12,7 +12,7 @@
 | booking-service 直连 | `http://localhost:8002` | 目的地服务 |
 | admin-service 直连 | `http://localhost:8003` | 管理服务 |
 
-网关分流规则（`config/nginx.conf`）：`/api/v1/user/*` → user-service，`/api/v1/booking/*` → booking-service，`/api/v1/admin/*` → admin-service；`/health`、`/ready` → user-service。
+网关分流规则（`config/nginx.conf`）：`/api/v1/user/*` → user-service，`/api/v1/booking/*` → booking-service，`/api/v1/admin/*` → admin-service，`/api/v1/search*` → search-service，`/api/v1/lines*` → line-service，`/api/v1/orders*` → order-service，`/api/v1/flights*` → flight-service，`/api/v1/hotels*` → hotel-service，`/api/v1/payments*` → payment-service；`/health`、`/ready` → user-service。
 
 ## 通用约定
 
@@ -53,9 +53,10 @@ Authorization: Bearer <JWT>
 
 ### 限流
 
-- 每个服务独立限流：**100 请求 / 60 秒**，Redis 分布式固定窗口
+- 每个服务、每个客户端独立限流：**100 请求 / 60 秒**，Redis 分布式固定窗口
 - 未认证请求也计入限流（防暴力请求耗尽资源）
-- 超限返回 `429`；限流 key 按客户端地址统计
+- 超限返回 `429`；客户端地址取 `X-Real-IP`，回退 `X-Forwarded-For` 首跳，缺失时归入 `unknown` 桶
+- 服务端口应只经网关暴露；直连时客户端可伪造上述请求头，限流不再可信
 
 ### 错误码
 
@@ -65,8 +66,8 @@ Authorization: Bearer <JWT>
 | 400 | 请求参数错误（`code` 非 0，`message` 描述原因） |
 | 401 | 未认证 / JWT 无效 / 登录凭据错误（统一返回，防枚举） |
 | 403 | 请求被安全中间件拦截（SQL 注入 / XSS / SSRF 等攻击模式）；admin 接口非 admin role（`admin role required`） |
-| 404 | 用户 / 目的地 / 景区不存在（各服务对应返回） |
-| 409 | 邮箱已注册；删除仍有关联景区的目的地 |
+| 404 | 用户 / 目的地 / 景区 / 线路 / 班期 / 航班 / 酒店 / 订单 / 流水不存在（各服务对应返回） |
+| 409 | 邮箱已注册；库存不足；删除仍有关联数据的资源（目的地仍有景区、线路仍有班期等） |
 | 429 | 超过限流阈值 |
 | 500 | 服务内部错误 |
 | 503 | 数据库不可用 |
@@ -193,7 +194,7 @@ curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X PUT
 
 #### `GET /api/v1/booking/dates?region_id=N` — 热门目的地日期
 
-公开接口，无鉴权。查询 `region_id` 对应的热门目的地列表（仅 `status=1`，按 `sort_order ASC, id ASC` 排序），走 Redis 缓存（`hot_destinations:{region_id}`，TTL 300s）→ MySQL 回源（`travel_destinations` 表）→ 占位数据兜底，保证无数据源环境可响应。
+公开接口，无鉴权。查询 `region_id` 对应的热门目的地列表（仅 `status=1`，按 `sort_order ASC, id ASC` 排序），走 Redis 缓存（`hot_destinations:{region_id}`，TTL 300s）→ MySQL 回源（`travel_destinations` 表）；无数据返回空数组。
 
 ```bash
 curl "http://localhost:8082/api/v1/booking/dates?region_id=1"
@@ -251,7 +252,7 @@ curl "http://localhost:8082/api/v1/booking/attractions/1?lang=zh"
 管理端接口全部需要 **admin JWT**（`POST /api/v1/admin/login` 签发，claims 含 `role=admin`）：
 
 - token 缺失 / 无效 → `401`；非 admin role → `403`（`admin role required`）
-- 限流独立统计：100 请求 / 60 秒
+- 限流独立统计：每客户端 100 请求 / 60 秒
 
 #### `POST /api/v1/admin/login` — 管理员登录
 
@@ -362,7 +363,7 @@ curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X PUT
 
 ### 搜索服务（search-service）
 
-公开接口，无需 JWT。OpenSearch 索引优先，索引不可用时回退 MySQL `LIKE` 检索；检索词写入 `travel_searches` 热词日志。
+公开接口，无需 JWT。OpenSearch 索引优先，索引不可用时回退 MySQL `LIKE` 检索；回源检索写入 `travel_searches` 热词日志（缓存命中不重复写），日志保留 30 天并每小时清理。
 
 #### `GET /api/v1/search` — 多条件检索
 
@@ -422,15 +423,15 @@ curl "http://localhost:8082/api/v1/search/hotwords?period=day&limit=10"
 
 ### 订单服务（order-service）
 
-全部接口需要 **用户 JWT**（`POST /api/v1/user/login` 签发）。限流独立统计。
+用户接口需要 **用户 JWT**（`POST /api/v1/user/login` 签发）；`POST /api/v1/orders/{id}/pay-success` 为内部接口，以 `X-Internal-Token` 防护。限流按客户端独立统计。
 
 #### `POST /api/v1/orders` — 下单
 
 请求体：`{ "order_type": 1, "product_id": 10020001, "line_date_id": 1, "quantity": 1 }`。
 
-- 仅支持 `order_type=1`（线路）；机票/酒店（2/3）返回 `501`
-- **防超卖双防线**：Redis 原子预占（`INCRBY travel:stock:{line_date_id}`）+ 数据库原子扣减（`seats_left >= quantity` 才扣）
-- 快照含标题/单价/出发日期/数量，订单 `expire_at = now + 15 分钟`，超时未支付由后台任务释放余位
+- 支持 `order_type=1/2/3`（线路/机票/酒店），字段含义见文末「订单类型说明」
+- **防超卖双防线**：Redis 原子预占（`INCRBY travel:stock:{order_type}:{stock_id}`）+ 数据库原子扣减（余位 `>= quantity` 才扣）
+- 快照含标题/单价/出发日期/数量，订单 `expire_at = now + 15 分钟`，超时未支付由 60 秒后台任务释放余位
 - `409`：余位不足（`insufficient stock`）
 
 ```bash
@@ -438,11 +439,11 @@ curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X POS
   http://localhost:8082/api/v1/orders -d '{"order_type":1,"product_id":10020001,"line_date_id":1,"quantity":1}'
 ```
 
-响应 `data`：`{ "id", "order_type", "product_id", "status", "amount_cents", "snapshot", "expire_at", "created_at" }`。
+响应 `data`：`{ "id", "id_str", "order_type", "product_id", "status", "amount_cents", "snapshot", "expire_at", "created_at" }`。`id_str` 为雪花 ID 的字符串形式，Web 客户端应优先使用它（JS 数字精度仅 2^53）。
 
 #### `GET /api/v1/orders` — 订单列表
 
-当前用户订单按创建时间倒序，分页参数 `page` / `page_size`。响应 `data`：`{ "items": [ ...订单对象 ], "total", "page", "page_size" }`。
+当前用户订单按创建时间倒序，分页参数 `page` / `page_size`。响应 `data` 为订单对象数组：`[ { ...订单对象 } ]`。
 
 #### `GET /api/v1/orders/{id}` — 订单详情
 
@@ -450,7 +451,7 @@ curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X POS
 
 #### `POST /api/v1/orders/{id}/cancel` — 取消订单
 
-仅 `status=0`（待支付）可取消；取消后释放余位（DB 回补 + Redis 预占回滚），订单置 `status=4`。其他状态 `409`。
+仅 `status=0`（待支付）可取消；取消后释放余位（DB 回补 + Redis 预占回滚），订单置 `status=4`。其他状态 `400`（`only pending orders can be cancelled`）。
 
 ### 管理端线路（admin-service 扩展）
 
@@ -503,9 +504,9 @@ curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X POS
 
 ### 航班服务（flight-service，P4-01/02）
 
-#### `GET /api/v1/flights/search?from=HND&to=HKG&depart_date=YYYY-MM-DD&cabin=0&page=&page_size=` — 航班检索
+#### `GET /api/v1/flights/search?from=HND&to=HKG&date=YYYY-MM-DD&cabin=0&page=&page_size=` — 航班检索
 
-公开。`from`/`to` 为 IATA 三字码，必填；`cabin` 0经济/1商务/2头等，缺省全部；`depart_date` 精确匹配当天航班（可省）。返回 `items`（`id/airline/flight_no/from_code/to_code/depart_at/arrive_at/cabin/price_cents/seats_left`）、`total`、`page`、`page_size`。`404`：该航线无航班。
+公开。`from`/`to` 为 IATA 三字码，必填；`cabin` 0经济/1商务/2头等，缺省全部；`date` 精确匹配当天航班（可省）。`page_size` 1..=100，越界 400。返回 `items`（`id/airline/flight_no/from_code/to_code/depart_at/arrive_at/cabin/price_cents/seats_left`）、`total`、`page`、`page_size`；无结果返回 200 + 空 `items`。
 
 #### `GET /api/v1/flights/{id}` — 航班详情
 
@@ -515,7 +516,7 @@ curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X POS
 
 #### `GET /api/v1/hotels/search?city=HKG&star=&page=&page_size=` — 酒店检索
 
-公开。`city` 三字码必填；`star` 1-5 可省。返回 `items`（`id/name_en/name_zh/city_code/star/latitude/longitude/cover_url`）、分页信息。
+公开。`city` 三字码必填；`star` 1-5 可省；`page_size` 1..=100，越界 400。返回 `items`（`id/name_en/name_zh/city_code/star/latitude/longitude/cover_url`）、`total`、`page`、`page_size`；无结果返回 200 + 空 `items`。
 
 #### `GET /api/v1/hotels/{id}` — 酒店详情（含房型）
 
@@ -525,11 +526,11 @@ curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X POS
 
 #### `POST /api/v1/payments` — 发起支付（用户 JWT）
 
-请求 `{"order_id": 123, "channel_code": "stripe"}`。校验订单属于当前用户且 `status=0`（已支付/已取消返回 400）。写支付流水（`status=0` 待支付）并返回 `{"txn_no", "amount_cents", "checkout_url"}`——沙箱环境 `checkout_url` 指向 `GET /api/v1/payments/sandbox/{txn_no}`（模拟收银台页）。`404`：订单不存在。
+请求 `{"order_id": 123, "channel_code": "stripe"}`；`order_id` 兼容 JSON 数字或数字字符串（Web 客户端传字符串）。校验订单属于当前用户且 `status=0`（已支付/已取消返回 400）。每个订单只有一条支付流水（`uk_order` 唯一键）；最近一次为失败（`status=2`）时复用该行重新发起。返回 `{"txn_no", "amount_cents", "checkout_url"}`；`checkout_url` 基址取 `PUBLIC_BASE_URL`（默认 `http://localhost:8082`），指向 `GET /api/v1/payments/sandbox/{txn_no}`。`404`：订单不存在。
 
 #### `POST /api/v1/payments/callback/{channel_code}` — 支付渠道回调（内部）
 
-无 JWT，以 `X-Internal-Token`（环境变量 `INTERNAL_TOKEN`，默认 `dev-internal-secret`）防护。请求 `{"txn_no": "...", "status": 1}`（status 1 成功/2 失败）。按 `txn_no` 幂等：已处理过直接返回 `{"duplicate": true}`。成功时更新流水 `status=1/paid_at` 并调用 order-service `POST /api/v1/orders/{id}/pay-success` 推进订单 `0→1`（内部 X-Internal-Token）。回调请求体以 `X-Signature`（HMAC-SHA256，密钥固定 `sandbox-secret`，开发环境模拟验签）签名校验，非法返回 401。
+公开接口（无 JWT），以请求头 `X-Signature` 防护：`HMAC-SHA256(原始请求体, sandbox-secret)`，非法返回 401（开发环境模拟验签，接入真实渠道时替换）。请求 `{"txn_no": "...", "status": 1}`（status 1 成功/2 失败）。按 `txn_no` 幂等：已失败/已退款直接返回 `data: null`；已成功时重试调用 order-service 确认（确认接口幂等），确认失败仍返回 500 让渠道继续重试。首次成功时更新流水 `status=1/paid_at` 并调用 `POST /api/v1/orders/{id}/pay-success` 推进订单 `0→1`；该内部调用带 `X-Internal-Token`（`INTERNAL_TOKEN`）。
 
 #### `GET /api/v1/payments/sandbox/{txn_no}` — 沙箱收银台页
 
@@ -537,7 +538,7 @@ curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X POS
 
 #### `GET /api/v1/payments/channels?lang=zh` — 渠道列表（按语言路由）
 
-公开。返回全部启用渠道，本国渠道（`languages` 含当前 lang）排前、全语言渠道（`languages=''`）兜底，同档按 `priority` 降序；`name` 取当前语言。返回 `items`（`channel_code/name/type/priority`）。
+公开。返回全部启用渠道，本国渠道（`languages` 含当前 lang）排前、全语言渠道（`languages=''`）兜底，同档按 `priority` 降序；`name` 取当前语言。响应 `data` 为数组：`[ { "channel_code", "name", "type", "priority" } ]`。
 
 ### 管理端支付（admin-service，P4-16）
 
@@ -561,7 +562,7 @@ curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X POS
 
 #### `POST /api/v1/admin/orders/{id}/refund` — 退款
 
-`status IN (1,2)` 才可退，置 `4` 并回补对应商品库存（线路回补班期余位、航班回补余票、酒店回补房态库存）。已退/其他状态 `400`；`404`：订单不存在。
+`status IN (1,2)` 才可退，置 `4` 并回补对应商品库存（线路回补班期余位、航班回补余票、酒店回补房态库存），支付流水置 `3`（已退款）。已退/其他状态 `409`；`404`：订单不存在。
 
 #### `GET /api/v1/admin/flights` / `POST /api/v1/admin/flights` / `PUT /api/v1/admin/flights/{id}` / `PUT /api/v1/admin/flights/{id}/status` — 航班管理
 
@@ -595,9 +596,7 @@ curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X POS
 
 `data.items`：`[ { "day"（YYYY-MM-DD）, "orders" } ]`，恒定 7 行（含当日，无单日补零）。
 
-### 订单扩展（order-service，P4-12）
-
-#### `POST /api/v1/orders` — 下单（用户 JWT，支持 type 1/2/3）
+### 订单类型说明（order-service，1/2/3）
 
 请求 `{"order_type": 1, "product_id": 123, "line_date_id": 45, "quantity": 2}`：
 
@@ -605,7 +604,7 @@ curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X POS
 - `order_type=2` 航班：`product_id`=航班 id；已起飞/下架返回 404，余票不足 409。
 - `order_type=3` 酒店：`product_id`=房型 id，可带 `check_in`/`check_out`（存快照）；房态库存不足 409。
 
-`quantity` 1-99，越界 400。防超卖双防线不变：Redis 预占（`travel:stock:{order_type}:{stock_id}`）+ DB 原子扣减（`WHERE ... >= ?`，受影响 0 行回滚并 409）。快照含商品标题/价格/日期，`destination_id` 仅线路填真实目的地，航班/酒店记 0。成功 `data` 含 `expire_at`（15 分钟后自动取消，惰性 + 60s 后台扫描）。
+`quantity` 1-99，越界 400。防超卖双防线不变：Redis 预占（`travel:stock:{order_type}:{stock_id}`）+ DB 原子扣减（`WHERE ... >= ?`，受影响 0 行回滚并 409）。快照含商品标题/价格/日期，`destination_id` 仅线路填真实目的地，航班/酒店记 0。成功 `data` 含 `id_str` 与 `expire_at`（15 分钟后自动取消，由 60 秒后台任务扫描释放；取消/超时先抢占状态再回补库存，并发下只回补一次）。
 
 ## 中间件链
 
@@ -617,7 +616,7 @@ curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT>" -X POS
 - **search-service / line-service**：`Tracing → CircuitBreaker → Security → RateLimit`（公开，无 JWT）
 - **order-service**：`Tracing → CircuitBreaker → Security → RateLimit → JWT(Auth)`（全部接口需用户 JWT；`POST /api/v1/orders/{id}/pay-success` 内部接口无 JWT，以 X-Internal-Token 防护）
 - **flight-service / hotel-service**：`Tracing → CircuitBreaker → Security → RateLimit`（公开，无 JWT）
-- **payment-service**：`Tracing → CircuitBreaker → Security → RateLimit`；`/api/v1/payments` 需用户 JWT，`/api/v1/payments/callback/{channel_code}` 无 JWT（X-Internal-Token + HMAC 签名防护）
+- **payment-service**：`Tracing → CircuitBreaker → Security → RateLimit`；`/api/v1/payments` 需用户 JWT，`/api/v1/payments/callback/{channel_code}` 无 JWT（HMAC 签名防护）；payment → order 的内部确认调用带 X-Internal-Token
 
 ## 相关文档
 

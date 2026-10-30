@@ -3,7 +3,7 @@
 // 端口 8004；公开接口（无 JWT）。检索链路：
 //   1. Redis 缓存（60s）命中直接返回
 //   2. OpenSearch multi_match（q，name_* + description，OR 语义）+ bool 过滤
-//      （destination_id term / price_cents range），目的地与景点索引各取一页后合并
+//      （destination_id term / price_cents range），目的地与景点索引各取前 page*PAGE_SIZE 条后合并再切页
 //   3. OpenSearch 不可用时回退 MySQL LIKE（status=1，参数化查询，语义与 OS 对齐）
 //   4. 检索成功写 travel_searches 日志（热词统计，user_id 留空：公开接口）
 // 索引同步：启动 2s 后全量重推 destinations + attractions（幂等 upsert，id 为文档
@@ -264,12 +264,30 @@ async fn sync_all(state: &AppState) {
     );
 }
 
+/// 检索日志保留 30 天：每小时删一批（主库写路径；失败仅告警，不阻塞同步）。
+async fn prune_searches(state: &AppState) {
+    let Some(db) = &state.db else { return };
+    match db.execute_with(
+        "DELETE FROM travel_searches WHERE created_at < NOW() - INTERVAL 30 DAY LIMIT 1000",
+        &[],
+    ).await {
+        Ok(n) => tracing::info!(deleted = n, "travel_searches pruned"),
+        Err(e) => tracing::warn!("travel_searches prune failed: {e}"),
+    }
+}
+
 async fn sync_loop(state: AppState) {
     // 等 MySQL/OpenSearch 就绪后首次全量同步，之后按间隔重推
     tokio::time::sleep(Duration::from_secs(2)).await;
+    prune_searches(&state).await;
     let mut ticker = tokio::time::interval(SYNC_INTERVAL);
+    let mut ticks = 0u32;
     loop {
         sync_all(&state).await;
+        ticks += 1;
+        if ticks % 60 == 0 {
+            prune_searches(&state).await;
+        }
         ticker.tick().await;
     }
 }
@@ -301,10 +319,11 @@ pub(crate) fn build_os_query(q: &str, dest: Option<u64>, pmin: Option<u64>, pmax
         // 目的地文档无 price_cents，range 不命中 → 价格过滤时自动排除目的地
         must.push(json!({"range": {"price_cents": range}}));
     }
+    // 每个索引都从 0 取到 page*PAGE_SIZE，合并后再统一按页切
     json!({
         "query": {"bool": {"must": must}},
-        "from": (page - 1) * PAGE_SIZE,
-        "size": PAGE_SIZE
+        "from": 0,
+        "size": page.saturating_mul(PAGE_SIZE)
     })
 }
 
@@ -364,14 +383,14 @@ fn like_pattern(q: &str) -> String {
     format!("%{q}%")
 }
 
-/// 构造 name_*/description 的 OR LIKE 条件；q 为空返回空条件（全量）。
+/// 构造 name_*/description 的 OR LIKE 条件（不含 AND 前缀）；q 为空返回空条件（全量）。
 fn like_cond(q: &str, cols: &[&str]) -> (String, Vec<serde_json::Value>) {
     if q.is_empty() {
         return (String::new(), Vec::new());
     }
     let ors: Vec<String> = cols.iter().map(|c| format!("{c} LIKE ?")).collect();
     let params = cols.iter().map(|_| json!(like_pattern(q))).collect();
-    (format!("AND ({})", ors.join(" OR ")), params)
+    (format!("({})", ors.join(" OR ")), params)
 }
 
 async fn count_rows(db: &SqlxClient, sql: &str, params: &[serde_json::Value]) -> u64 {
@@ -388,12 +407,13 @@ async fn count_rows(db: &SqlxClient, sql: &str, params: &[serde_json::Value]) ->
 /// （无价格字段，与 OpenSearch range 行为一致）。
 async fn fallback_dest(db: &SqlxClient, q: &str, page: u32, lang: &str) -> (Vec<SearchItem>, u64) {
     let (cond, params) = like_cond(q, &["name_en", "name_zh", "name_ja", "description"]);
+    let cond = if cond.is_empty() { cond } else { format!("AND {cond}") };
     let total = count_rows(db, &format!("SELECT COUNT(*) AS n FROM travel_destinations WHERE status = 1 {cond}"), &params).await;
     let sql = format!(
         "SELECT id, name_en, name_zh, name_ja, cover_url, CAST(description AS CHAR) AS description \
          FROM travel_destinations WHERE status = 1 {cond} ORDER BY sort_order ASC, id ASC \
-         LIMIT {PAGE_SIZE} OFFSET {}",
-        (page - 1) * PAGE_SIZE
+         LIMIT {}",
+        page.saturating_mul(PAGE_SIZE)
     );
     match db.query_with(&sql, &params).await {
         Ok(rows) => {
@@ -441,8 +461,8 @@ async fn fallback_attr(
     let sql = format!(
         "SELECT id, destination_id, price_cents, cover_url, CAST(description AS CHAR) AS description, {NAME_COLS} \
          FROM travel_attractions WHERE status = 1 {where_clause} ORDER BY id ASC \
-         LIMIT {PAGE_SIZE} OFFSET {}",
-        (page - 1) * PAGE_SIZE
+         LIMIT {}",
+        page.saturating_mul(PAGE_SIZE)
     );
     match db.query_with(&sql, &params).await {
         Ok(rows) => {
@@ -477,6 +497,10 @@ async fn fallback_search(
     let (a_items, a_total) = fallback_attr(db, q, dest, pmin, pmax, page, lang).await;
     items.extend(a_items);
     total += a_total;
+    // 两路各取前 page*PAGE_SIZE 条后合并（目的地在前），再统一切页
+    let start = (page - 1).saturating_mul(PAGE_SIZE) as usize;
+    items.drain(..start.min(items.len()));
+    items.truncate(PAGE_SIZE as usize);
     SearchResult { total, page, page_size: PAGE_SIZE, items }
 }
 
@@ -510,7 +534,6 @@ pub(crate) async fn search(
     if let Some(cache) = &state.cache {
         if let Ok(Some(raw)) = cache.get(&cache_key).await {
             if let Ok(result) = serde_json::from_str::<SearchResult>(&String::from_utf8_lossy(&raw)) {
-                log_search(&state, &keyword, &lang, result.total).await;
                 return (StatusCode::OK, Json(ApiResponse { code: 0, message: "cache hit".into(), data: Some(result) }));
             }
         }
@@ -521,9 +544,12 @@ pub(crate) async fn search(
         let a = search_os_index(os, "travel_attractions", &keyword, q.destination_id, q.price_min, q.price_max, page, &lang).await;
         match (d, a) {
             (Some((d_items, d_total)), Some((a_items, a_total))) => {
-                // 目的地在前 + 各索引页切片合并（与 MySQL 回退语义一致）
+                // 目的地在前合并两索引结果，再统一按页切（与 MySQL 回退语义一致）
                 let mut items = d_items;
                 items.extend(a_items);
+                let start = (page - 1).saturating_mul(PAGE_SIZE) as usize;
+                items.drain(..start.min(items.len()));
+                items.truncate(PAGE_SIZE as usize);
                 SearchResult { total: d_total + a_total, page, page_size: PAGE_SIZE, items }
             }
             // OpenSearch 故障 → 回退 MySQL
